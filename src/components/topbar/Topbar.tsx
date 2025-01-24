@@ -2,7 +2,7 @@ import { CancleIcon } from '../icon/Icon.tsx';
 
 function TopbarWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="absolute top-0 left-0 flex items-center justify-between w-[360px] h-14 bg-white py-4 pr-4 border-b border-custom-gray">
+    <div className="absolute top-0 left-0 flex items-center justify-between w-[360px] h-14 bg-white py-4 pr-4 border-b border-solid border-custom-gray">
       {children}
     </div>
   );
