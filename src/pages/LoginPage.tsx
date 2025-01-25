@@ -2,7 +2,7 @@ import { Topbar } from '../components/topbar/Topbar.tsx';
 import { AccordionItem } from '../components/accordion/AccordionItem.tsx';
 import React from 'react';
 import { FormInput } from '../components/form/FormInput.tsx';
-import { Button } from '../components/button/Button.tsx';
+import { LoginForm } from '../contents/login/LoginForm.tsx';
 
 export function LoginPage() {
   const [selectedId, setSelectedId] = React.useState<string>('');
@@ -20,11 +20,7 @@ export function LoginPage() {
             onChange={setSelectedId}
             isFirst={true}
           >
-            <form>
-              <FormInput id="username" name="username" type="text" label="Email address or user ID" />
-              <FormInput id="password" name="password" type="password" label="Password" />
-              <Button>Log in</Button>
-            </form>
+            <LoginForm />
           </AccordionItem>
           <AccordionItem
             id="signup"
@@ -34,7 +30,9 @@ export function LoginPage() {
             onChange={setSelectedId}
             isLast={true}
           >
-            <form>회원가입 폼</form>
+            <form>
+              <FormInput id="email" name="email" type="text" label="Email" />
+            </form>
           </AccordionItem>
         </div>
       </div>
