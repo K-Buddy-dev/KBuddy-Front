@@ -1,8 +1,7 @@
 import { Topbar } from '../components/topbar/Topbar.tsx';
-import { AccordionItem } from '../components/accordion/AccordionItem.tsx';
 import { FormInput } from '../components/form/FormInput.tsx';
 import { LoginForm } from '../contents/login/LoginForm.tsx';
-import { Accordion } from '../components/accordion/Accordion.tsx';
+import { Accordion, AccordionItem } from '../components/accordion';
 
 export function LoginPage() {
   return (
