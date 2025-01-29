@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '../../utils/utils.ts';
 
-interface AccordionProps {
+export interface AccordionItemProps {
   children: React.ReactNode;
   id: string;
   label: string;
@@ -12,7 +12,7 @@ interface AccordionProps {
   isLast?: boolean;
 }
 
-export function AccordionItem({ children, id, label, name, checked, onChange, isFirst, isLast }: AccordionProps) {
+export function AccordionItem({ children, id, label, name, checked, onChange, isFirst, isLast }: AccordionItemProps) {
   return (
     <div className="border-b border-primary last:border-b-0">
       <div
