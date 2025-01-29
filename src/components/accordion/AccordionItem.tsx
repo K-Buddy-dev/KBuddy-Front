@@ -6,8 +6,8 @@ interface AccordionProps {
   id: string;
   label: string;
   name: string;
-  checked: boolean;
-  onChange: (id: string) => void;
+  checked?: boolean;
+  onChange?: (id: string) => void;
   isFirst?: boolean;
   isLast?: boolean;
 }
@@ -24,7 +24,7 @@ export function AccordionItem({ children, id, label, name, checked, onChange, is
           isLast && checked && 'border-b'
         )}
       >
-        <input type="radio" id={id} name={name} checked={checked} onChange={() => onChange(id)} className="hidden" />
+        <input type="radio" id={id} name={name} checked={checked} onChange={() => onChange?.(id)} className="hidden" />
         <label htmlFor={id} className="flex items-center gap-2 cursor-pointer w-full">
           {checked ? (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -48,7 +48,14 @@ export function AccordionItem({ children, id, label, name, checked, onChange, is
           <span className="text-[#222] font-roboto text-lg font-medium leading-6 tracking-[0.15px]">{label}</span>
         </label>
       </div>
-      {checked && <div className="pt-4 pb-6 px-4">{children}</div>}
+      <div
+        className="overflow-hidden transition-all duration-300 ease-in-out"
+        style={{
+          maxHeight: checked ? 'none' : 0,
+        }}
+      >
+        <div className="pt-4 pb-6 px-4">{children}</div>
+      </div>
     </div>
   );
 }
