@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../utils/utils.ts';
+import { cn } from '@/utils/utils.ts';
 
 export interface AccordionItemProps {
   children: React.ReactNode;

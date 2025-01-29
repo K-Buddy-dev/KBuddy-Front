@@ -1,5 +1,5 @@
 import { cva, VariantProps } from 'class-variance-authority';
-import { cn } from '../../utils/utils';
+import { cn } from '@/utils/utils';
 import React, { useState } from 'react';
 
 const checkboxVariants = cva('flex items-center cursor-pointer', {
