@@ -1,5 +1,5 @@
 import { cva, VariantProps } from 'class-variance-authority';
-import { cn } from '../../utils/utils';
+import { cn } from '@/utils/utils';
 import React from 'react';
 
 const buttonVariants = cva('w-[296px] h-12 rounded-lg text-center font-roboto text-base font-semibold leading-none', {

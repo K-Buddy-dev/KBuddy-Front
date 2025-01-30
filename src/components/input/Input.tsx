@@ -1,5 +1,5 @@
 import { forwardRef, useState } from 'react';
-import { cn } from '../../utils/utils';
+import { cn } from '@utils/utils';
 
 export interface InputProps extends React.ComponentProps<'input'> {
   className?: string;

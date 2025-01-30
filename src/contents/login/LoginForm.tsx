@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../../components/button/Button.tsx';
-import { Checkbox } from '../../components/checkbox/Checkbox.tsx';
-import { FormInput } from '../../components/form/FormInput.tsx';
+import { Button } from '@components/button/Button.tsx';
+import { Checkbox } from '@components/checkbox/Checkbox.tsx';
+import { FormInput } from '@components/form/FormInput.tsx';
 
 export function LoginForm() {
   const navigate = useNavigate();

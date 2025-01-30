@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Input } from '../input/Input';
+import { Input } from '@components/input/Input';
 
 interface FormInputProps {
   id: string;
