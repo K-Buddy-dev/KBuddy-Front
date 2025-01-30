@@ -1,4 +1,4 @@
-import { CancleIcon } from '../icon/Icon.tsx';
+import { CancelIcon } from '@components/icon/Icon.tsx';
 
 function TopbarWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -15,7 +15,7 @@ function PageTitle({ children }: { children: React.ReactNode }) {
 export function Topbar({ title }: { title: string }) {
   return (
     <TopbarWrapper>
-      <CancleIcon />
+      <CancelIcon />
       <PageTitle>{title}</PageTitle>
     </TopbarWrapper>
   );
