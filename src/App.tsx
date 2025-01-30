@@ -1,8 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { LoginPage } from './pages/LoginPage.tsx';
+import { LoginPage, Community } from './pages';
 import { DefaultLayout } from './components/layout/DefaultLayout.tsx';
-import Community from './pages/CommunityPage.tsx';
 
 function App() {
   return (
