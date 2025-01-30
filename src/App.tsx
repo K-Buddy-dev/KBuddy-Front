@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { LoginPage, Community } from './pages';
+import { LoginPage, CommunityPage } from './pages';
 import { DefaultLayout } from './components/layout/DefaultLayout.tsx';
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
       <Routes>
         <Route element={<DefaultLayout />}>
           <Route path="/" element={<LoginPage />} />
-          <Route path="/community" element={<Community />} />
+          <Route path="/community" element={<CommunityPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
