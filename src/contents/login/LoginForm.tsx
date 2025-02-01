@@ -21,7 +21,7 @@ export function LoginForm() {
           Forgot password?
         </span>
       </div>
-      <Button>Log in</Button>
+      <Button className="w-full">Log in</Button>
     </form>
   );
 }
