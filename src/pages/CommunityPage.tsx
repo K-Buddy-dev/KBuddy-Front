@@ -1,9 +1,13 @@
-import { Swiper } from '../components/community/swiper';
+import { Navbar } from '@/components/navbar/Navbar';
+import { Swiper } from '@/components/community/swiper';
 
 export function CommunityPage() {
   return (
-    <div>
-      <Swiper />
-    </div>
+    <>
+      <Navbar withSearch />
+      <div>
+        <Swiper />
+      </div>
+    </>
   );
 }
