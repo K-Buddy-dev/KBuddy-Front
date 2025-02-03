@@ -22,7 +22,8 @@
       "@pages/*": ["src/pages/*"],
       "@components/*": ["src/components/*"],
       "@contents/*": ["src/contents/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "swiper/*": ["node_modules/swiper/*"]
     },
 
     /* Linting */

@@ -1,1 +1,1 @@
-export { Swiper } from './Swiper';
+export { SwiperList } from './SwiperList';
