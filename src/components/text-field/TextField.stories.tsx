@@ -1,18 +1,58 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 import { TextField } from './TextField';
 import { useState } from 'react';
 
-export default {
-  title: 'Components/Input',
+const meta: Meta<typeof TextField> = {
+  title: 'Components/TextField',
   component: TextField,
+  tags: ['autodocs'],
   argTypes: {
-    value: { control: 'text' },
-    error: { control: 'text' },
+    type: { control: 'text', defaultValue: 'text' },
+    label: { control: 'text', defaultValue: 'Label' },
+    placeholder: { control: 'text', defaultValue: 'Enter text...' },
+    error: { control: 'text', defaultValue: '' },
   },
-} as Meta<typeof TextField>;
+};
 
-export const Default: StoryFn<typeof TextField> = (args) => {
-  const [text, setText] = useState('');
+export default meta;
 
-  return <TextField {...args} value={text} onChange={(e) => setText(e.target.value)} />;
+type Story = StoryObj<typeof TextField>;
+
+export const Default: Story = {
+  render: (args) => {
+    const [value, setValue] = useState('');
+    return <TextField {...args} value={value} onChange={(e) => setValue(e.target.value)} id="default" name="default" />;
+  },
+};
+
+export const WithError: Story = {
+  render: (args) => {
+    const [value, setValue] = useState('');
+    return (
+      <TextField
+        {...args}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        id="error"
+        name="error"
+        error="This is an error"
+      />
+    );
+  },
+};
+
+export const WithPlaceholder: Story = {
+  render: (args) => {
+    const [value, setValue] = useState('');
+    return (
+      <TextField
+        {...args}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        id="placeholder"
+        name="placeholder"
+        placeholder="Type something..."
+      />
+    );
+  },
 };

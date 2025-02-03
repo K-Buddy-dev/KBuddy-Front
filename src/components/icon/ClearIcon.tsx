@@ -1,8 +1,4 @@
-interface ClearIconProps {
-  onClick: () => void;
-}
-
-export function ClearIcon({ onClick }: ClearIconProps) {
+export function ClearIcon() {
   return (
     <svg
       width="24"
@@ -11,7 +7,6 @@ export function ClearIcon({ onClick }: ClearIconProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-label="clear icon"
-      onClick={onClick}
     >
       <path
         d="M22 12.3398C22 17.8627 17.5228 22.3398 12 22.3398C6.47715 22.3398 2 17.8627 2 12.3398C2 6.817 6.47715 2.33984 12 2.33984C17.5228 2.33984 22 6.817 22 12.3398Z"

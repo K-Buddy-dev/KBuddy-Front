@@ -26,3 +26,5 @@ export function Accordion(props: AccordionProps) {
     </div>
   );
 }
+
+Accordion.displayName = 'Accordion';
