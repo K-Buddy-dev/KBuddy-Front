@@ -12,6 +12,7 @@ const textFieldVariants = cva(
         focus: 'border-2 border-[#464646]',
         error: 'border-[#D31510]',
         'error-focus': 'border-2 border-[#D31510]',
+        disabled: 'bg-[#0A004B1A]',
       },
     },
   }
@@ -26,6 +27,14 @@ interface TextFieldProps extends ComponentProps<'input'> {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
+const checkState = (disabled: boolean | undefined, isFocus: boolean, error: string | undefined) => {
+  if (disabled) return 'disabled';
+  if (isFocus && error) return 'error-focus';
+  if (isFocus) return 'focus';
+  if (error) return 'error';
+  return undefined;
+};
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   ({ id, name, label, className, error, value, onChange, ...props }, ref) => {
@@ -52,7 +61,13 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     return (
       <div className="w-full flex flex-col items-start mb-4">
         <Label id={id} label={label} />
-        <div className={cn(textFieldVariants({ state: isFocus ? 'focus' : undefined }))}>
+        <div
+          className={cn(
+            textFieldVariants({
+              state: checkState(props.disabled, isFocus, error),
+            })
+          )}
+        >
           <input
             className="w-full pr-10 flex-1 h-6 bg-transparent outline-none text-gray-900 placeholder-gray-400"
             ref={ref || inputRef}

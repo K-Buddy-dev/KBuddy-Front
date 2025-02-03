@@ -41,6 +41,22 @@ export const WithError: Story = {
   },
 };
 
+export const Disabled: Story = {
+  render: (args) => {
+    const [value, setValue] = useState('');
+    return (
+      <TextField
+        {...args}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        id="disabled"
+        name="disabled"
+        disabled
+      />
+    );
+  },
+};
+
 export const WithPlaceholder: Story = {
   render: (args) => {
     const [value, setValue] = useState('');
