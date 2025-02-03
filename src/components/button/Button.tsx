@@ -1,6 +1,6 @@
 import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from '@/utils/utils';
-import React, { forwardRef } from 'react';
+import { ComponentProps, forwardRef } from 'react';
 
 const buttonVariants = cva('px-8 rounded-lg font-roboto font-semibold inline-flex items-center focus:outline-none', {
   variants: {
@@ -62,9 +62,7 @@ const buttonVariants = cva('px-8 rounded-lg font-roboto font-semibold inline-fle
   },
 });
 
-export interface ButtonProps
-  extends Omit<React.ComponentProps<'button'>, 'color'>,
-    VariantProps<typeof buttonVariants> {}
+export interface ButtonProps extends Omit<ComponentProps<'button'>, 'color'>, VariantProps<typeof buttonVariants> {}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, color, size, variant, ...props }, ref) => {

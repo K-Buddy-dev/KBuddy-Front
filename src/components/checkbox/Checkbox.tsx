@@ -1,6 +1,6 @@
 import { cva, VariantProps } from 'class-variance-authority';
 import { cn } from '@/utils/utils';
-import React, { useState } from 'react';
+import { ComponentProps, forwardRef, useState } from 'react';
 
 const checkboxVariants = cva('flex items-center cursor-pointer', {
   variants: {
@@ -13,13 +13,11 @@ const checkboxVariants = cva('flex items-center cursor-pointer', {
   },
 });
 
-export interface CheckboxProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
-    VariantProps<typeof checkboxVariants> {
+export interface CheckboxProps extends Omit<ComponentProps<'input'>, 'size'>, VariantProps<typeof checkboxVariants> {
   label?: string;
 }
 
-export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
+export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   ({ className, size, label, onChange, checked, ...props }, ref) => {
     const [isChecked, setIsChecked] = useState(checked || false);
 

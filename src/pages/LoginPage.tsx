@@ -1,7 +1,5 @@
-import { Topbar } from '@components/topbar/Topbar.tsx';
-import { FormInput } from '@components/form/FormInput.tsx';
-import { LoginForm } from '@contents/login/LoginForm.tsx';
-import { Accordion, AccordionItem } from '@components/accordion';
+import { Accordion, AccordionItem, TextField, Topbar } from '@/components';
+import { LoginForm } from '@/contents/login/LoginForm';
 
 export function LoginPage() {
   return (
@@ -14,7 +12,7 @@ export function LoginPage() {
           </AccordionItem>
           <AccordionItem id="signup" name="auth" label="Create account">
             <form>
-              <FormInput id="email" name="email" type="text" label="Email" />
+              <TextField id="email" name="email" type="text" label="Email" />
             </form>
           </AccordionItem>
         </Accordion>

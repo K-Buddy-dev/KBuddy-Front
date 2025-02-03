@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@components/button/Button.tsx';
 import { Checkbox } from '@components/checkbox/Checkbox.tsx';
-import { FormInput } from '@components/form/FormInput.tsx';
+import { TextField } from '@components/text-field/TextField.tsx';
 
 export function LoginForm() {
   const navigate = useNavigate();
@@ -10,8 +10,8 @@ export function LoginForm() {
   };
   return (
     <form>
-      <FormInput id="username" name="username" type="text" label="Email address or user ID" />
-      <FormInput id="password" name="password" type="password" label="Password" />
+      <TextField id="username" name="username" type="text" label="Email address or user ID" />
+      <TextField id="password" name="password" type="password" label="Password" />
       <div className="w-full h-8 mb-6 flex items-center justify-between">
         <Checkbox label="Remember me" />
         <span

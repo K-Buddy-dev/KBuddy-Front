@@ -1,5 +1,4 @@
-import { AlarmIcon, Logo, SearchIcon, SettingsIcon } from '@components/icon/Icon.tsx';
-import React from 'react';
+import { AlarmIcon, Logo, SearchIcon, SettingsIcon } from '@/components/icon';
 
 function NavSearch() {
   return (
