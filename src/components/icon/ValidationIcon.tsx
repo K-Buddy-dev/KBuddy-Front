@@ -1,0 +1,10 @@
+export function ValidationIcon() {
+  return (
+    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M5.86615 10.9334L3.06615 8.13337L2.13281 9.0667L5.86615 12.8L13.8661 4.80003L12.9328 3.8667L5.86615 10.9334Z"
+        fill="#6D6D6D"
+      />
+    </svg>
+  );
+}

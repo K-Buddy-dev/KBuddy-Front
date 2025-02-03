@@ -1,8 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@components/button/Button.tsx';
-import { Checkbox } from '@components/checkbox/Checkbox.tsx';
-import { TextField } from '@components/text-field/TextField.tsx';
 import { useState } from 'react';
+import { Button, Checkbox, TextField, PasswordField } from '@/components';
 
 export function LoginForm() {
   const [username, setUsername] = useState('');
@@ -30,7 +28,7 @@ export function LoginForm() {
         value={username}
         onChange={handleChangeUsername}
       />
-      <TextField
+      <PasswordField
         id="password"
         name="password"
         type="password"

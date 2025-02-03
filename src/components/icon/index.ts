@@ -9,3 +9,8 @@ export * from './CheckedIcon';
 export * from './UnCheckedIcon';
 export * from './SelectedRadioIcon';
 export * from './UnSelectedRadioIcon';
+export * from './ValidationPassIcon';
+export * from './ValidationErrorIcon';
+export * from './ValidationIcon';
+export * from './EyesIcon';
+export * from './EyesSlashIcon';
