@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/navbar/Navbar';
 import { SwiperList } from '@/components/community/swiper';
+import { Tab } from '@/components/community/tab';
 
 const mockData = [
   {
@@ -43,6 +44,7 @@ export function CommunityPage() {
       <Navbar withSearch />
       <div>
         <SwiperList cards={mockData} />
+        <Tab />
       </div>
     </>
   );
