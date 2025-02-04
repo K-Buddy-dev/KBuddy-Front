@@ -1,40 +1,47 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import { Button, Checkbox, TextField, PasswordField } from '@/components';
+import { useForm, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema } from '@/utils/validationSchemas';
+import { LoginFormData } from '@/types';
 
 export function LoginForm() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value);
-  };
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
+  const onSubmit = (data: LoginFormData) => {
+    console.log(data);
   };
 
   const handleClickForgotPassword = () => {
     navigate('/forgot');
   };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <TextField
         id="username"
-        name="username"
-        type="text"
         label="Email address or user ID"
-        value={username}
-        onChange={handleChangeUsername}
+        control={control}
+        setValue={setValue}
+        register={register('username')}
+        error={errors.username?.message}
       />
       <PasswordField
         id="password"
-        name="password"
-        type="password"
         label="Password"
-        value={password}
-        onChange={handleChangePassword}
+        control={control}
+        register={register('password')}
+        error={errors.password?.message}
       />
       <div className="w-full h-8 mb-6 flex items-center justify-between">
         <Checkbox label="Remember me" />
