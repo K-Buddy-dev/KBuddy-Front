@@ -1,26 +1,44 @@
-// const menuArr = [{ name: 'Curated blog' }, { name: 'User blog' }, { name: 'Q&A' }];
+import { useTabsStore } from '@/store';
+
+const menuArr = [
+  { name: 'Curated blog', id: 1 },
+  { name: 'User blog', id: 2 },
+  { name: 'Q&A', id: 3 },
+];
 
 function TabWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-center w-[360px] h-[50px] bg-gradient-to-r from-primary-light to-primary">
-      {children}
-    </div>
+    <div className="flex items-end w-[360px] h-[50px] bg-gradient-to-r from-primary-light to-primary">{children}</div>
   );
 }
 
-// function TabList({ children }: { chilfren: React.ReactNode }) {
-//     return (
-//         <div>
-
-//         </div>
-//     )
-
-// }
+function TabList({ children }: { children: React.ReactNode }) {
+  return <div className="w-full h-[35px] flex items-end justify-center px-4">{children}</div>;
+}
 
 export function Tab() {
+  const { activeTab, setActiveTab } = useTabsStore();
+
   return (
     <TabWrapper>
-      <div>가나다</div>
+      <TabList>
+        {menuArr.map((menu, index) => (
+          <button
+            key={index}
+            onClick={() => setActiveTab(menu.id)}
+            className={`
+              w-full h-full px-[7.5px] pb-2 rounded-t-md transition-colors duration-300 font-roboto font-medium leading-[24px]
+              ${
+                activeTab === menu.id
+                  ? 'text-white border-b-[3px] border-white'
+                  : 'text-week-down hover:bg-primary-light'
+              }
+            `}
+          >
+            {menu.name}
+          </button>
+        ))}
+      </TabList>
     </TabWrapper>
   );
 }

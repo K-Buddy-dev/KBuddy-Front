@@ -12,6 +12,7 @@ export default {
         'text/default': '#222222',
         week2: '#E6E6E6',
         week: '#6D6D6D',
+        'week-down': '#E2DEFD',
       },
       spacing: {
         'base-unit-2': '8px',
