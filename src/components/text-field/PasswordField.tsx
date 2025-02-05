@@ -50,7 +50,7 @@ const getValidationState = (value: string, ruleValid: boolean) => {
 };
 
 export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
-  ({ id, name, label, className, error, value, onChange, showValidation = false, ...props }, ref) => {
+  ({ id, label, error, value, onChange, showValidation = false, ...props }, ref) => {
     const [isFocus, setIsFocus] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 

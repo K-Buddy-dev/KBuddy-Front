@@ -34,7 +34,7 @@ const checkState = (disabled: boolean | undefined, isFocus: boolean, error: stri
 };
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  ({ id, name, label, className, error, value, onChange, ...props }, ref) => {
+  ({ id, name, label, error, value, onChange, ...props }, ref) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [isFocus, setIsFocus] = useState(false);
 

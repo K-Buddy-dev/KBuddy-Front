@@ -19,48 +19,54 @@ export default meta;
 
 type Story = StoryObj<typeof PasswordField>;
 
-export const Default: Story = {
-  render: (args) => {
-    const { control } = useForm({
-      defaultValues: {
-        password: '',
-      },
-    });
+const DefaultComponent: React.FC<any> = (args) => {
+  const { control } = useForm({
+    defaultValues: { password: '' },
+  });
 
-    return (
-      <Controller control={control} name="password" render={({ field }) => <PasswordField {...args} {...field} />} />
-    );
-  },
+  return (
+    <Controller control={control} name="password" render={({ field }) => <PasswordField {...args} {...field} />} />
+  );
+};
+
+export const Default: Story = {
+  render: (args) => <DefaultComponent {...args} />,
+};
+
+const WithErrorComponent: React.FC<any> = (args) => {
+  const [password, setPassword] = useState('');
+
+  return (
+    <PasswordField
+      {...args}
+      id="password"
+      name="password"
+      error="Password is too weak"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+    />
+  );
 };
 
 export const WithError: Story = {
-  render: (args) => {
-    const [password, setPassword] = useState('');
-    return (
-      <PasswordField
-        {...args}
-        id="password"
-        name="password"
-        error="Password is too weak"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-    );
-  },
+  render: (args) => <WithErrorComponent {...args} />,
+};
+
+const WithValidationComponent: React.FC<any> = (args) => {
+  const [password, setPassword] = useState('');
+
+  return (
+    <PasswordField
+      {...args}
+      id="password"
+      name="password"
+      showValidation={true}
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+    />
+  );
 };
 
 export const WithValidation: Story = {
-  render: (args) => {
-    const [password, setPassword] = useState('');
-    return (
-      <PasswordField
-        {...args}
-        id="password"
-        name="password"
-        showValidation={true}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-    );
-  },
+  render: (args) => <WithValidationComponent {...args} />,
 };
