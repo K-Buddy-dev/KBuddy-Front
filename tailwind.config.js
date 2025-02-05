@@ -41,8 +41,8 @@ export default {
           strong: '#E6E6E6',
           highlight: {
             default: 'transparent',
-            hover: '#0A004B0D', // rgba(10, 0, 75, 0.05)
-            pressed: '#0A004B1A', // rgba(10, 0, 75, 0.1)
+            hover: '#0A004B0D',
+            pressed: '#0A004B1A',
             disabled: '#0A004B1A',
             selected: '#F6F4FE',
           },

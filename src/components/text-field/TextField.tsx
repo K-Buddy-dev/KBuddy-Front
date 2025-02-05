@@ -5,14 +5,14 @@ import { Label } from '@/label/Label';
 import { cva } from 'class-variance-authority';
 
 const textFieldVariants = cva(
-  'relative w-full py-3 pl-4 pr-2 border border-solid border-[#B1B1B1] rounded-[8px] bg-white box-border',
+  'relative w-full py-3 pl-4 pr-2 border border-solid border-default rounded-[8px] bg-white box-border',
   {
     variants: {
       state: {
-        focus: 'border-2 border-[#464646]',
-        error: 'border-[#D31510]',
-        'error-focus': 'border-2 border-[#D31510]',
-        disabled: 'bg-[#0A004B1A]',
+        focus: 'border-2 border-hover',
+        error: 'border-danger-default',
+        'error-focus': 'border-2 border-danger-default',
+        disabled: 'bg-bg-highlight-disabled',
       },
     },
   }
@@ -82,7 +82,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         {error && (
           <div className="flex items-center gap-1 mt-2">
             <ErrorOutlineIcon />
-            <p className="text-[#D31510] text-[12px] font-normal">{error}</p>
+            <p className="text-danger-default text-[12px] font-normal">{error}</p>
           </div>
         )}
       </div>
