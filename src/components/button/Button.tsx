@@ -3,7 +3,7 @@ import { cn } from '@/utils/utils';
 import { ComponentProps, forwardRef } from 'react';
 
 const buttonVariants = cva(
-  'px-8 rounded-lg font-roboto font-semibold inline-flex items-center justify-center focus:outline-none',
+  'px-8 rounded-[8px] font-roboto font-semibold inline-flex items-center justify-center focus:outline-none',
   {
     variants: {
       variant: {
@@ -26,7 +26,7 @@ const buttonVariants = cva(
         variant: 'solid',
         color: 'primary',
         class:
-          'bg-primary hover:bg-[#5a44d7] focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-white',
+          'bg-[#6952F9] hover:bg-[#5a44d7] focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-white',
       },
       {
         variant: 'solid',

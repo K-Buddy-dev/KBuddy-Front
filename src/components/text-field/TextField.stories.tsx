@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { TextField } from './TextField';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 const meta: Meta<typeof TextField> = {
   title: 'Components/TextField',
@@ -18,18 +18,15 @@ export default meta;
 type Story = StoryObj<typeof TextField>;
 
 const StoryTemplate = (args: any) => {
-  const { control, register, setValue } = useForm({
+  const { control } = useForm({
     defaultValues: { fieldValue: '' },
   });
 
   return (
-    <TextField
-      {...args}
-      id="storybook-textfield"
-      label="Text Field"
+    <Controller
       control={control}
-      register={register('fieldValue')}
-      setValue={setValue}
+      name="fieldValue"
+      render={({ field }) => <TextField id="fieldValue" {...args} {...field} />}
     />
   );
 };

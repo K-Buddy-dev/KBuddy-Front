@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { PasswordField } from './PasswordField';
-import { useForm } from 'react-hook-form';
-import { LoginFormData } from '@/types';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 const meta: Meta<typeof PasswordField> = {
   title: 'Components/PasswordField',
@@ -21,23 +21,29 @@ type Story = StoryObj<typeof PasswordField>;
 
 export const Default: Story = {
   render: (args) => {
-    const { register, control } = useForm<LoginFormData>();
+    const { control } = useForm({
+      defaultValues: {
+        password: '',
+      },
+    });
 
-    return <PasswordField {...args} id="password" register={register('password')} control={control} />;
+    return (
+      <Controller control={control} name="password" render={({ field }) => <PasswordField {...args} {...field} />} />
+    );
   },
 };
 
 export const WithError: Story = {
   render: (args) => {
-    const { register, control } = useForm<LoginFormData>();
-
+    const [password, setPassword] = useState('');
     return (
       <PasswordField
         {...args}
         id="password"
-        register={register('password')}
-        control={control}
+        name="password"
         error="Password is too weak"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
       />
     );
   },
@@ -45,10 +51,16 @@ export const WithError: Story = {
 
 export const WithValidation: Story = {
   render: (args) => {
-    const { register, control } = useForm<LoginFormData>();
-
+    const [password, setPassword] = useState('');
     return (
-      <PasswordField {...args} id="password" register={register('password')} control={control} showValidation={true} />
+      <PasswordField
+        {...args}
+        id="password"
+        name="password"
+        showValidation={true}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
     );
   },
 };

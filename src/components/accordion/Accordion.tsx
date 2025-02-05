@@ -11,7 +11,7 @@ export function Accordion(props: AccordionProps) {
   const [selectedId, setSelectedId] = useState<string>(defaultSelectedId || '');
 
   return (
-    <div className="border-solid border border-primary rounded-2xl overflow-hidden">
+    <div className="border-solid border border-[#6952F9] rounded-2xl overflow-hidden">
       {Children.map(children, (child, index) => {
         if (isValidElement(child)) {
           return cloneElement(child as React.ReactElement<AccordionItemProps>, {

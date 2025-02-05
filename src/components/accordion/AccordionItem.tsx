@@ -15,10 +15,10 @@ export interface AccordionItemProps {
 
 export function AccordionItem({ children, id, label, name, checked, onChange, isFirst, isLast }: AccordionItemProps) {
   return (
-    <div className="border-b border-primary last:border-b-0">
+    <div className="border-b border-[#6952F9] last:border-b-0">
       <div
         className={cn(
-          'flex items-center gap-2 p-4 border-solid border-primary',
+          'flex items-center gap-2 p-4 border-solid border-[#6952F9]',
           checked ? 'bg-[#E2DEFD]' : 'bg-[#F4F4F4]',
           isFirst && 'border-b',
           isLast && !checked && 'border-t',
