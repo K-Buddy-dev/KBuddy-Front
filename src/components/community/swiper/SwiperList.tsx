@@ -43,12 +43,12 @@ function SwiperCard({
           {/* user 이미지 */}
           <div className="w-7 h-7 bg-red-300 rounded-full"></div>
           <div className="flex flex-col items-start justify-start gap-1 font-roboto text-[12px] font-light">
-            <h4 className="text-text/default">{userName}</h4>
+            <h4 className="text/default">{userName}</h4>
             <p className="text-week">{createdAt}</p>
           </div>
         </div>
         <div className="flex flex-col items-start justify-start gap-1 font-roboto">
-          <h3 className="text-[16px] font-medium text-text/default line-clamp-2 leading-[24px]">{title}</h3>
+          <h3 className="text-[16px] font-medium text/default line-clamp-2 leading-[24px]">{title}</h3>
           <p className="text-[14px] font-normal text-week">{content}</p>
         </div>
       </div>
