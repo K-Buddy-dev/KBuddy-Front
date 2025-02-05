@@ -1,4 +1,4 @@
-import { CancelIcon } from '@components/icon/Icon.tsx';
+import { CancelIcon } from '@/components/icon';
 
 function TopbarWrapper({ children }: { children: React.ReactNode }) {
   return (
