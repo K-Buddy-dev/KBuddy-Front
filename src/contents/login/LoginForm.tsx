@@ -6,10 +6,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '@/utils/validationSchemas';
 
 export function LoginForm() {
-  const { control, handleSubmit } = useForm<LoginFormData>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: '',
+      email: '',
       password: '',
     },
   });
@@ -28,13 +32,17 @@ export function LoginForm() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Controller
         control={control}
-        name="username"
-        render={({ field }) => <TextField id="username" label="Email address or user ID" {...field} />}
+        name="email"
+        render={({ field }) => (
+          <TextField id="email" label="Email address or user ID" {...field} error={errors.email?.message} />
+        )}
       />
       <Controller
         control={control}
         name="password"
-        render={({ field }) => <PasswordField id="password" label="Password" {...field} />}
+        render={({ field }) => (
+          <PasswordField id="password" label="Password" {...field} error={errors.password?.message} />
+        )}
       />
       <div className="w-full h-8 mb-6 flex items-center justify-between">
         <Checkbox label="Remember me" />
@@ -45,7 +53,7 @@ export function LoginForm() {
           Forgot password?
         </span>
       </div>
-      <Button variant="solid" color="primary" className="w-full">
+      <Button type="submit" variant="solid" color="primary" className="w-full">
         Log in
       </Button>
     </form>

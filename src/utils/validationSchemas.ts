@@ -19,6 +19,6 @@ export const passwordValidationRules = [
 ];
 
 export const loginSchema = z.object({
-  username: z.string().email('Invalid email address.'),
+  email: z.string().email('Invalid email address.'),
   password: passwordSchema,
 });
