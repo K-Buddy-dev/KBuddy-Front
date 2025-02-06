@@ -85,8 +85,22 @@ function SwiperCard({
 
 function SwiperListWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className={cn('bg-gradient-to-r from-bg-brand-light to-bg-brand-default pb-6 pl-4', 'w-full h-[250px]')}>
-      <h1 className="pt-6 pb-4 text-[18px] leading-[24px] text-white">Featured posts</h1>
+    <div
+      className={cn(
+        'w-full bg-gradient-to-r from-bg-brand-light to-bg-brand-default pb-6 pl-4',
+        'xs:h-[250px]',
+        'h-[250px]'
+      )}
+    >
+      <h1
+        className={cn(
+          'text-body-200-light leading-[20px]',
+          'xs:text-title-200-medium xs:leading-[24px]',
+          'pt-6 pb-4 text-text-inverted-default'
+        )}
+      >
+        Featured posts
+      </h1>
       {children}
     </div>
   );
