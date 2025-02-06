@@ -1,5 +1,6 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { CommentIcon, LikeIcon } from '@/components/icon/Icon';
+import { cn } from '@/utils/utils';
 
 interface SwiperCardProps {
   userImg: string;
@@ -19,7 +20,14 @@ interface SwiperWrapperProps {
 
 function SwiperCardWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-4 w-[312px] h-[162px] py-[14px] px-4 bg-bg/default rounded-base-unit-2 border-[1px] border-week2 rounded-lg">
+    <div
+      className={cn(
+        'flex items-center gap-4 border border-week2 rounded-lg',
+        'w-[312px] h-[162px] py-[14px] px-4 bg-bg-default',
+        'xs:scale-[calc(100vw/360)] xs:min-w-[312px] xs:min-h-[162px]',
+        'sm:max-w-[600px] sm:mx-auto'
+      )}
+    >
       {children}
     </div>
   );
@@ -77,7 +85,7 @@ function SwiperCard({
 
 function SwiperListWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-[360px] h-[250px] bg-gradient-to-r from-primary-light to-primary pb-6 pl-4">
+    <div className={cn('bg-gradient-to-r from-bg-brand-light to-bg-brand-default pb-6 pl-4', 'w-full h-[250px]')}>
       <h1 className="pt-6 pb-4 text-[18px] leading-[24px] text-white">Featured posts</h1>
       {children}
     </div>

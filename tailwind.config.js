@@ -52,6 +52,7 @@ export default {
             pressed: '#4937B3',
             weak: '#F6F4FE',
             weakDown: '#E2DEFD',
+            light: '#8886FF',
           },
           danger: {
             default: '#D31510',
@@ -128,6 +129,10 @@ export default {
         hover: '0px 4px 8px rgba(0, 0, 0, 0.06), 0px 0px 4px rgba(0, 0, 0, 0.04)',
         selected: '0px 8px 16px rgba(0, 0, 0, 0.08), 0px 0px 4px rgba(0, 0, 0, 0.04)',
         gradientBg: '0px 4px 8px rgba(0, 0, 0, 0.12), 0px 0px 4px rgba(0, 0, 0, 0.07)',
+      },
+      screens: {
+        xs: '360px',
+        sm: '600px',
       },
     },
   },
