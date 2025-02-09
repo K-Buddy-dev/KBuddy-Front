@@ -22,3 +22,12 @@ export const loginSchema = z.object({
   username: z.string().email('Invalid email address.'),
   password: passwordSchema,
 });
+
+export const signupSchema = z.object({
+  firstName: z.string().min(1, 'First name is required.'),
+  lastName: z.string().min(1, 'Last name is required.'),
+  email: z.string().email('Invalid email address.'),
+  userId: z.string().min(1, 'User ID is required.'),
+  password: passwordSchema,
+  confirmPassword: passwordSchema,
+});
