@@ -1,5 +1,6 @@
 import { Accordion, AccordionItem, TextField, Topbar } from '@/components';
 import { LoginForm } from '@/contents/login/LoginForm';
+import { SocialLoginForm } from '@/contents/login/SocialLoginForm';
 import { useState } from 'react';
 
 export function LoginPage() {
@@ -28,6 +29,7 @@ export function LoginPage() {
           <span className="text-text-default text-body-200-light">or</span>
           <div className="h-[1px] flex-1 bg-border-weak1"></div>
         </div>
+        <SocialLoginForm />
       </div>
     </>
   );

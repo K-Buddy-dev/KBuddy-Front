@@ -1,3 +1,12 @@
+import { AppleLogo, GoogleLogo, KakaoLogo } from '@/components';
+import { SocialButton } from './Social/SocialButton';
+
 export function SocialLoginForm() {
-  return <div>ㅇㅇㅇ</div>;
+  return (
+    <div className="flex flex-col items-center justify-center gap-3">
+      <SocialButton logo={<KakaoLogo />} title="Continue with Kakao" type="kakao" />
+      <SocialButton logo={<GoogleLogo />} title="Continue with Google" type="google" />
+      <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
+    </div>
+  );
 }
