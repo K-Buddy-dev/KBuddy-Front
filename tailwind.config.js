@@ -69,6 +69,7 @@ export default {
             pressed: '#005132',
             weak: '#CEF8E0',
           },
+          kakao: '#FEE500',
         },
         border: {
           default: '#B1B1B1',

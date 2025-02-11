@@ -11,7 +11,7 @@ export function SocialButton({ logo, title, type }: SocialButtonProps) {
     <div
       className={cn(
         'w-full h-14 p-4 rounded-xl flex items-center justify-start cursor-pointer',
-        `${type === 'kakao' ? 'bg-[#FEE500]' : 'bg-bg-default border-2 border-border-default'}`
+        `${type === 'kakao' ? 'bg-bg-kakao' : 'bg-bg-default border-2 border-border-default'}`
       )}
     >
       <div>{logo}</div>
