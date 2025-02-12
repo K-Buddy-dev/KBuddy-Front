@@ -1,5 +1,5 @@
 import { Button, PasswordField, TextField, Topbar } from '@/components';
-import { useSignupStore } from '@/store/useSignupStore';
+import { useSignupStore } from '@/store';
 import { signupSchema } from '@/utils/validationSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';

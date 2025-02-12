@@ -1,6 +1,6 @@
 import { Accordion, AccordionItem, Button, TextField, Topbar } from '@/components';
 import { LoginForm } from '@/contents/login/LoginForm';
-import { useSignupStore } from '@/store/useSignupStore';
+import { useSignupStore } from '@/store';
 import { useNavigate } from 'react-router-dom';
 
 export function LoginPage() {
