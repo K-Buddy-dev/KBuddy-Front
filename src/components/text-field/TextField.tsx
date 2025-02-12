@@ -5,7 +5,7 @@ import { Label } from '@/label/Label';
 import { cva } from 'class-variance-authority';
 
 const textFieldVariants = cva(
-  'relative w-full py-3 pl-4 pr-2 border border-solid border-default rounded-[8px] bg-white box-border',
+  'relative w-full py-3 pl-4 pr-2 border border-solid border-border-default rounded-[8px] bg-white box-border',
   {
     variants: {
       state: {
