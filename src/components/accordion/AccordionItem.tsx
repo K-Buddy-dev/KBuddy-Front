@@ -15,11 +15,11 @@ export interface AccordionItemProps {
 
 export function AccordionItem({ children, id, label, name, checked, onChange, isFirst, isLast }: AccordionItemProps) {
   return (
-    <div className="border-b border-[#6952F9] last:border-b-0">
+    <div className="border-b border-border-brand-default last:border-b-0">
       <div
         className={cn(
-          'flex items-center gap-2 p-4 border-solid border-[#6952F9]',
-          checked ? 'bg-[#E2DEFD]' : 'bg-[#F4F4F4]',
+          'flex items-center gap-2 p-4 border-solid border-border-brand-default',
+          checked ? 'bg-bg-brand-weakDown' : 'bg-bg-medium',
           isFirst && 'border-b',
           isLast && !checked && 'border-t',
           isLast && checked && 'border-b'
@@ -28,7 +28,7 @@ export function AccordionItem({ children, id, label, name, checked, onChange, is
         <input type="radio" id={id} name={name} checked={checked} onChange={() => onChange?.(id)} className="hidden" />
         <label htmlFor={id} className="flex items-center gap-2 cursor-pointer w-full">
           {checked ? <SelectedRadioIcon /> : <UnSelectedRadioIcon />}
-          <span className="text-[#222] font-roboto text-lg font-medium leading-6 tracking-[0.15px]">{label}</span>
+          <span className="text-text-default font-roboto text-lg font-medium leading-6 tracking-[0.15px]">{label}</span>
         </label>
       </div>
       <div

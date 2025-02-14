@@ -47,7 +47,7 @@ export function LoginForm() {
       <div className="w-full h-8 mb-6 flex items-center justify-between">
         <Checkbox label="Remember me" />
         <span
-          className="text-[#6952F9] font-roboto text-sm font-semibold leading-[14px] tracking-[0.28px] underline cursor-pointer"
+          className="text-text-brand-default font-roboto text-sm font-semibold leading-[14px] tracking-[0.28px] underline cursor-pointer"
           onClick={handleClickForgotPassword}
         >
           Forgot password?
