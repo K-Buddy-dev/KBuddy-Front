@@ -4,6 +4,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { LoginFormData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '@/utils/validationSchemas';
+import apiClient from '@/api/axiosConfig';
+import { useState } from 'react';
 
 export function LoginForm() {
   const {
@@ -18,14 +20,29 @@ export function LoginForm() {
     },
   });
 
+  const [serverError, setServerError] = useState<{ email?: string; password?: string }>({});
   const navigate = useNavigate();
 
   const handleClickForgotPassword = () => {
     navigate('/forgot');
   };
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log(data);
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      const response = await apiClient.post('/user/auth/login', { email: data.email, password: data.password });
+      if (!response.data.status) {
+        throw new Error('Invalid email address.');
+      }
+
+      setServerError({});
+      navigate('/community');
+    } catch (error: any) {
+      const errorMessage = error.response.data.data as string;
+      setServerError({
+        email: errorMessage,
+        password: errorMessage,
+      });
+    }
   };
 
   return (
@@ -34,14 +51,24 @@ export function LoginForm() {
         control={control}
         name="email"
         render={({ field }) => (
-          <TextField id="email" label="Email address or user ID" {...field} error={errors.email?.message} />
+          <TextField
+            id="email"
+            label="Email address or user ID"
+            error={errors.email?.message || serverError.email}
+            {...field}
+          />
         )}
       />
       <Controller
         control={control}
         name="password"
         render={({ field }) => (
-          <PasswordField id="password" label="Password" {...field} error={errors.password?.message} />
+          <PasswordField
+            id="password"
+            label="Password"
+            error={errors.password?.message || serverError.password}
+            {...field}
+          />
         )}
       />
       <div className="w-full h-8 mb-6 flex items-center justify-between">
