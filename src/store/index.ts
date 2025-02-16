@@ -1,1 +1,2 @@
-export { default as useTabsStore } from './useTabsStore';
+export * from './useTabsStore';
+export * from './useSocialTokensStore';
