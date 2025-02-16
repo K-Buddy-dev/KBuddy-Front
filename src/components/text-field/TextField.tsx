@@ -9,9 +9,9 @@ const textFieldVariants = cva(
   {
     variants: {
       state: {
-        focus: 'border-2 border-hover',
-        error: 'border-danger-default',
-        'error-focus': 'border-2 border-danger-default',
+        focus: 'border-2 border-border-hover',
+        error: 'border-border-danger-default',
+        'error-focus': 'border-2 border-border-danger-default',
         disabled: 'bg-bg-highlight-disabled',
       },
     },
@@ -82,7 +82,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         {error && (
           <div className="flex items-center gap-1 mt-2">
             <ErrorOutlineIcon />
-            <p className="text-danger-default text-[12px] font-normal">{error}</p>
+            <p className="text-text-danger-default text-[12px] font-normal">{error}</p>
           </div>
         )}
       </div>
