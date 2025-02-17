@@ -1,6 +1,7 @@
 import { Button, PasswordField, TextField, Topbar } from '@/components';
 import { RadioButtonGroup } from '@/components/radio/RadioButtonGroup';
 import { Select } from '@/components/select/Select';
+import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
 import { Label } from '@/label/Label';
 import { useSignupStore } from '@/store';
 import { signupSchema } from '@/utils/validationSchemas';
@@ -47,7 +48,13 @@ export function SignupFormPage() {
   };
 
   const onSubmit = (data: SignupFormValues) => {
-    console.log(data);
+    const birthDate = new Date(Number(data.birthDate.year), Number(data.birthDate.month), Number(data.birthDate.day));
+    const signupData = {
+      ...data,
+      birthDate,
+    };
+
+    console.log(signupData);
   };
 
   return (
@@ -91,30 +98,21 @@ export function SignupFormPage() {
                   <Select
                     name="birthYear"
                     value={field.value.year}
-                    options={Array.from({ length: 100 }, (_, i) => ({
-                      label: `${2025 - i}`,
-                      value: `${2025 - i}`,
-                    }))}
+                    options={BIRTH_YEAR_OPTIONS}
                     onChange={(e) => field.onChange({ ...field.value, year: e.target.value })}
                     className="border border-solid border-border-default rounded-[8px] bg-white box-border text-gray-900 placeholder-gray-400 py-3 px-4"
                   />
                   <Select
                     name="birthMonth"
                     value={field.value.month}
-                    options={Array.from({ length: 12 }, (_, i) => ({
-                      label: `${i + 1}`,
-                      value: `${i + 1}`,
-                    }))}
+                    options={BIRTH_MONTH_OPTIONS}
                     onChange={(e) => field.onChange({ ...field.value, month: e.target.value })}
                     className="border border-solid border-border-default rounded-[8px] bg-white box-border text-gray-900 placeholder-gray-400 py-3 px-4"
                   />
                   <Select
                     name="birthDay"
                     value={field.value.day}
-                    options={Array.from({ length: 31 }, (_, i) => ({
-                      label: `${i + 1}`,
-                      value: `${i + 1}`,
-                    }))}
+                    options={BIRTH_DAY_OPTIONS}
                     onChange={(e) => field.onChange({ ...field.value, day: e.target.value })}
                     className="border border-solid border-border-default rounded-[8px] bg-white box-border text-gray-900 placeholder-gray-400 py-3 px-4"
                   />
@@ -132,28 +130,7 @@ export function SignupFormPage() {
                   name="nationality"
                   size="large"
                   value={field.value}
-                  options={[
-                    { label: 'Select your nationality', value: '' },
-                    { label: 'South Korea', value: 'KR' },
-                    { label: 'United States', value: 'US' },
-                    { label: 'Japan', value: 'JP' },
-                    { label: 'China', value: 'CN' },
-                    { label: 'United Kingdom', value: 'GB' },
-                    { label: 'Germany', value: 'DE' },
-                    { label: 'France', value: 'FR' },
-                    { label: 'India', value: 'IN' },
-                    { label: 'Brazil', value: 'BR' },
-                    { label: 'Australia', value: 'AU' },
-                    { label: 'Canada', value: 'CA' },
-                    { label: 'Italy', value: 'IT' },
-                    { label: 'Mexico', value: 'MX' },
-                    { label: 'Russia', value: 'RU' },
-                    { label: 'Spain', value: 'ES' },
-                    { label: 'Netherlands', value: 'NL' },
-                    { label: 'Sweden', value: 'SE' },
-                    { label: 'Switzerland', value: 'CH' },
-                    { label: 'Turkey', value: 'TR' },
-                  ]}
+                  options={NATIONALITIES}
                   onChange={field.onChange}
                 />
                 {errors.nationality && <span>{errors.nationality.message}</span>}
