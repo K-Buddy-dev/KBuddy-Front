@@ -28,21 +28,6 @@ export const loginSchema = z.object({
 export const signupSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
   lastName: z.string().min(1, 'Last name is required.'),
-  email: emailSchema,
-  userId: z.string().min(1, 'User ID is required.'),
-  birthDate: z.object({
-    year: z.string().min(1, 'Year is required.'),
-    month: z.string().min(1, 'Month is required.'),
-    day: z.string().min(1, 'Day is required.'),
-  }),
-  nationality: z.string().min(1, 'Nationality is required.'),
-  gender: z.string().min(1, 'Gender is required.'),
-  password: passwordSchema,
-});
-
-export const signupSchema = z.object({
-  firstName: z.string().min(1, 'First name is required.'),
-  lastName: z.string().min(1, 'Last name is required.'),
   email: z.string().email('Invalid email address.'),
   userId: z.string().min(1, 'User ID is required.'),
   birthDate: z.object({
