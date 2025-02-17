@@ -51,6 +51,7 @@ export default {
             selected: '#F6F4FE',
           },
           brand: {
+            light: '#8886FF',
             default: '#6952F9',
             hover: '#5A44D7',
             pressed: '#4937B3',
