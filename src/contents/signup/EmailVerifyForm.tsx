@@ -1,7 +1,7 @@
 import apiClient from '@/api/axiosConfig';
 import { Button, TextField } from '@/components';
 import { useSignupStore } from '@/store';
-import { emailSchema } from '@/utils/validationSchemas';
+import { emailFormSchema } from '@/utils/validationSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -13,7 +13,7 @@ export function EmailVerifyForm() {
     handleSubmit,
     formState: { isValid },
   } = useForm({
-    resolver: zodResolver(emailSchema),
+    resolver: zodResolver(emailFormSchema),
     defaultValues: {
       email: '',
     },
@@ -25,7 +25,7 @@ export function EmailVerifyForm() {
 
   const onSubmit = async (data: { email: string }) => {
     try {
-      const response = await apiClient.post('/user/auth/email/send', { email: data.email });
+      const response = await apiClient.post('/auth/email/send', { email: data.email });
 
       if (!response.data.status) {
         throw new Error('Invalid email address.');

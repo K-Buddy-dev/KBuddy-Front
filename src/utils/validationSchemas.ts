@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 export const emailSchema = z.string().email('Invalid email address.');
 
+export const emailFormSchema = z.object({
+  email: emailSchema,
+});
+
 export const passwordSchema = z
   .string()
   .min(8, 'At least 8 characters.')
