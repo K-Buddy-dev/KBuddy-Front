@@ -35,7 +35,7 @@ const KakaoUserResponseSchema = z.object({
   kakao_account: KakaoAccountSchema,
 });
 
-export function KakaoRedirectPage() {
+export function AppleRedirectPage() {
   const { setKakaoToken } = useSocialTokensStore();
   const navigate = useNavigate();
 
