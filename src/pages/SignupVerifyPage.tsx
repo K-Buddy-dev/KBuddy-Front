@@ -1,5 +1,5 @@
 import apiClient from '@/api/axiosConfig';
-import { Button, TextField, Topbar } from '@/components';
+import { Button, InfoMessage, TextField, Topbar } from '@/components';
 import { useSignupStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
@@ -45,12 +45,10 @@ export function SignupVerifyPage() {
     <>
       <Topbar title="Create account" type="back" onBack={handleClickBackButton} />
       <form className="mt-[72px] flex flex-col items-center" onSubmit={handleSubmit(onSubmit)}>
-        <div className="pt-6 pb-4 w-full">
-          <h1 className="font-medium text-title-100-medium text-text-default">Enter the confirmation code</h1>
-          <p className="font-normal text-body-100-medium text-text-default mt-1">
-            Confirmation sent. To continue, check your email & enter the 6-digit code we sent to {email}
-          </p>
-        </div>
+        <InfoMessage
+          title="Enter the confirmation code"
+          description={`Confirmation sent. To continue, check your email & enter the 6-digit code we sent to ${email}`}
+        />
         <Controller
           control={control}
           name="code"
