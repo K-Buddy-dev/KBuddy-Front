@@ -19,7 +19,7 @@ interface SwiperWrapperProps {
 
 function SwiperCardWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-4 w-[312px] h-[162px] py-[14px] px-4 bg-bg-default border-[1px] border-border-weak2 rounded-lg">
+    <div className="flex items-center gap-4 w-full xs:w-[312px] h-[162px] py-[11px] px-[12px] xs:py-[14px] xs:px-4 bg-bg-default border-[1px] border-border-weak2 rounded-lg">
       {children}
     </div>
   );

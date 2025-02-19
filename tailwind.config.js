@@ -22,6 +22,7 @@ export default {
             default: '#6952F9',
             hover: '#5A44D7',
             pressed: '#4937B3',
+            weakDown: '#E2DEFD',
           },
           danger: {
             default: '#D31510',
