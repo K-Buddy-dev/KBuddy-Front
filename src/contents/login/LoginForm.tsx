@@ -57,7 +57,7 @@ export function LoginForm() {
           <TextField
             id="emailOrUserId"
             label="Email address or user ID"
-            error={errors.emailOrUserId?.message || serverError.emailOrUserId}
+            error={errors.emailOrUserId?.message || serverError.email}
             {...field}
           />
         )}
