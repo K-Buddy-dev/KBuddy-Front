@@ -63,7 +63,7 @@ export function SignupFormPage() {
     }
   };
 
-  const onSubmit = (data: SignupFormValues) => {
+  const onSubmit = async (data: SignupFormValues) => {
     const {
       firstName,
       lastName,
@@ -74,19 +74,23 @@ export function SignupFormPage() {
       country,
       gender,
     } = data;
-    const birthDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+
     const signupData = {
       firstName,
       lastName,
       email,
       userId,
       password,
-      birthDate,
+      birthDate: `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`,
       country,
       gender,
     };
 
-    console.log(signupData);
+    try {
+      await apiClient.post('/auth/register', signupData);
+    } catch (error) {
+      console.error('Failed to sign up:', error);
+    }
   };
 
   return (

@@ -20,7 +20,7 @@ export const passwordValidationRules = [
 ];
 
 export const loginSchema = z.object({
-  email: emailSchema,
+  emailOrUserId: z.string().min(1, 'Email or User ID is required.'),
   password: passwordSchema,
 });
 
