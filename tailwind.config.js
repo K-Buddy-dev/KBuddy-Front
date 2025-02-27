@@ -3,6 +3,10 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      screens: {
+        xs: '360px',
+        sm: '600px',
+      },
       colors: {
         text: {
           default: '#222222',
@@ -18,6 +22,7 @@ export default {
             default: '#6952F9',
             hover: '#5A44D7',
             pressed: '#4937B3',
+            weakDown: '#E2DEFD',
           },
           danger: {
             default: '#D31510',
@@ -47,6 +52,7 @@ export default {
             selected: '#F6F4FE',
           },
           brand: {
+            light: '#8886FF',
             default: '#6952F9',
             hover: '#5A44D7',
             pressed: '#4937B3',
@@ -65,6 +71,7 @@ export default {
             pressed: '#005132',
             weak: '#CEF8E0',
           },
+          kakao: '#FEE500',
         },
         border: {
           default: '#B1B1B1',

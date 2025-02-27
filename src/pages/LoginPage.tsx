@@ -14,6 +14,12 @@ export function LoginPage() {
             <EmailVerifyForm />
           </AccordionItem>
         </Accordion>
+        <div className="flex items-center gap-1 w-full my-[40px]">
+          <div className="h-[1px] flex-1 bg-border-weak1"></div>
+          <span className="text-text-default text-body-200-light">or</span>
+          <div className="h-[1px] flex-1 bg-border-weak1"></div>
+        </div>
+        <SocialLoginForm />
       </div>
     </>
   );

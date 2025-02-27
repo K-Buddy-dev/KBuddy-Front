@@ -5,9 +5,7 @@ interface TabsStore {
   setActiveTab: (number: number) => void;
 }
 
-const useTabsStore = create<TabsStore>((set) => ({
+export const useTabsStore = create<TabsStore>((set) => ({
   activeTab: 1,
   setActiveTab: (number) => set({ activeTab: number }),
 }));
-
-export default useTabsStore;
