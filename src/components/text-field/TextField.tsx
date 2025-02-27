@@ -34,13 +34,16 @@ const checkState = (disabled: boolean | undefined, isFocus: boolean, error: stri
 };
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  ({ id, name, label, error, value, onChange, ...props }, ref) => {
+  ({ id, name, label, error, value, onChange, onBlur, ...props }, ref) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [isFocus, setIsFocus] = useState(false);
 
     const handleFocusInput = () => setIsFocus(true);
 
-    const handleBlurInput = () => setIsFocus(false);
+    const handleBlurInput = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocus(false);
+      onBlur?.(e);
+    };
 
     const handleClickClearButton = () => {
       onChange?.({

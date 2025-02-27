@@ -1,3 +1,4 @@
+import apiClient from '@/api/axiosConfig';
 import { Button, PasswordField, TextField, Topbar } from '@/components';
 import { RadioButtonGroup } from '@/components/radio/RadioButtonGroup';
 import { Select } from '@/components/select/Select';
@@ -6,6 +7,7 @@ import { Label } from '@/label/Label';
 import { useSignupStore } from '@/store';
 import { signupSchema } from '@/utils/validationSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,13 +19,15 @@ interface SignupFormValues {
   password: string;
   confirmPassword: string;
   birthDate: { year: string; month: string; day: string };
-  nationality: string;
+  country: string;
   gender: string;
 }
 
 export function SignupFormPage() {
+  const [userIdError, setUserIdError] = useState<string>('');
   const { email } = useSignupStore();
   const navigate = useNavigate();
+
   const {
     control,
     handleSubmit,
@@ -38,7 +42,7 @@ export function SignupFormPage() {
       password: '',
       confirmPassword: '',
       birthDate: { year: '', month: '', day: '' },
-      nationality: '',
+      country: '',
       gender: '',
     },
   });
@@ -47,11 +51,39 @@ export function SignupFormPage() {
     navigate('/');
   };
 
+  const checkUserIdDuplicate = async (userId: string) => {
+    if (!userId) return;
+
+    try {
+      await apiClient.post('/auth/userId/check', { userId });
+      setUserIdError('');
+    } catch (error) {
+      console.error('Failed to check user ID:', error);
+      setUserIdError('This user ID is already taken.');
+    }
+  };
+
   const onSubmit = (data: SignupFormValues) => {
-    const birthDate = new Date(Number(data.birthDate.year), Number(data.birthDate.month), Number(data.birthDate.day));
+    const {
+      firstName,
+      lastName,
+      email,
+      userId,
+      password,
+      birthDate: { year, month, day },
+      country,
+      gender,
+    } = data;
+    const birthDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     const signupData = {
-      ...data,
+      firstName,
+      lastName,
+      email,
+      userId,
+      password,
       birthDate,
+      country,
+      gender,
     };
 
     console.log(signupData);
@@ -86,7 +118,18 @@ export function SignupFormPage() {
           <Controller
             control={control}
             name="userId"
-            render={({ field }) => <TextField id="userId" label="User ID" {...field} error={errors.userId?.message} />}
+            render={({ field }) => (
+              <TextField
+                id="userId"
+                label="User ID"
+                {...field}
+                error={errors.userId?.message || userIdError}
+                onBlur={(e) => {
+                  field.onBlur();
+                  checkUserIdDuplicate(e.target.value);
+                }}
+              />
+            )}
           />
           <Controller
             control={control}
@@ -122,18 +165,18 @@ export function SignupFormPage() {
           />
           <Controller
             control={control}
-            name="nationality"
+            name="country"
             render={({ field }) => (
               <div className="w-full flex flex-col items-start mb-4">
-                <Label id={'nationality'} label={'Nationality'} />
+                <Label id={'country'} label={'Nationality'} />
                 <Select
-                  name="nationality"
+                  name="country"
                   size="large"
                   value={field.value}
                   options={NATIONALITIES}
                   onChange={field.onChange}
                 />
-                {errors.nationality && <span>{errors.nationality.message}</span>}
+                {errors.country && <span>{errors.country.message}</span>}
               </div>
             )}
           />
@@ -145,8 +188,8 @@ export function SignupFormPage() {
                 id="gender"
                 label="Gender"
                 options={[
-                  { label: 'Male', value: 'male' },
-                  { label: 'Female', value: 'female' },
+                  { label: 'Male', value: 'M' },
+                  { label: 'Female', value: 'F' },
                 ]}
                 value={field.value}
                 onChange={field.onChange}
