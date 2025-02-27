@@ -11,7 +11,9 @@ export function SocialLoginForm() {
       <Link to={import.meta.env.VITE_GOOGLE_AUTH_URL} className="w-full">
         <SocialButton logo={<GoogleLogo />} title="Continue with Google" type="google" />
       </Link>
-      <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
+      <Link to={import.meta.env.VITE_APPLE_AUTH_URL} className="w-full">
+        <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
+      </Link>
     </div>
   );
 }
