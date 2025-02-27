@@ -6,3 +6,4 @@ export * from './text-field';
 export * from './checkbox';
 export * from './accordion';
 export * from './icon';
+export * from './typography';

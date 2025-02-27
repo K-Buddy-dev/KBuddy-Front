@@ -15,7 +15,7 @@ export function LoginForm() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      emailOrUserId: '',
       password: '',
     },
   });
@@ -29,7 +29,10 @@ export function LoginForm() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await apiClient.post('/user/auth/login', { email: data.email, password: data.password });
+      const response = await apiClient.post('/auth/login', {
+        emailOrUserId: data.emailOrUserId,
+        password: data.password,
+      });
       if (!response.data.status) {
         throw new Error('Invalid email address.');
       }
@@ -49,12 +52,12 @@ export function LoginForm() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Controller
         control={control}
-        name="email"
+        name="emailOrUserId"
         render={({ field }) => (
           <TextField
-            id="email"
+            id="emailOrUserId"
             label="Email address or user ID"
-            error={errors.email?.message || serverError.email}
+            error={errors.emailOrUserId?.message || serverError.emailOrUserId}
             {...field}
           />
         )}
