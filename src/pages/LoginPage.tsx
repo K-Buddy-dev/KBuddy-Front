@@ -1,5 +1,6 @@
 import { Accordion, AccordionItem, Topbar } from '@/components';
 import { LoginForm, EmailVerifyForm } from '@/contents';
+import { SocialLoginForm } from '@/contents/login/SocialLoginForm';
 
 export function LoginPage() {
   return (
