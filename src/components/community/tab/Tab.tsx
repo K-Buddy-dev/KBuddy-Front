@@ -8,12 +8,14 @@ const menuArr = [
 
 function TabWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-end w-[360px] h-[50px] bg-gradient-to-r from-primary-light to-primary">{children}</div>
+    <div className="flex items-end min-w-[280px] w-full sm:w-[600px] h-[50px] bg-gradient-to-r from-bg-brand-light to-bg-brand-default">
+      {children}
+    </div>
   );
 }
 
 function TabList({ children }: { children: React.ReactNode }) {
-  return <div className="w-full h-[35px] flex items-end justify-center px-4">{children}</div>;
+  return <div className="w-full h-full flex items-end justify-center px-4">{children}</div>;
 }
 
 export function Tab() {
@@ -31,7 +33,7 @@ export function Tab() {
               ${
                 activeTab === menu.id
                   ? 'text-white border-b-[3px] border-white'
-                  : 'text-week-down hover:bg-primary-light'
+                  : 'text-text-brand-weakDown hover:bg-bg-brand-light'
               }
             `}
           >

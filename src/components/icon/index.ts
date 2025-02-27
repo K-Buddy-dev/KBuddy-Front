@@ -14,3 +14,6 @@ export * from './ValidationErrorIcon';
 export * from './ValidationIcon';
 export * from './EyesIcon';
 export * from './EyesSlashIcon';
+export * from './FloatButton';
+export * from './PreviewBackIcon';
+export * from './DownArrow';

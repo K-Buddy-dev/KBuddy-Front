@@ -1,4 +1,10 @@
-import { CancelIcon } from '@/components/icon';
+import { CancelIcon, PreviewBackIcon } from '@/components/icon';
+
+interface TopbarProps {
+  title: string;
+  type: 'cancel' | 'back';
+  onBack?: () => void;
+}
 
 function TopbarWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -12,10 +18,15 @@ function PageTitle({ children }: { children: React.ReactNode }) {
   return <h1 className="flex-1 text-text-primary font-roboto text-[22px] font-normal leading-7">{children}</h1>;
 }
 
-export function Topbar({ title }: { title: string }) {
+export function Topbar({ title, type, onBack }: TopbarProps) {
   return (
     <TopbarWrapper>
-      <CancelIcon />
+      {type === 'cancel' && <CancelIcon />}
+      {type === 'back' && (
+        <button type="button" onClick={onBack}>
+          <PreviewBackIcon />
+        </button>
+      )}
       <PageTitle>{title}</PageTitle>
     </TopbarWrapper>
   );

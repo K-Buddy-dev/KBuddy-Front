@@ -7,9 +7,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        solid: 'text-white disabled:bg-[#0a004b1a] disabled:text-[#B1B1B1]',
-        outline: 'disabled:bg-white disabled:text-[#B1B1B1] border-[#d5d5d5]',
-        link: 'px-2 disabled:bg-white disabled:text-[#B1B1B1]',
+        solid: 'text-white disabled:bg-bg-highlight-disabled disabled:text-text-disabled',
+        outline: 'disabled:bg-white disabled:text-text-disabled border-border-weak1',
+        link: 'px-2 disabled:bg-white disabled:text-text-disabled',
       },
       color: {
         primary: '',
@@ -26,35 +26,37 @@ const buttonVariants = cva(
         variant: 'solid',
         color: 'primary',
         class:
-          'bg-[#6952F9] hover:bg-[#5a44d7] focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-white',
+          'bg-bg-brand-default hover:bg-bg-brand-hover focus:ring-2 focus:ring-bg-brand-default focus:ring-offset-2 focus:ring-offset-white',
       },
       {
         variant: 'solid',
         color: 'secondary',
         class:
-          'bg-[#222222] hover:bg-[#6d6d6d] focus:bg-[#6d6d6d] focus:ring-2 focus:ring-[#6d6d6d] focus:ring-offset-2 focus:ring-offset-white',
+          'bg-text-default hover:bg-border-inverted-hover focus:bg-border-inverted-hover focus:ring-2 focus:ring-border-inverted-hover focus:ring-offset-2 focus:ring-offset-white',
       },
       {
         variant: 'link',
         color: 'primary',
-        class: 'bg-white text-primary underline hover:bg-[#0a004b0d] active:text-[#4937B3] active:bg-[#0a004b1a]',
+        class:
+          'bg-white text-text-brand-default underline hover:bg-bg-highlight-hover active:text-text-brand-pressed active:bg-bg-highlight-disabled',
       },
       {
         variant: 'link',
         color: 'secondary',
-        class: 'bg-white text-[#222222] underline hover:bg-[#0a004b0d] active:text-[#111111] active:bg-[#0a004b1a]',
+        class:
+          'bg-white text-text-default underline hover:bg-bg-highlight-hover active:text-text-strong active:bg-bg-highlight-disabled',
       },
       {
         variant: 'outline',
         color: 'primary',
         class:
-          'border border-primary text-primary hover:bg-[#f6f4fe] focus:bg-[#f6f4fe] active:text-[#4937B3] active:border-[#4937B3] focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-white',
+          'border border-border-brand-default text-text-brand-default hover:bg-bg-brand-weakDown focus:bg-bg-brand-weakDown active:text-text-brand-pressed active:border-text-brand-pressed focus:ring-2 focus:ring-border-brand-default focus:ring-offset-2 focus:ring-offset-white',
       },
       {
         variant: 'outline',
         color: 'secondary',
         class:
-          'border border-[#b1b1b1] text-[#222222] hover:bg-[#0a004b0d] active:bg-[#0a004b1a] focus:bg-[#0a004b0d] focus:ring-2 focus:ring-[#b1b1b1] focus:ring-offset-2 focus:ring-offset-white',
+          'border border-border-default text-text-default hover:bg-[#0a004b0d] active:bg-bg-highlight-disabled focus:bg-[#0a004b0d] focus:ring-2 focus:ring-[#b1b1b1] focus:ring-offset-2 focus:ring-offset-white',
       },
     ],
     defaultVariants: {

@@ -5,14 +5,14 @@ import { Label } from '@/label/Label';
 import { cva } from 'class-variance-authority';
 
 const textFieldVariants = cva(
-  'relative w-full py-3 pl-4 pr-2 border border-solid border-[#B1B1B1] rounded-[8px] bg-white box-border',
+  'relative w-full py-3 pl-4 pr-2 border border-solid border-border-default rounded-[8px] bg-white box-border',
   {
     variants: {
       state: {
-        focus: 'border-2 border-[#464646]',
-        error: 'border-[#D31510]',
-        'error-focus': 'border-2 border-[#D31510]',
-        disabled: 'bg-[#0A004B1A]',
+        focus: 'border-2 border-border-hover',
+        error: 'border-border-danger-default',
+        'error-focus': 'border-2 border-border-danger-default',
+        disabled: 'bg-bg-highlight-disabled',
       },
     },
   }
@@ -34,13 +34,16 @@ const checkState = (disabled: boolean | undefined, isFocus: boolean, error: stri
 };
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  ({ id, name, label, error, value, onChange, ...props }, ref) => {
+  ({ id, name, label, error, value, onChange, onBlur, ...props }, ref) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [isFocus, setIsFocus] = useState(false);
 
     const handleFocusInput = () => setIsFocus(true);
 
-    const handleBlurInput = () => setIsFocus(false);
+    const handleBlurInput = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocus(false);
+      onBlur?.(e);
+    };
 
     const handleClickClearButton = () => {
       onChange?.({
@@ -82,7 +85,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         {error && (
           <div className="flex items-center gap-1 mt-2">
             <ErrorOutlineIcon />
-            <p className="text-[#D31510] text-[12px] font-normal">{error}</p>
+            <p className="text-text-danger-default text-[12px] font-normal">{error}</p>
           </div>
         )}
       </div>

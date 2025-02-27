@@ -13,14 +13,14 @@ import { cva } from 'class-variance-authority';
 import { passwordValidationRules } from '@/utils/validationSchemas';
 
 const passwordVariants = cva(
-  'relative w-full py-3 pl-4 pr-2 border border-solid border-[#B1B1B1] rounded-[8px] bg-white box-border',
+  'relative w-full py-3 pl-4 pr-2 border border-solid border-border-default rounded-[8px] bg-white box-border',
   {
     variants: {
       state: {
-        focus: 'border-2 border-[#464646]',
-        error: 'border-[#D31510]',
-        'error-focus': 'border-2 border-[#D31510]',
-        disabled: 'bg-[#0A004B1A]',
+        focus: 'border-2 border-border-hover',
+        error: 'border-border-danger-default',
+        'error-focus': 'border-2 border-border-danger-default',
+        disabled: 'bg-bg-highlight-disabled',
       },
     },
   }
@@ -43,10 +43,10 @@ const checkState = (disabled: boolean | undefined, isFocus: boolean, error: stri
 };
 
 const getValidationState = (value: string, ruleValid: boolean) => {
-  if (value.length === 0) return { icon: <ValidationIcon />, color: 'text-[#6D6D6D]' };
+  if (value.length === 0) return { icon: <ValidationIcon />, color: 'text-text-weak' };
   return ruleValid
-    ? { icon: <ValidationPassIcon />, color: 'text-[#007A4D]' }
-    : { icon: <ValidationErrorIcon />, color: 'text-[#D31510]' };
+    ? { icon: <ValidationPassIcon />, color: 'text-text-success-default' }
+    : { icon: <ValidationErrorIcon />, color: 'text-text-danger-default' };
 };
 
 export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
@@ -91,7 +91,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
         {error && (
           <div className="flex items-center gap-1 mt-2">
             <ErrorOutlineIcon />
-            <p className="text-[#D31510] text-[12px] font-normal">{error}</p>
+            <p className="text-text-danger-default text-[12px] font-normal">{error}</p>
           </div>
         )}
         {showValidation && (
