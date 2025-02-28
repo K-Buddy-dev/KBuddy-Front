@@ -1,96 +1,30 @@
-import apiClient from '@/api/axiosConfig';
 import { Button, PasswordField, TextField, Topbar } from '@/components';
 import { RadioButtonGroup } from '@/components/radio/RadioButtonGroup';
 import { Select } from '@/components/select/Select';
 import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
+import { useSignup, useSignupForm, useUserIdDuplicateCheck } from '@/hooks';
 import { Label } from '@/label/Label';
 import { useSignupStore } from '@/store';
-import { signupSchema } from '@/utils/validationSchemas';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { SignupFormData } from '@/types';
+import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-interface SignupFormValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  userId: string;
-  password: string;
-  confirmPassword: string;
-  birthDate: { year: string; month: string; day: string };
-  country: string;
-  gender: string;
-}
-
 export function SignupFormPage() {
-  const [userIdError, setUserIdError] = useState<string>('');
   const { email } = useSignupStore();
   const navigate = useNavigate();
-
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: email,
-      userId: '',
-      password: '',
-      confirmPassword: '',
-      birthDate: { year: '', month: '', day: '' },
-      country: '',
-      gender: '',
-    },
-  });
-
+  } = useSignupForm(email);
+  const { signup, isLoading } = useSignup();
+  const { checkUserIdDuplicate, error: userIdError } = useUserIdDuplicateCheck();
   const handleClickBackButton = () => {
     navigate('/');
   };
 
-  const checkUserIdDuplicate = async (userId: string) => {
-    if (!userId) return;
-
-    try {
-      await apiClient.post('/auth/userId/check', { userId });
-      setUserIdError('');
-    } catch (error) {
-      console.error('Failed to check user ID:', error);
-      setUserIdError('This user ID is already taken.');
-    }
-  };
-
-  const onSubmit = async (data: SignupFormValues) => {
-    const {
-      firstName,
-      lastName,
-      email,
-      userId,
-      password,
-      birthDate: { year, month, day },
-      country,
-      gender,
-    } = data;
-
-    const signupData = {
-      firstName,
-      lastName,
-      email,
-      userId,
-      password,
-      birthDate: `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`,
-      country,
-      gender,
-    };
-
-    try {
-      await apiClient.post('/auth/register', signupData);
-    } catch (error) {
-      console.error('Failed to sign up:', error);
-    }
+  const onSubmit = async (data: SignupFormData) => {
+    await signup(data);
   };
 
   return (
@@ -227,8 +161,8 @@ export function SignupFormPage() {
               />
             )}
           />
-          <Button variant="solid" color="primary" className="w-full">
-            Create account
+          <Button variant="solid" color="primary" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Creating account...' : 'Create account'}
           </Button>
         </form>
       </div>
