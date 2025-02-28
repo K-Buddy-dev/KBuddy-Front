@@ -15,7 +15,7 @@ export function SignupFormPage() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useSignupForm(email);
   const { signup, isLoading } = useSignup();
   const { checkUserIdDuplicate, error: userIdError } = useUserIdDuplicateCheck();
@@ -161,7 +161,7 @@ export function SignupFormPage() {
               />
             )}
           />
-          <Button variant="solid" color="primary" className="w-full" disabled={isLoading}>
+          <Button variant="solid" color="primary" className="w-full" disabled={isLoading || !isValid || !!userIdError}>
             {isLoading ? 'Creating account...' : 'Create account'}
           </Button>
         </form>

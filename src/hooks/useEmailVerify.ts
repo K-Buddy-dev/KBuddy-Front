@@ -12,8 +12,9 @@ export const useEmailVerify = () => {
       setError('');
       return result;
     } catch (error: any) {
-      const errorMessage = error.response.data.data as string;
+      const errorMessage = 'Email verification failed';
       setError(errorMessage);
+      throw error;
     } finally {
       setIsLoading(false);
     }

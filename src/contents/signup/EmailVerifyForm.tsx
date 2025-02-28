@@ -15,9 +15,15 @@ export function EmailVerifyForm() {
   const navigate = useNavigate();
 
   const onSubmit = async (data: { email: string }) => {
-    await emailVerify(data);
-    setEmail(data.email);
-    navigate('/signup/verify');
+    try {
+      const result = await emailVerify(data);
+      if (result) {
+        setEmail(data.email);
+        navigate('/signup/verify');
+      }
+    } catch (error) {
+      console.error('Email verification failed:', error);
+    }
   };
 
   return (

@@ -9,6 +9,7 @@ export const useUserIdDuplicateCheck = () => {
 
     try {
       await authService.userIdCheck({ userId });
+      setError('');
     } catch (error: any) {
       const errorMessage = error.response.data.data as string;
       setError(errorMessage);
