@@ -15,7 +15,7 @@ function App() {
 
           <Route path="/oauth/callback/kakao" element={<KakaoRedirectPage />} />
           <Route path="/oauth2/code/google" element={<GoogleRedirectPage />} />
-          <Route path="/api/oauth/callback/apple/" element={<AppleRedirectPage />} />
+          <Route path="/oauth/callback/apple" element={<AppleRedirectPage />} />
 
           <Route path="/signup/verify" element={<SignupVerifyPage />} />
           <Route path="/signup/form" element={<SignupFormPage />} />
