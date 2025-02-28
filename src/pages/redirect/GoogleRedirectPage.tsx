@@ -6,35 +6,17 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-// const KakaoProfileSchema = z.object({
-//   nickname: z.string().optional(),
-//   thumbnail_image_url: z.string().url().optional(),
-//   profile_image_url: z.string().url().optional(),
-//   is_default_image: z.boolean(),
-//   is_default_nickname: z.boolean(),
-// });
-
-// const KakaoAccountSchema = z.object({
-//   profile_nickname_needs_agreement: z.boolean(),
-//   profile_image_needs_agreement: z.boolean(),
-//   profile: KakaoProfileSchema.optional(),
-//   has_email: z.boolean(),
-//   email_needs_agreement: z.boolean(),
-//   is_email_valid: z.boolean(),
-//   is_email_verified: z.boolean(),
-//   email: z.string().email(), // 이메일만 필수
-// });
-
-// const KakaoUserResponseSchema = z.object({
-//   id: z.number(),
-//   connected_at: z.string().datetime(),
-//   properties: z.object({
-//     nickname: z.string().optional(),
-//     profile_image: z.string().url().optional(),
-//     thumbnail_image: z.string().url().optional(),
-//   }),
-//   kakao_account: KakaoAccountSchema,
-// });
+const GoogleIdTokenSchema = z.object({
+  iss: z.string().url(), // 발급 기관 (Google)
+  azp: z.string(), // 인증된 앱의 클라이언트 ID
+  aud: z.string(), // 수신자(Client ID)
+  sub: z.string(), // 사용자 고유 ID
+  email: z.string().email(), // 사용자 이메일
+  email_verified: z.boolean(), // 이메일 인증 여부
+  at_hash: z.string().optional(), // 액세스 토큰 해시값
+  iat: z.number(), // 발급 시간 (Unix timestamp)
+  exp: z.number(), // 만료 시간 (Unix timestamp)
+});
 
 export function GoogleRedirectPage() {
   // const { setKakaoToken } = useSocialTokensStore();
@@ -75,30 +57,20 @@ export function GoogleRedirectPage() {
             code: code,
           }),
         });
-        console.log('tokenResponse', tokenResponse);
+
         const { id_token } = tokenResponse.data;
         const userInfo = parseJwt(id_token);
-        console.log('userInfo: ', userInfo);
+        const validatedUserInfo = GoogleIdTokenSchema.parse(userInfo);
 
-        // 사용자 정보 가져오기
-        // const userResponse = await axios({
-        //   method: 'GET',
-        //   url: 'https://kapi.kakao.com/v2/user/me',
-        //   headers: {
-        //     Authorization: `Bearer ${access_token}`,
-        //   },
-        // });
+        console.log('Validated Google User Info:', validatedUserInfo);
 
-        // const userData = KakaoUserResponseSchema.parse(userResponse.data);
-        // console.log('Validated Kakao User Data:', userData);
-
-        // // 메인 페이지 리다이렉트 -> 회원가입 페이지로 바꿀 예정
-        // navigate('/');
+        // TODO: 회원가입 페이지로 이동 로직 추가
+        // navigate('/signup');
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error('Data validation error:', error.errors);
+          console.error('Google ID Token validation error:', error.errors);
         } else {
-          console.error('Kakao login error:', error);
+          console.error('Google login error:', error);
         }
       }
     };
