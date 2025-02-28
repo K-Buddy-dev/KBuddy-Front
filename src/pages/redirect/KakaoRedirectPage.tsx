@@ -44,7 +44,6 @@ export function KakaoRedirectPage() {
   useEffect(() => {
     if (!code) {
       console.error('Authorization code not found');
-      navigate('/');
       return;
     }
 
