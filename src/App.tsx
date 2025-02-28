@@ -12,11 +12,10 @@ function App() {
       <Routes>
         <Route element={<DefaultLayout />}>
           <Route path="/" element={<LoginPage />} />
-          
+
           <Route path="/oauth/callback/kakao" element={<KakaoRedirectPage />} />
           <Route path="/oauth2/code/google" element={<GoogleRedirectPage />} />
-          <Route path="/oauth/callback/apple" element={<AppleRedirectPage />} />
-
+          <Route path="/api/oauth/callback/apple" element={<AppleRedirectPage />} />
 
           <Route path="/signup/verify" element={<SignupVerifyPage />} />
           <Route path="/signup/form" element={<SignupFormPage />} />

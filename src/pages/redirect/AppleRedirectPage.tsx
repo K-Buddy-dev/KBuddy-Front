@@ -18,7 +18,7 @@ export function AppleRedirectPage() {
 
       if (!idToken) {
         console.error('ID Token not found');
-        navigate('/');
+        // navigate('/');
         return;
       }
 
