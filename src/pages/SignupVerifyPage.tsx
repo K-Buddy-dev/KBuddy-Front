@@ -1,44 +1,25 @@
-import apiClient from '@/api/axiosConfig';
 import { Button, InfoMessage, TextField, Topbar } from '@/components';
+import { useVerifyCode, useVerifyCodeForm } from '@/hooks';
 import { useSignupStore } from '@/store';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
 export function SignupVerifyPage() {
   const { email } = useSignupStore();
-  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
     formState: { isValid },
-  } = useForm<{ code: string }>({
-    resolver: zodResolver(z.object({ code: z.string().length(6) })),
-    defaultValues: {
-      code: '',
-    },
-    mode: 'onSubmit',
-  });
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  } = useVerifyCodeForm();
+  const { verifyCode, error, isLoading } = useVerifyCode();
+  const navigate = useNavigate();
   const handleClickBackButton = () => {
     navigate('/');
   };
 
   const onSubmit = async (data: { code: string }) => {
-    try {
-      const response = await apiClient.post('/auth/email/code', { email: email, code: data.code });
-
-      if (!response.data.status) {
-        throw new Error('Invalid confirmation code.');
-      }
-
-      setErrorMessage('');
-      navigate('/signup/form');
-    } catch {
-      setErrorMessage('Invalid confirmation code.');
-    }
+    await verifyCode({ email, code: data.code });
+    navigate('/signup/form');
   };
 
   return (
@@ -52,12 +33,10 @@ export function SignupVerifyPage() {
         <Controller
           control={control}
           name="code"
-          render={({ field }) => (
-            <TextField id="code" type="text" label="Confirmation code" error={errorMessage} {...field} />
-          )}
+          render={({ field }) => <TextField id="code" type="text" label="Confirmation code" error={error} {...field} />}
         />
         <Button variant="solid" color="primary" className="w-full mt-[184px]" disabled={!isValid}>
-          Next
+          {isLoading ? 'Sending...' : 'Next'}
         </Button>
         <span className="text-text-brand-default font-roboto text-sm font-semibold leading-[14px] tracking-[0.28px] underline cursor-pointer mt-[13px]">
           I didn't get the code
