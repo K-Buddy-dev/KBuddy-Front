@@ -6,27 +6,38 @@ export function AppleRedirectPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // form에서 전달된 데이터 처리
-    const handleFormData = () => {
-      // form_post 방식으로 받은 데이터 획득 시도
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get('code');
-      const idToken = urlParams.get('id_token');
+    const handleAppleCallback = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const idToken = urlParams.get('id_token');
 
-      console.log('Apple Authorization Code:', code);
-      console.log('Apple ID Token:', idToken);
+        console.log('Apple Authorization Code:', code);
 
-      if (!idToken) {
-        console.error('ID Token not found');
-        // navigate('/');
-        return;
+        if (!code) {
+          throw new Error('Authorization code not found');
+        }
+
+        const response = await fetch('/api/auth/apple', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code, idToken }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Authentication failed');
+        }
+
+        const data = await response.json();
+        console.log('data: ', data);
+      } catch (err) {
+        console.error('Apple authentication error:', err);
       }
-
-      const userInfo = decodeURI(idToken);
-      console.log('Decoded Apple User Info:', userInfo);
     };
 
-    handleFormData();
+    handleAppleCallback();
   }, [navigate]);
 
   return (
