@@ -9,6 +9,10 @@ export interface EmailVerifyRequest {
   email: string;
 }
 
+export interface SendCodeRequest {
+  email: string;
+}
+
 export interface VerifyCodeRequest {
   email: string;
   code: string;
@@ -35,8 +39,11 @@ export const authService = {
     return response.data;
   },
   emailVerify: async (data: EmailVerifyRequest) => {
-    const response = await apiClient.post('/auth/email/send', data);
+    const response = await apiClient.post('/auth/email/check', data);
     return response.data;
+  },
+  sendCode: (data: SendCodeRequest) => {
+    apiClient.post('/auth/email/send', data);
   },
   verifyCode: async (data: VerifyCodeRequest) => {
     const response = await apiClient.post('/auth/email/code', data);

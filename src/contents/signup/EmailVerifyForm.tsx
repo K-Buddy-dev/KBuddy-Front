@@ -1,5 +1,6 @@
 import { Button, TextField } from '@/components';
 import { useEmailVerify, useEmailVerifyForm } from '@/hooks';
+import { authService } from '@/services';
 import { useSignupStore } from '@/store';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +19,7 @@ export function EmailVerifyForm() {
     try {
       const result = await emailVerify(data);
       if (result) {
+        authService.sendCode(data);
         setEmail(data.email);
         navigate('/signup/verify');
       }
