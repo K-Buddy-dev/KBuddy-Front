@@ -7,15 +7,15 @@ import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 const GoogleIdTokenSchema = z.object({
-  iss: z.string().url(), // 발급 기관 (Google)
-  azp: z.string(), // 인증된 앱의 클라이언트 ID
-  aud: z.string(), // 수신자(Client ID)
-  sub: z.string(), // 사용자 고유 ID
-  email: z.string().email(), // 사용자 이메일
-  email_verified: z.boolean(), // 이메일 인증 여부
-  at_hash: z.string().optional(), // 액세스 토큰 해시값
-  iat: z.number(), // 발급 시간 (Unix timestamp)
-  exp: z.number(), // 만료 시간 (Unix timestamp)
+  iss: z.enum(['https://accounts.google.com', 'accounts.google.com']),
+  azp: z.string(),
+  aud: z.string(),
+  sub: z.string(),
+  email: z.string().email(),
+  email_verified: z.boolean(),
+  at_hash: z.string().optional(),
+  iat: z.number(),
+  exp: z.number(),
 });
 
 export function GoogleRedirectPage() {
@@ -60,6 +60,7 @@ export function GoogleRedirectPage() {
 
         const { id_token } = tokenResponse.data;
         const userInfo = parseJwt(id_token);
+        console.log('userInfo: ', userInfo);
         const validatedUserInfo = GoogleIdTokenSchema.parse(userInfo);
 
         console.log('Validated Google User Info:', validatedUserInfo);
@@ -67,11 +68,11 @@ export function GoogleRedirectPage() {
         // TODO: 회원가입 페이지로 이동 로직 추가
         // navigate('/signup');
       } catch (error) {
-        if (error instanceof z.ZodError) {
-          console.error('Google ID Token validation error:', error.errors);
-        } else {
-          console.error('Google login error:', error);
-        }
+        // if (error /instanceof z.ZodError) {
+        // console.error('Google ID Token validation error:', error.errors);
+        // } else {
+        console.error('Google login error:', error);
+        // }
       }
     };
 
