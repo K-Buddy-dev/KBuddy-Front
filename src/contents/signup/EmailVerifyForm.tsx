@@ -1,10 +1,8 @@
-import apiClient from '@/api/axiosConfig';
 import { Button, TextField } from '@/components';
+import { useEmailVerify, useEmailVerifyForm } from '@/hooks';
+import { authService } from '@/services';
 import { useSignupStore } from '@/store';
-import { emailFormSchema } from '@/utils/validationSchemas';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export function EmailVerifyForm() {
@@ -12,30 +10,21 @@ export function EmailVerifyForm() {
     control,
     handleSubmit,
     formState: { isValid },
-  } = useForm({
-    resolver: zodResolver(emailFormSchema),
-    defaultValues: {
-      email: '',
-    },
-    mode: 'onSubmit',
-  });
-  const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  } = useEmailVerifyForm();
+  const { emailVerify, error, isLoading } = useEmailVerify();
   const setEmail = useSignupStore((state) => state.setEmail);
+  const navigate = useNavigate();
 
   const onSubmit = async (data: { email: string }) => {
     try {
-      const response = await apiClient.post('/auth/email/send', { email: data.email });
-
-      if (!response.data.status) {
-        throw new Error('Invalid email address.');
+      const result = await emailVerify(data);
+      if (result) {
+        authService.sendCode(data);
+        setEmail(data.email);
+        navigate('/signup/verify');
       }
-
-      setEmail(data.email);
-      setErrorMessage('');
-      navigate('/signup/verify');
-    } catch {
-      setErrorMessage('Invalid email address.');
+    } catch (error) {
+      console.error('Email verification failed:', error);
     }
   };
 
@@ -44,10 +33,10 @@ export function EmailVerifyForm() {
       <Controller
         control={control}
         name="email"
-        render={({ field }) => <TextField id="email" label="Email" error={errorMessage} {...field} />}
+        render={({ field }) => <TextField id="email" label="Email" error={error} {...field} />}
       />
       <Button variant="solid" color="primary" type="submit" className="w-full" disabled={!isValid}>
-        Continue
+        {isLoading ? 'Sending...' : 'Continue'}
       </Button>
     </form>
   );
