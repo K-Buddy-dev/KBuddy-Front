@@ -1,26 +1,16 @@
-import { useNavigate } from 'react-router-dom';
 import { Button, Checkbox, TextField, PasswordField } from '@/components';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { LoginFormData } from '@/types';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema } from '@/utils/validationSchemas';
-import apiClient from '@/api/axiosConfig';
-import { useState } from 'react';
+import { useLoginForm, useLogin } from '@/hooks';
+import { useNavigate } from 'react-router-dom';
 
 export function LoginForm() {
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      emailOrUserId: '',
-      password: '',
-    },
-  });
-
-  const [serverError, setServerError] = useState<{ email?: string; password?: string }>({});
+  } = useLoginForm();
+  const { login, error, isLoading } = useLogin();
   const navigate = useNavigate();
 
   const handleClickForgotPassword = () => {
@@ -28,24 +18,8 @@ export function LoginForm() {
   };
 
   const onSubmit = async (data: LoginFormData) => {
-    try {
-      const response = await apiClient.post('/auth/login', {
-        emailOrUserId: data.emailOrUserId,
-        password: data.password,
-      });
-      if (!response.data.status) {
-        throw new Error('Invalid email address.');
-      }
-
-      setServerError({});
-      navigate('/community');
-    } catch (error: any) {
-      const errorMessage = error.response.data.data as string;
-      setServerError({
-        email: errorMessage,
-        password: errorMessage,
-      });
-    }
+    await login(data);
+    navigate('/community');
   };
 
   return (
@@ -57,7 +31,7 @@ export function LoginForm() {
           <TextField
             id="emailOrUserId"
             label="Email address or user ID"
-            error={errors.emailOrUserId?.message || serverError.email}
+            error={errors.emailOrUserId?.message || error.emailOrUserId}
             {...field}
           />
         )}
@@ -66,12 +40,7 @@ export function LoginForm() {
         control={control}
         name="password"
         render={({ field }) => (
-          <PasswordField
-            id="password"
-            label="Password"
-            error={errors.password?.message || serverError.password}
-            {...field}
-          />
+          <PasswordField id="password" label="Password" error={errors.password?.message || error.password} {...field} />
         )}
       />
       <div className="w-full h-8 mb-6 flex items-center justify-between">
@@ -84,7 +53,7 @@ export function LoginForm() {
         </span>
       </div>
       <Button type="submit" variant="solid" color="primary" className="w-full">
-        Log in
+        {isLoading ? 'Logging in...' : 'Log in'}
       </Button>
     </form>
   );
