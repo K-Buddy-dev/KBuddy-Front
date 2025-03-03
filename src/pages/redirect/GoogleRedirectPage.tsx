@@ -1,8 +1,10 @@
 import { Spinner } from '@/components/spinner';
+import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks/useOauth';
+import { OauthRequest } from '@/types';
 // import { useSocialTokensStore } from '@/store';
 import { parseJwt } from '@/utils/utils';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -19,16 +21,17 @@ const GoogleIdTokenSchema = z.object({
 });
 
 export function GoogleRedirectPage() {
-  // const { setKakaoToken } = useSocialTokensStore();
   const navigate = useNavigate();
 
   const code = new URL(window.location.href).searchParams.get('code');
-  console.log('code: ', code);
 
+  const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
+
+  const { isMember, isLoading } = useMemberCheckHandler(memberCheckData ?? { oAuthUid: '', oAuthCategory: 'GOOGLE' });
+  const { handleLogin } = useOauthLoginHandler();
   useEffect(() => {
     if (!code) {
       console.error('Authorization code not found');
-      navigate('/');
       return;
     }
 
@@ -60,28 +63,40 @@ export function GoogleRedirectPage() {
 
         const { id_token } = tokenResponse.data;
         const userInfo = parseJwt(id_token);
-        console.log('userInfo: ', userInfo);
         const validatedUserInfo = GoogleIdTokenSchema.parse(userInfo);
-
-        console.log('Validated Google User Info:', validatedUserInfo);
-
-        // TODO: 회원가입 페이지로 이동 로직 추가
-        // navigate('/signup');
+        setMemberCheckData({
+          oAuthUid: validatedUserInfo.sub,
+          oAuthCategory: 'GOOGLE',
+        });
       } catch (error) {
-        // if (error /instanceof z.ZodError) {
-        // console.error('Google ID Token validation error:', error.errors);
-        // } else {
-        console.error('Google login error:', error);
-        // }
+        if (error instanceof z.ZodError) {
+          console.error('Google ID Token validation error:', error.errors);
+        } else {
+          console.error('Google login error:', error);
+        }
       }
     };
 
     fetchKakaoToken();
-  }, [code]);
+  }, []);
 
-  return (
-    <div className="w-full h-full flex items-center justify-center">
-      <Spinner />
-    </div>
-  );
+  useEffect(() => {
+    if (isMember) {
+      console.log('기존 회원, 로그인 실행');
+      handleLogin(memberCheckData!);
+    } else {
+      console.log('회원가입 페이지로 이동');
+      navigate('/signup/form');
+    }
+  }, [isMember, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return null;
 }

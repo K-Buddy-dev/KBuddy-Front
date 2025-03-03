@@ -14,3 +14,13 @@ export interface SignupFormData {
   country: string;
   gender: string;
 }
+
+export interface OauthRequest {
+  oAuthUid: string;
+  oAuthCategory: 'KAKAO' | 'GOOGLE' | 'APPLE';
+}
+
+export interface OauthRegisterRequest extends SignupFormData {
+  oAuthUid: string;
+  oAuthCategory: 'KAKAO' | 'GOOGLE' | 'APPLE';
+}
