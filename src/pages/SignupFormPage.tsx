@@ -25,6 +25,7 @@ export function SignupFormPage() {
 
   const onSubmit = async (data: SignupFormData) => {
     await signup(data);
+    navigate('/');
   };
 
   return (
