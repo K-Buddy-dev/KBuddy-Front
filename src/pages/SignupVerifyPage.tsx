@@ -18,8 +18,12 @@ export function SignupVerifyPage() {
   };
 
   const onSubmit = async (data: { code: string }) => {
-    await verifyCode({ email, code: data.code });
-    navigate('/signup/form');
+    try {
+      await verifyCode({ email, code: data.code });
+      navigate('/signup/form');
+    } catch (error) {
+      console.error('Verification failed:', error);
+    }
   };
 
   return (
