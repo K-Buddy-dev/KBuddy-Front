@@ -119,30 +119,20 @@ export function KakaoRedirectPage() {
     };
 
     const fetchKakaoToken = async () => {
-      const makeFormData = (params: { [key: string]: string }) => {
-        const searchParams = new URLSearchParams();
-        Object.keys(params).forEach((key) => {
-          searchParams.append(key, params[key]);
-        });
-        return searchParams;
-      };
-
       try {
-        // 액세스 및 리프레쉬 토큰 받기
-        const tokenResponse = await axios({
-          method: 'POST',
-          url: 'https://kauth.kakao.com/oauth/token',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-          },
-          data: makeFormData({
+        const tokenResponse = await axios.post(
+          'https://kauth.kakao.com/oauth/token',
+          new URLSearchParams({
             grant_type: 'authorization_code',
             client_id: import.meta.env.VITE_KAKAO_REST_API_KEY,
             redirect_uri: import.meta.env.VITE_KAKAO_REDIRECT_URI,
             client_secret: import.meta.env.VITE_KAKAO_SECRET_KEY,
             code: code,
           }),
-        });
+          {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+          }
+        );
 
         const { access_token, refresh_token, expires_in } = tokenResponse.data;
 

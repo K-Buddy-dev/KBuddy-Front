@@ -35,33 +35,24 @@ export function GoogleRedirectPage() {
       return;
     }
 
-    const fetchKakaoToken = async () => {
-      const makeFormData = (params: { [key: string]: string }) => {
-        const searchParams = new URLSearchParams();
-        Object.keys(params).forEach((key) => {
-          searchParams.append(key, params[key]);
-        });
-        return searchParams;
-      };
-
+    const fetchGoogleToken = async () => {
       try {
-        // 액세스 및 리프레쉬 토큰 받기
-        const tokenResponse = await axios({
-          method: 'POST',
-          url: 'https://accounts.google.com/o/oauth2/token',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-          },
-          data: makeFormData({
+        const tokenResponse = await axios.post(
+          'https://oauth2.googleapis.com/token',
+          new URLSearchParams({
             grant_type: 'authorization_code',
             client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-            redirect_uri: import.meta.env.VITE_GOOGLE_REDIRECT_URI,
             client_secret: import.meta.env.VITE_GOOGLE_CLIENT_PW,
+            redirect_uri: import.meta.env.VITE_GOOGLE_REDIRECT_URI,
             code: code,
           }),
-        });
+          {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+          }
+        );
 
         const { id_token } = tokenResponse.data;
+        console.log('tokenResponse: ', tokenResponse);
         const userInfo = parseJwt(id_token);
         const validatedUserInfo = GoogleIdTokenSchema.parse(userInfo);
         setMemberCheckData({
@@ -77,7 +68,7 @@ export function GoogleRedirectPage() {
       }
     };
 
-    fetchKakaoToken();
+    fetchGoogleToken();
   }, []);
 
   useEffect(() => {
