@@ -12,8 +12,8 @@ export const useVerifyCode = () => {
       setError('');
       return result;
     } catch (error: any) {
-      const errorMessage = error.response.data.data as string;
-      setError(errorMessage);
+      setError('Verification failed');
+      throw error;
     } finally {
       setIsLoading(false);
     }
