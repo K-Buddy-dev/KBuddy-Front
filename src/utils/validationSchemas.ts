@@ -24,12 +24,24 @@ export const loginSchema = z.object({
   password: passwordSchema,
 });
 
+export const userIdSchema = z
+  .string()
+  .min(3, 'User ID must be at least 3 characters.')
+  .max(20, 'User ID must be at most 20 characters.')
+  .regex(/^[a-zA-Z0-9]{3,20}$/, 'User ID must contain only letters and numbers.');
+
 export const signupSchema = z
   .object({
-    firstName: z.string().min(1, 'First name is required.'),
-    lastName: z.string().min(1, 'Last name is required.'),
+    firstName: z
+      .string()
+      .max(30, 'First name must be at most 30 characters.')
+      .regex(/^[a-zA-Z]+$/, 'First name must contain only letters.'),
+    lastName: z
+      .string()
+      .max(30, 'Last name must be at most 30 characters.')
+      .regex(/^[a-zA-Z]+$/, 'Last name must contain only letters.'),
     email: z.string().email('Invalid email address.'),
-    userId: z.string().min(1, 'User ID is required.'),
+    userId: userIdSchema,
     birthDate: z.object({
       year: z.string().min(1, 'Year is required.'),
       month: z.string().min(1, 'Month is required.'),

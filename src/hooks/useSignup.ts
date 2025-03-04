@@ -37,6 +37,7 @@ export const useSignup = () => {
     } catch (error: any) {
       const errorMessage = error.response.data.data as string;
       setError(errorMessage);
+      throw error;
     } finally {
       setIsLoading(false);
     }
