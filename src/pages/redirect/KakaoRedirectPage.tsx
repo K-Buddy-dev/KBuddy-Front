@@ -150,12 +150,12 @@ export function KakaoRedirectPage() {
         localStorage.setItem('kakaoTokenExpiry', (Date.now() + expires_in * 1000).toString());
 
         const userInfo = await fetchUserInfo();
-        const userData = KakaoUserResponseSchema.parse(userInfo);
-        if (userData) {
-          setOauthSignupData(userData);
+        const validatedUserInfo = KakaoUserResponseSchema.parse(userInfo);
+        if (validatedUserInfo) {
+          setOauthSignupData(validatedUserInfo);
         }
         setMemberCheckData({
-          oAuthUid: userData.id.toString(),
+          oAuthUid: validatedUserInfo.id.toString(),
           oAuthCategory: 'KAKAO',
         });
       } catch (error) {

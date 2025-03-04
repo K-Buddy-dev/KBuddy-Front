@@ -1,5 +1,6 @@
 import { Spinner } from '@/components/spinner';
 import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
+import { useSocialStore } from '@/store';
 
 import { OauthRequest } from '@/types';
 // import { useSocialTokensStore } from '@/store';
@@ -21,7 +22,10 @@ const GoogleIdTokenSchema = z.object({
   exp: z.number(),
 });
 
+type GoogleUserResponse = z.infer<typeof GoogleIdTokenSchema>;
+
 export function GoogleRedirectPage() {
+  const { setEmail, setoAuthUid, setoAuthCategory } = useSocialStore();
   const navigate = useNavigate();
 
   const code = new URL(window.location.href).searchParams.get('code');
@@ -35,6 +39,12 @@ export function GoogleRedirectPage() {
       console.error('Authorization code not found');
       return;
     }
+
+    const setOauthSignupData = (data: GoogleUserResponse) => {
+      setEmail(data.email);
+      setoAuthUid(data.sub);
+      setoAuthCategory('GOOGLE');
+    };
 
     const fetchGoogleToken = async () => {
       try {
@@ -53,9 +63,13 @@ export function GoogleRedirectPage() {
         );
 
         const { id_token } = tokenResponse.data;
-        console.log('tokenResponse: ', tokenResponse);
         const userInfo = parseJwt(id_token);
         const validatedUserInfo = GoogleIdTokenSchema.parse(userInfo);
+
+        if (validatedUserInfo) {
+          setOauthSignupData(validatedUserInfo);
+        }
+
         setMemberCheckData({
           oAuthUid: validatedUserInfo.sub,
           oAuthCategory: 'GOOGLE',
@@ -78,7 +92,7 @@ export function GoogleRedirectPage() {
       handleLogin(memberCheckData!);
     } else {
       console.log('회원가입 페이지로 이동');
-      navigate('/signup/form');
+      navigate('/oauth/signup/form');
     }
   }, [isMember, navigate]);
 
