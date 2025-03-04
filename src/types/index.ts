@@ -8,19 +8,16 @@ export interface SignupFormData {
   lastName: string;
   email: string;
   userId: string;
-  password: string;
-  confirmPassword: string;
+  password?: string;
+  confirmPassword?: string;
   birthDate: { year: string; month: string; day: string };
   country: string;
   gender: string;
+  oAuthUid?: string | number;
+  oAuthCategory?: 'KAKAO' | 'GOOGLE' | 'APPLE' | null;
 }
 
 export interface OauthRequest {
-  oAuthUid: string;
-  oAuthCategory: 'KAKAO' | 'GOOGLE' | 'APPLE';
-}
-
-export interface OauthRegisterRequest extends SignupFormData {
-  oAuthUid: string;
-  oAuthCategory: 'KAKAO' | 'GOOGLE' | 'APPLE';
+  oAuthUid: string | number;
+  oAuthCategory: 'KAKAO' | 'GOOGLE' | 'APPLE' | null;
 }

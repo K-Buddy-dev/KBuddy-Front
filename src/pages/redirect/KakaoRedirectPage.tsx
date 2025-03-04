@@ -1,5 +1,6 @@
 import { Spinner } from '@/components/spinner';
-import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks/useOauth';
+import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
+import { useSocialStore } from '@/store';
 // import { useSocialTokensStore } from '@/store';
 import { OauthRequest } from '@/types';
 import axios from 'axios';
@@ -37,8 +38,10 @@ const KakaoUserResponseSchema = z.object({
   kakao_account: KakaoAccountSchema,
 });
 
+type KakaoUserResponse = z.infer<typeof KakaoUserResponseSchema>;
+
 export function KakaoRedirectPage() {
-  // const { setKakaoToken } = useSocialTokensStore();
+  const { setEmail, setoAuthUid, setoAuthCategory } = useSocialStore();
   const navigate = useNavigate();
 
   const code = new URL(window.location.href).searchParams.get('code');
@@ -118,6 +121,12 @@ export function KakaoRedirectPage() {
       }
     };
 
+    const setOauthSignupData = (data: KakaoUserResponse) => {
+      setEmail(data.kakao_account.email);
+      setoAuthUid(data.id);
+      setoAuthCategory('KAKAO');
+    };
+
     const fetchKakaoToken = async () => {
       try {
         const tokenResponse = await axios.post(
@@ -142,7 +151,9 @@ export function KakaoRedirectPage() {
 
         const userInfo = await fetchUserInfo();
         const userData = KakaoUserResponseSchema.parse(userInfo);
-
+        if (userData) {
+          setOauthSignupData(userData);
+        }
         setMemberCheckData({
           oAuthUid: userData.id.toString(),
           oAuthCategory: 'KAKAO',

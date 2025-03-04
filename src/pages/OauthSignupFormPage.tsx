@@ -1,30 +1,37 @@
-import { Button, PasswordField, TextField, Topbar } from '@/components';
+import { Button, TextField, Topbar } from '@/components';
 import { RadioButtonGroup } from '@/components/radio/RadioButtonGroup';
 import { Select } from '@/components/select/Select';
 import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
-import { useSignup, useSignupForm, useUserIdDuplicateCheck } from '@/hooks';
+import { useOauthRegister, useSocialSignupForm, useUserIdDuplicateCheck } from '@/hooks';
 import { Label } from '@/label/Label';
-import { useSignupStore } from '@/store';
+import { useSocialStore } from '@/store';
 import { SignupFormData } from '@/types';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export function OauthSignupFormPage() {
-  const { email } = useSignupStore();
+  const { email, oAuthUid, oAuthCategory } = useSocialStore();
   const navigate = useNavigate();
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
-  } = useSignupForm(email);
-  const { signup, isLoading } = useSignup();
+  } = useSocialSignupForm(email, oAuthUid, oAuthCategory);
+  const { oauthRegister, isLoading } = useOauthRegister();
   const { checkUserIdDuplicate, error: userIdError } = useUserIdDuplicateCheck();
   const handleClickBackButton = () => {
     navigate('/');
   };
 
+  console.log('isValid: ', isValid);
   const onSubmit = async (data: SignupFormData) => {
-    await signup(data);
+    const sumbitData = {
+      ...data,
+      email: email,
+      oAuthUid: String(oAuthUid),
+      oAuthCategory: oAuthCategory,
+    };
+    await oauthRegister(sumbitData);
   };
 
   return (
@@ -132,32 +139,6 @@ export function OauthSignupFormPage() {
                 value={field.value}
                 onChange={field.onChange}
                 error={errors.gender?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="password"
-            render={({ field }) => (
-              <PasswordField
-                id="password"
-                label="Password"
-                {...field}
-                error={errors.password?.message}
-                showValidation={true}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <PasswordField
-                id="confirmPassword"
-                label="Confirm password"
-                {...field}
-                error={errors.confirmPassword?.message}
-                showValidation={true}
               />
             )}
           />

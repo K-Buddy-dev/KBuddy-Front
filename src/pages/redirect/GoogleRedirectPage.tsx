@@ -1,5 +1,6 @@
 import { Spinner } from '@/components/spinner';
-import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks/useOauth';
+import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
+
 import { OauthRequest } from '@/types';
 // import { useSocialTokensStore } from '@/store';
 import { parseJwt } from '@/utils/utils';

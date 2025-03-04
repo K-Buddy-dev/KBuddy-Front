@@ -1,5 +1,5 @@
 import { authService } from '@/services';
-import { OauthRegisterRequest, OauthRequest } from '@/types';
+import { OauthRequest, SignupFormData } from '@/types';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,7 +35,7 @@ const useOauthLogin = () => {
   const oauthLogin = async (data: OauthRequest) => {
     setIsLoading(true);
     try {
-      const result = await authService.oauthCheck(data);
+      const result = await authService.oauthLogin(data);
       setError({ oAuthCategory: '', oAuthUid: '' });
       return result;
     } catch (error: any) {
@@ -57,10 +57,10 @@ export const useOauthRegister = () => {
   const [error, setError] = useState({ oAuthCategory: '', oAuthUid: '' });
   const [isLoading, setIsLoading] = useState(false);
 
-  const oauthRegister = async (data: OauthRegisterRequest) => {
+  const oauthRegister = async (data: SignupFormData) => {
     setIsLoading(true);
     try {
-      const result = await authService.oauthCheck(data);
+      const result = await authService.oauthRegister(data);
       setError({ oAuthCategory: '', oAuthUid: '' });
       return result;
     } catch (error: any) {

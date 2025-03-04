@@ -1,5 +1,5 @@
 import apiClient from '@/api/axiosConfig';
-import { OauthLoginRequest, OauthRegisterRequest, OauthRequest } from '@/types';
+import { OauthRequest, SignupFormData } from '@/types';
 
 export interface LoginRequest {
   emailOrUserId: string;
@@ -24,7 +24,7 @@ export interface SignupRequest {
   lastName: string;
   email: string;
   userId: string;
-  password: string;
+  password?: string;
   birthDate: string;
   country: string;
   gender: string;
@@ -62,11 +62,11 @@ export const authService = {
     const response = await apiClient.post('/auth/oauth/check', data);
     return response.data;
   },
-  oauthRegister: async (data: OauthRegisterRequest) => {
+  oauthRegister: async (data: SignupFormData) => {
     const response = await apiClient.post('/auth/oauth/register', data);
     return response.data;
   },
-  oauthLogin: async (data: OauthLoginRequest) => {
+  oauthLogin: async (data: OauthRequest) => {
     const response = await apiClient.post('/auth/oauth/login', data);
     return response.data;
   },
