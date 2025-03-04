@@ -18,6 +18,7 @@ export const useLogin = () => {
         emailOrUserId: errorMessage,
         password: errorMessage,
       });
+      throw error;
     } finally {
       setIsLoading(false);
     }
