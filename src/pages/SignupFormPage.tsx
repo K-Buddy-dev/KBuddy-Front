@@ -23,9 +23,31 @@ export function SignupFormPage() {
     navigate('/');
   };
 
+  const isSubmitDisabled = isLoading || !isValid || !!userIdError;
+
+  const onUserIdBlur = (field: any) => {
+    return async (e: React.FocusEvent<HTMLInputElement>) => {
+      field.onBlur();
+      const userId = e.target.value;
+
+      if (!userId) return;
+
+      try {
+        await checkUserIdDuplicate(userId);
+        errors.userId = undefined;
+      } catch (error: any) {
+        errors.userId = error.message;
+      }
+    };
+  };
+
   const onSubmit = async (data: SignupFormData) => {
-    await signup(data);
-    navigate('/');
+    try {
+      await signup(data);
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -63,10 +85,7 @@ export function SignupFormPage() {
                 label="User ID"
                 {...field}
                 error={errors.userId?.message || userIdError}
-                onBlur={(e) => {
-                  field.onBlur();
-                  checkUserIdDuplicate(e.target.value);
-                }}
+                onBlur={onUserIdBlur(field)}
               />
             )}
           />
@@ -162,7 +181,7 @@ export function SignupFormPage() {
               />
             )}
           />
-          <Button variant="solid" color="primary" className="w-full" disabled={isLoading || !isValid || !!userIdError}>
+          <Button variant="solid" color="primary" className="w-full" disabled={isSubmitDisabled}>
             {isLoading ? 'Creating account...' : 'Create account'}
           </Button>
         </form>
