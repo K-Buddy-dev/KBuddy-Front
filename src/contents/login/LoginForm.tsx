@@ -18,8 +18,12 @@ export function LoginForm() {
   };
 
   const onSubmit = async (data: LoginFormData) => {
-    await login(data);
-    navigate('/community');
+    try {
+      await login(data);
+      navigate('/community');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
