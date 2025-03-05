@@ -44,7 +44,7 @@ export function SignupVerifyPage() {
         <Button variant="solid" color="primary" className="w-full mt-[184px]" disabled={!isValid}>
           {isLoading ? 'Sending...' : 'Next'}
         </Button>
-        <span className="text-text-brand-default font-roboto text-sm font-semibold leading-[14px] tracking-[0.28px] underline cursor-pointer mt-[13px]">
+        <span className="text-text-brand-default text-sm font-semibold leading-[14px] tracking-[0.28px] underline cursor-pointer mt-[13px]">
           I didn't get the code
         </span>
       </form>

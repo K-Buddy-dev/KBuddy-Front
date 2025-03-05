@@ -6,7 +6,7 @@ import { CheckedIcon, UnCheckedIcon } from '../icon';
 const checkboxVariants = cva('flex items-center cursor-pointer', {
   variants: {
     size: {
-      default: 'w-[141px] h-full px-2 py-1 gap-[11px] font-roboto text-sm font-normal leading-5 tracking-[0.1px]',
+      default: 'w-[141px] h-full px-2 py-1 gap-[11px] text-sm font-normal leading-5 tracking-[0.1px]',
     },
   },
   defaultVariants: {

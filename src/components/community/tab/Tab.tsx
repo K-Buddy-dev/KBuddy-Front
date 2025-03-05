@@ -29,7 +29,7 @@ export function Tab() {
             key={index}
             onClick={() => setActiveTab(menu.id)}
             className={`
-              w-full h-full px-[7.5px] pb-2 rounded-t-md transition-colors duration-300 font-roboto font-medium leading-[24px]
+              w-full h-full px-[7.5px] pb-2 rounded-t-md transition-colors duration-300 font-medium leading-[24px]
               ${
                 activeTab === menu.id
                   ? 'text-white border-b-[3px] border-white'
