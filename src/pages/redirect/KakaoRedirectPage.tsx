@@ -41,15 +41,17 @@ const KakaoUserResponseSchema = z.object({
 type KakaoUserResponse = z.infer<typeof KakaoUserResponseSchema>;
 
 export function KakaoRedirectPage() {
-  const { setEmail, setoAuthUid, setoAuthCategory } = useSocialStore();
   const navigate = useNavigate();
+
+  const { setEmail, setoAuthUid, setoAuthCategory } = useSocialStore();
+  const { checkMember, isLoading } = useMemberCheckHandler();
+  const { handleLogin } = useOauthLoginHandler();
 
   const code = new URL(window.location.href).searchParams.get('code');
 
   const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
+  const [isMember, setIsMember] = useState<boolean | null>(null);
 
-  const { isMember, isLoading } = useMemberCheckHandler(memberCheckData ?? { oAuthUid: '', oAuthCategory: 'KAKAO' });
-  const { handleLogin } = useOauthLoginHandler();
   useEffect(() => {
     if (!code) {
       console.error('Authorization code not found');
@@ -171,14 +173,27 @@ export function KakaoRedirectPage() {
   }, []);
 
   useEffect(() => {
-    if (isMember) {
-      console.log('기존 회원, 로그인 실행');
-      handleLogin(memberCheckData!);
-    } else {
-      console.log('회원가입 페이지로 이동');
-      navigate('/oauth/signup/form');
+    if (!memberCheckData) return;
+
+    const fetchMemberStatus = async () => {
+      const status = await checkMember(memberCheckData);
+      setIsMember(status);
+    };
+
+    fetchMemberStatus();
+  }, [memberCheckData]);
+
+  useEffect(() => {
+    if (isMember !== null) {
+      if (isMember) {
+        console.log('기존 회원, 로그인 실행');
+        handleLogin(memberCheckData!);
+      } else {
+        console.log('회원가입 페이지로 이동');
+        navigate('/oauth/signup/form');
+      }
     }
-  }, [isMember, navigate]);
+  }, [isMember]);
 
   if (isLoading) {
     return (

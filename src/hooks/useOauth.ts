@@ -1,6 +1,6 @@
 import { authService } from '@/services';
 import { OauthRequest, SignupFormData } from '@/types';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const useOauthCheck = () => {
@@ -54,22 +54,41 @@ const useOauthLogin = () => {
 };
 
 export const useOauthRegister = () => {
-  const [error, setError] = useState({ oAuthCategory: '', oAuthUid: '' });
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const oauthRegister = async (data: SignupFormData) => {
     setIsLoading(true);
     try {
-      const result = await authService.oauthRegister(data);
-      setError({ oAuthCategory: '', oAuthUid: '' });
+      const {
+        firstName,
+        lastName,
+        email,
+        userId,
+        birthDate: { year, month, day },
+        country,
+        gender,
+        oAuthUid,
+        oAuthCategory,
+      } = data;
+
+      const signupData = {
+        firstName,
+        lastName,
+        email,
+        userId,
+        birthDate: `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`,
+        country,
+        gender,
+        oAuthUid,
+        oAuthCategory,
+      };
+      const result = await authService.oauthRegister(signupData);
+      setError('');
       return result;
     } catch (error: any) {
-      const errorMessage = error.response.data as string;
-      console.log('errorMessage: ', errorMessage);
-      setError({
-        oAuthCategory: errorMessage,
-        oAuthUid: errorMessage,
-      });
+      const errorMessage = error.response.data.data as string;
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -78,30 +97,28 @@ export const useOauthRegister = () => {
   return { oauthRegister, error, isLoading };
 };
 
-export const useMemberCheckHandler = (data: OauthRequest) => {
+export const useMemberCheckHandler = () => {
   const { oauthCheck } = useOauthCheck();
 
-  const [isMember, setIsMember] = useState<boolean | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const checkMember = async () => {
+  const checkMember = useCallback(
+    async (data: OauthRequest) => {
       setIsLoading(true);
       try {
         const result = await oauthCheck(data);
-        setIsMember(result);
+        return result;
       } catch (err: any) {
-        setError(err.message || '회원 확인 중 오류 발생');
+        console.error(err.message || '회원 확인 중 오류 발생');
+        return null;
       } finally {
         setIsLoading(false);
       }
-    };
+    },
+    [oauthCheck]
+  );
 
-    checkMember();
-  }, [data]);
-
-  return { isMember, error, isLoading };
+  return { checkMember, isLoading };
 };
 
 export const useOauthLoginHandler = () => {

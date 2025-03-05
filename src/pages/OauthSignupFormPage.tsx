@@ -6,16 +6,19 @@ import { useOauthRegister, useSocialSignupForm, useUserIdDuplicateCheck } from '
 import { Label } from '@/label/Label';
 import { useSocialStore } from '@/store';
 import { SignupFormData } from '@/types';
+import { useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export function OauthSignupFormPage() {
   const { email, oAuthUid, oAuthCategory } = useSocialStore();
+
   const navigate = useNavigate();
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
+    reset,
   } = useSocialSignupForm(email, oAuthUid, oAuthCategory);
   const { oauthRegister, isLoading } = useOauthRegister();
   const { checkUserIdDuplicate, error: userIdError } = useUserIdDuplicateCheck();
@@ -23,7 +26,6 @@ export function OauthSignupFormPage() {
     navigate('/');
   };
 
-  console.log('isValid: ', isValid);
   const onSubmit = async (data: SignupFormData) => {
     const sumbitData = {
       ...data,
@@ -32,7 +34,22 @@ export function OauthSignupFormPage() {
       oAuthCategory: oAuthCategory,
     };
     await oauthRegister(sumbitData);
+    navigate('/');
   };
+
+  useEffect(() => {
+    reset({
+      firstName: '',
+      lastName: '',
+      email,
+      userId: '',
+      birthDate: { year: '', month: '', day: '' },
+      country: '',
+      gender: '',
+      oAuthUid,
+      oAuthCategory,
+    });
+  }, [email, oAuthUid, oAuthCategory, reset]);
 
   return (
     <>
