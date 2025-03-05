@@ -3,7 +3,7 @@ import { cn } from '@/utils/utils';
 import { ComponentProps, forwardRef } from 'react';
 
 const buttonVariants = cva(
-  'px-8 rounded-[8px] font-roboto font-semibold inline-flex items-center justify-center focus:outline-none',
+  'px-8 rounded-[8px] font-semibold inline-flex items-center justify-center focus:outline-none',
   {
     variants: {
       variant: {

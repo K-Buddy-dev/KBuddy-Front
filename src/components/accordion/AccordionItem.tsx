@@ -28,7 +28,7 @@ export function AccordionItem({ children, id, label, name, checked, onChange, is
         <input type="radio" id={id} name={name} checked={checked} onChange={() => onChange?.(id)} className="hidden" />
         <label htmlFor={id} className="flex items-center gap-2 cursor-pointer w-full">
           {checked ? <SelectedRadioIcon /> : <UnSelectedRadioIcon />}
-          <span className="text-text-default font-roboto text-lg font-medium leading-6 tracking-[0.15px]">{label}</span>
+          <span className="text-text-default text-lg font-medium leading-6 tracking-[0.15px]">{label}</span>
         </label>
       </div>
       <div

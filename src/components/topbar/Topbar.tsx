@@ -15,7 +15,7 @@ function TopbarWrapper({ children }: { children: React.ReactNode }) {
 }
 
 function PageTitle({ children }: { children: React.ReactNode }) {
-  return <h1 className="flex-1 text-text-primary font-roboto text-[22px] font-normal leading-7">{children}</h1>;
+  return <h1 className="flex-1 text-text-primary text-[22px] font-normal leading-7">{children}</h1>;
 }
 
 export function Topbar({ title, type, onBack }: TopbarProps) {

@@ -45,12 +45,12 @@ function SwiperCard({
         <div className="flex items-center justify-start gap-2">
           {/* user 이미지 */}
           <div className="w-7 h-7 bg-red-300 rounded-full"></div>
-          <div className="flex flex-col items-start justify-start gap-1 font-roboto text-[12px] font-light">
+          <div className="flex flex-col items-start justify-start gap-1 text-[12px] font-light">
             <h4 className="text-text-default">{userName}</h4>
             <p className="text-text-weak">{createdAt}</p>
           </div>
         </div>
-        <div className="flex flex-col items-start justify-start gap-1 font-roboto">
+        <div className="flex flex-col items-start justify-start gap-1">
           <h3 className="text-[16px] font-medium text-text-default line-clamp-2 leading-[24px]">{title}</h3>
           <p className="text-[14px] font-normal text-text-weak">{content}</p>
         </div>
@@ -59,7 +59,7 @@ function SwiperCard({
         {/* post 이미지 */}
         <div className="w-[100px] h-[100px] bg-lime-400 rounded-base-unit-2"></div>
         <div className="flex items-center justify-start gap-4">
-          <div className="flex items-center gap-1 h-full font-roboto text-[14px] font-normal text-text-weak">
+          <div className="flex items-center gap-1 h-full text-[14px] font-normal text-text-weak">
             <div className="flex items-center">
               <LikeIcon />
               <span className="flex items-center py-[3px]">{postHeart}</span>
