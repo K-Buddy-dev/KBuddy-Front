@@ -1,3 +1,3 @@
 export * from './useTabsStore';
-export * from './useSocialTokensStore';
+export * from './useSocialStore';
 export * from './useSignupStore';

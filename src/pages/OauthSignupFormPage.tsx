@@ -1,54 +1,55 @@
-import { Button, PasswordField, TextField, Topbar } from '@/components/shared';
+import { Button, TextField, Topbar } from '@/components/shared';
 import { RadioButtonGroup } from '@/components/shared/radio/RadioButtonGroup';
 import { Select } from '@/components/shared/select/Select';
 import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
-import { useSignup, useSignupForm, useUserIdDuplicateCheck } from '@/hooks';
+import { useOauthRegister, useSocialSignupForm, useUserIdDuplicateCheck } from '@/hooks';
 import { Label } from '@/components/shared/label/Label';
-import { useSignupStore } from '@/store';
+import { useSocialStore } from '@/store';
 import { SignupFormData } from '@/types';
+import { useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-export function SignupFormPage() {
-  const { email } = useSignupStore();
+export function OauthSignupFormPage() {
+  const { email, oAuthUid, oAuthCategory } = useSocialStore();
+
   const navigate = useNavigate();
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
-  } = useSignupForm(email);
-  const { signup, isLoading } = useSignup();
+    reset,
+  } = useSocialSignupForm(email, oAuthUid, oAuthCategory);
+  const { oauthRegister, isLoading } = useOauthRegister();
   const { checkUserIdDuplicate, error: userIdError } = useUserIdDuplicateCheck();
   const handleClickBackButton = () => {
     navigate('/');
   };
 
-  const isSubmitDisabled = isLoading || !isValid || !!userIdError;
-
-  const onUserIdBlur = (field: any) => {
-    return async (e: React.FocusEvent<HTMLInputElement>) => {
-      field.onBlur();
-      const userId = e.target.value;
-
-      if (!userId) return;
-
-      try {
-        await checkUserIdDuplicate(userId);
-        errors.userId = undefined;
-      } catch (error: any) {
-        errors.userId = error.message;
-      }
-    };
-  };
-
   const onSubmit = async (data: SignupFormData) => {
-    try {
-      await signup(data);
-      navigate('/');
-    } catch (error) {
-      console.error(error);
-    }
+    const sumbitData = {
+      ...data,
+      email: email,
+      oAuthUid: String(oAuthUid),
+      oAuthCategory: oAuthCategory,
+    };
+    await oauthRegister(sumbitData);
+    navigate('/');
   };
+
+  useEffect(() => {
+    reset({
+      firstName: '',
+      lastName: '',
+      email,
+      userId: '',
+      birthDate: { year: '', month: '', day: '' },
+      country: '',
+      gender: '',
+      oAuthUid,
+      oAuthCategory,
+    });
+  }, [email, oAuthUid, oAuthCategory, reset]);
 
   return (
     <>
@@ -85,7 +86,10 @@ export function SignupFormPage() {
                 label="User ID"
                 {...field}
                 error={errors.userId?.message || userIdError}
-                onBlur={onUserIdBlur(field)}
+                onBlur={(e) => {
+                  field.onBlur();
+                  checkUserIdDuplicate(e.target.value);
+                }}
               />
             )}
           />
@@ -155,33 +159,7 @@ export function SignupFormPage() {
               />
             )}
           />
-          <Controller
-            control={control}
-            name="password"
-            render={({ field }) => (
-              <PasswordField
-                id="password"
-                label="Password"
-                {...field}
-                error={errors.password?.message}
-                showValidation={true}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <PasswordField
-                id="confirmPassword"
-                label="Confirm password"
-                {...field}
-                error={errors.confirmPassword?.message}
-                showValidation={true}
-              />
-            )}
-          />
-          <Button variant="solid" color="primary" className="w-full" disabled={isSubmitDisabled}>
+          <Button variant="solid" color="primary" className="w-full" disabled={isLoading || !isValid || !!userIdError}>
             {isLoading ? 'Creating account...' : 'Create account'}
           </Button>
         </form>

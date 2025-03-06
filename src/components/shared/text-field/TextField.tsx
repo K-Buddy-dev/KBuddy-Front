@@ -1,7 +1,7 @@
 import React, { ComponentProps, forwardRef, useRef, useState } from 'react';
-import { ClearIcon, ErrorOutlineIcon } from '@components/icon';
+import { ClearIcon, ErrorOutlineIcon } from '@/components/shared/icon';
 import { cn } from '@/utils/utils';
-import { Label } from '@/label/Label';
+import { Label } from '@/components/shared/label/Label';
 import { cva } from 'class-variance-authority';
 
 const textFieldVariants = cva(

@@ -1,8 +1,8 @@
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
-import { CommentIcon, LikeIcon } from '@/components/icon/Icon';
+import { CommentIcon, LikeIcon } from '@/components/shared/icon/Icon';
 import { Navigation } from 'swiper/modules';
 import { useState } from 'react';
-import { FloatLeft, FloatRight } from '@/components/icon';
+import { FloatLeft, FloatRight } from '@/components/shared/icon';
 
 interface SwiperCardProps {
   userImg: string;

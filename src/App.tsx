@@ -1,7 +1,14 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import { LoginPage, CommunityPage, KakaoRedirectPage, GoogleRedirectPage, AppleRedirectPage } from './pages';
-import { DefaultLayout } from './components/layout/DefaultLayout.tsx';
+import {
+  LoginPage,
+  CommunityPage,
+  KakaoRedirectPage,
+  GoogleRedirectPage,
+  AppleRedirectPage,
+  OauthSignupFormPage,
+} from './pages';
+import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
 import 'swiper/css';
 import { SignupVerifyPage } from './pages/SignupVerifyPage.tsx';
 import { SignupFormPage } from './pages/SignupFormPage.tsx';
@@ -16,6 +23,8 @@ function App() {
           <Route path="/oauth/callback/kakao" element={<KakaoRedirectPage />} />
           <Route path="/oauth2/code/google" element={<GoogleRedirectPage />} />
           <Route path="/oauth/callback/apple" element={<AppleRedirectPage />} />
+
+          <Route path="/oauth/signup/form" element={<OauthSignupFormPage />} />
 
           <Route path="/signup/verify" element={<SignupVerifyPage />} />
           <Route path="/signup/form" element={<SignupFormPage />} />

@@ -1,4 +1,4 @@
-import { CancelIcon, PreviewBackIcon } from '@/components/icon';
+import { CancelIcon, PreviewBackIcon } from '@/components/shared/icon';
 
 interface TopbarProps {
   title: string;

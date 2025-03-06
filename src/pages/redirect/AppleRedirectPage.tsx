@@ -1,4 +1,4 @@
-import { Spinner } from '@/components/spinner';
+import { Spinner } from '@/components/shared/spinner';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,11 +8,12 @@ export function AppleRedirectPage() {
   useEffect(() => {
     const handleAppleCallback = async () => {
       try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const idToken = urlParams.get('id_token');
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const code = hashParams.get('code');
+        const idToken = hashParams.get('id_token');
 
-        console.log('Apple Authorization Code:', code);
+        console.log('Hash params - code:', code);
+        console.log('Hash params - id_token:', idToken);
 
         if (!code) {
           throw new Error('Authorization code not found');

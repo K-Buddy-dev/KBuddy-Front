@@ -1,4 +1,4 @@
-import { Button, Checkbox, TextField, PasswordField } from '@/components';
+import { Button, Checkbox, TextField, PasswordField } from '@/components/shared';
 import { Controller } from 'react-hook-form';
 import { LoginFormData } from '@/types';
 import { useLoginForm, useLogin } from '@/hooks';

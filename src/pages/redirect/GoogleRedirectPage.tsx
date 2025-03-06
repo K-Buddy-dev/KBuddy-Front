@@ -1,114 +1,123 @@
-import { Spinner } from '@/components/spinner';
+import { Spinner } from '@/components/shared/spinner';
+import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
+import { useSocialStore } from '@/store';
+
+import { OauthRequest } from '@/types';
 // import { useSocialTokensStore } from '@/store';
 import { parseJwt } from '@/utils/utils';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-// const KakaoProfileSchema = z.object({
-//   nickname: z.string().optional(),
-//   thumbnail_image_url: z.string().url().optional(),
-//   profile_image_url: z.string().url().optional(),
-//   is_default_image: z.boolean(),
-//   is_default_nickname: z.boolean(),
-// });
+const GoogleIdTokenSchema = z.object({
+  iss: z.enum(['https://accounts.google.com', 'accounts.google.com']),
+  azp: z.string(),
+  aud: z.string(),
+  sub: z.string(),
+  email: z.string().email(),
+  email_verified: z.boolean(),
+  at_hash: z.string().optional(),
+  iat: z.number(),
+  exp: z.number(),
+});
 
-// const KakaoAccountSchema = z.object({
-//   profile_nickname_needs_agreement: z.boolean(),
-//   profile_image_needs_agreement: z.boolean(),
-//   profile: KakaoProfileSchema.optional(),
-//   has_email: z.boolean(),
-//   email_needs_agreement: z.boolean(),
-//   is_email_valid: z.boolean(),
-//   is_email_verified: z.boolean(),
-//   email: z.string().email(), // 이메일만 필수
-// });
-
-// const KakaoUserResponseSchema = z.object({
-//   id: z.number(),
-//   connected_at: z.string().datetime(),
-//   properties: z.object({
-//     nickname: z.string().optional(),
-//     profile_image: z.string().url().optional(),
-//     thumbnail_image: z.string().url().optional(),
-//   }),
-//   kakao_account: KakaoAccountSchema,
-// });
+type GoogleUserResponse = z.infer<typeof GoogleIdTokenSchema>;
 
 export function GoogleRedirectPage() {
-  // const { setKakaoToken } = useSocialTokensStore();
   const navigate = useNavigate();
 
+  const { setEmail, setoAuthUid, setoAuthCategory } = useSocialStore();
+  const { checkMember, isLoading } = useMemberCheckHandler();
+  const { handleLogin } = useOauthLoginHandler();
+
   const code = new URL(window.location.href).searchParams.get('code');
-  console.log('code: ', code);
+
+  const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
+  const [isMember, setIsMember] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!code) {
       console.error('Authorization code not found');
-      navigate('/');
       return;
     }
 
-    const fetchKakaoToken = async () => {
-      const makeFormData = (params: { [key: string]: string }) => {
-        const searchParams = new URLSearchParams();
-        Object.keys(params).forEach((key) => {
-          searchParams.append(key, params[key]);
-        });
-        return searchParams;
-      };
+    const setOauthSignupData = (data: GoogleUserResponse) => {
+      setEmail(data.email);
+      setoAuthUid(data.sub);
+      setoAuthCategory('GOOGLE');
+    };
 
+    const fetchGoogleToken = async () => {
       try {
-        // 액세스 및 리프레쉬 토큰 받기
-        const tokenResponse = await axios({
-          method: 'POST',
-          url: 'https://accounts.google.com/o/oauth2/token',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-          },
-          data: makeFormData({
+        const tokenResponse = await axios.post(
+          'https://oauth2.googleapis.com/token',
+          new URLSearchParams({
             grant_type: 'authorization_code',
             client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-            redirect_uri: import.meta.env.VITE_GOOGLE_REDIRECT_URI,
             client_secret: import.meta.env.VITE_GOOGLE_CLIENT_PW,
+            redirect_uri: import.meta.env.VITE_GOOGLE_REDIRECT_URI,
             code: code,
           }),
-        });
-        console.log('tokenResponse', tokenResponse);
+          {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+          }
+        );
+
         const { id_token } = tokenResponse.data;
         const userInfo = parseJwt(id_token);
-        console.log('userInfo: ', userInfo);
+        const validatedUserInfo = GoogleIdTokenSchema.parse(userInfo);
 
-        // 사용자 정보 가져오기
-        // const userResponse = await axios({
-        //   method: 'GET',
-        //   url: 'https://kapi.kakao.com/v2/user/me',
-        //   headers: {
-        //     Authorization: `Bearer ${access_token}`,
-        //   },
-        // });
+        if (validatedUserInfo) {
+          setOauthSignupData(validatedUserInfo);
+        }
 
-        // const userData = KakaoUserResponseSchema.parse(userResponse.data);
-        // console.log('Validated Kakao User Data:', userData);
-
-        // // 메인 페이지 리다이렉트 -> 회원가입 페이지로 바꿀 예정
-        // navigate('/');
+        setMemberCheckData({
+          oAuthUid: validatedUserInfo.sub,
+          oAuthCategory: 'GOOGLE',
+        });
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error('Data validation error:', error.errors);
+          console.error('Google ID Token validation error:', error.errors);
         } else {
-          console.error('Kakao login error:', error);
+          console.error('Google login error:', error);
         }
       }
     };
 
-    fetchKakaoToken();
-  }, [code]);
+    fetchGoogleToken();
+  }, []);
 
-  return (
-    <div className="w-full h-full flex items-center justify-center">
-      <Spinner />
-    </div>
-  );
+  useEffect(() => {
+    if (!memberCheckData) return;
+
+    const fetchMemberStatus = async () => {
+      const status = await checkMember(memberCheckData);
+      setIsMember(status);
+    };
+
+    fetchMemberStatus();
+  }, [memberCheckData]);
+
+  useEffect(() => {
+    if (isMember !== null) {
+      if (isMember) {
+        console.log('기존 회원, 로그인 실행');
+        handleLogin(memberCheckData!);
+      } else {
+        console.log('회원가입 페이지로 이동');
+        navigate('/oauth/signup/form');
+      }
+    }
+  }, [isMember]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return null;
 }

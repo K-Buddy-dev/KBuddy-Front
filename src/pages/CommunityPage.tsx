@@ -1,6 +1,6 @@
-import { Navbar } from '@/components/navbar/Navbar';
-import { SwiperList } from '@/components/community/swiper';
-import { Tab } from '@/components/community/tab';
+import { Navbar } from '@/components/shared/navbar/Navbar';
+import { SwiperList } from '@/components/shared/community/swiper';
+import { Tab } from '@/components/shared/community/tab';
 
 const mockData = [
   {

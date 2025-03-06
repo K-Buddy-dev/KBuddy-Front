@@ -1,7 +1,10 @@
-import { Spinner } from '@/components/spinner';
-import { useSocialTokensStore } from '@/store';
+import { Spinner } from '@/components/shared/spinner';
+import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
+import { useSocialStore } from '@/store';
+// import { useSocialTokensStore } from '@/store';
+import { OauthRequest } from '@/types';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -35,11 +38,19 @@ const KakaoUserResponseSchema = z.object({
   kakao_account: KakaoAccountSchema,
 });
 
+type KakaoUserResponse = z.infer<typeof KakaoUserResponseSchema>;
+
 export function KakaoRedirectPage() {
-  const { setKakaoToken } = useSocialTokensStore();
   const navigate = useNavigate();
 
+  const { setEmail, setoAuthUid, setoAuthCategory } = useSocialStore();
+  const { checkMember, isLoading } = useMemberCheckHandler();
+  const { handleLogin } = useOauthLoginHandler();
+
   const code = new URL(window.location.href).searchParams.get('code');
+
+  const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
+  const [isMember, setIsMember] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!code) {
@@ -47,50 +58,108 @@ export function KakaoRedirectPage() {
       return;
     }
 
-    const fetchKakaoToken = async () => {
-      const makeFormData = (params: { [key: string]: string }) => {
-        const searchParams = new URLSearchParams();
-        Object.keys(params).forEach((key) => {
-          searchParams.append(key, params[key]);
-        });
-        return searchParams;
-      };
+    const getValidKakaoAccessToken = async () => {
+      const accessToken = localStorage.getItem('kakaoAccessToken');
+      const refreshToken = localStorage.getItem('kakaoRefreshToken');
+      const tokenExpiry = localStorage.getItem('kakaoTokenExpiry');
+
+      if (!refreshToken) {
+        console.warn('리프레시 토큰 만료. 재로그인 필요');
+        return null;
+      }
+
+      // 토큰이 없거나 만료 10분 전 갱신
+      if (!accessToken || !tokenExpiry || Date.now() > parseInt(tokenExpiry, 10) - 600000) {
+        try {
+          const response = await axios({
+            method: 'POST',
+            url: 'https://kauth.kakao.com/oauth/token',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+            data: new URLSearchParams({
+              grant_type: 'refresh_token',
+              client_id: import.meta.env.VITE_KAKAO_REST_API_KEY,
+              client_secret: import.meta.env.VITE_KAKAO_SECRET_KEY,
+              refresh_token: refreshToken,
+            }),
+          });
+
+          const newAccessToken = response.data.access_token;
+          localStorage.setItem('kakaoAccessToken', newAccessToken);
+          localStorage.setItem('kakaoTokenExpiry', (Date.now() + response.data.expires_in * 1000).toString());
+
+          if (response.data.refresh_token) {
+            localStorage.setItem('kakaoRefreshToken', response.data.refresh_token);
+          }
+
+          return newAccessToken;
+        } catch (error) {
+          console.error('카카오 토큰 갱신 실패:', error);
+          return null;
+        }
+      }
+
+      return accessToken;
+    };
+
+    const fetchUserInfo = async () => {
+      const token = await getValidKakaoAccessToken();
+
+      if (!token) {
+        console.warn('유효한 액세스 토큰 없음. 로그인 필요');
+        return;
+      }
 
       try {
-        // 액세스 및 리프레쉬 토큰 받기
-        const tokenResponse = await axios({
-          method: 'POST',
-          url: 'https://kauth.kakao.com/oauth/token',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-          },
-          data: makeFormData({
+        const userResponse = await axios({
+          method: 'GET',
+          url: 'https://kapi.kakao.com/v2/user/me',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        return userResponse.data;
+      } catch (error) {
+        console.error('사용자 정보 요청 실패:', error);
+        return null;
+      }
+    };
+
+    const setOauthSignupData = (data: KakaoUserResponse) => {
+      setEmail(data.kakao_account.email);
+      setoAuthUid(data.id);
+      setoAuthCategory('KAKAO');
+    };
+
+    const fetchKakaoToken = async () => {
+      try {
+        const tokenResponse = await axios.post(
+          'https://kauth.kakao.com/oauth/token',
+          new URLSearchParams({
             grant_type: 'authorization_code',
             client_id: import.meta.env.VITE_KAKAO_REST_API_KEY,
             redirect_uri: import.meta.env.VITE_KAKAO_REDIRECT_URI,
             client_secret: import.meta.env.VITE_KAKAO_SECRET_KEY,
             code: code,
           }),
+          {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+          }
+        );
+
+        const { access_token, refresh_token, expires_in } = tokenResponse.data;
+
+        localStorage.setItem('kakaoAccessToken', access_token);
+        localStorage.setItem('kakaoRefreshToken', refresh_token);
+        localStorage.setItem('kakaoTokenExpiry', (Date.now() + expires_in * 1000).toString());
+
+        const userInfo = await fetchUserInfo();
+        const validatedUserInfo = KakaoUserResponseSchema.parse(userInfo);
+        if (validatedUserInfo) {
+          setOauthSignupData(validatedUserInfo);
+        }
+        setMemberCheckData({
+          oAuthUid: validatedUserInfo.id.toString(),
+          oAuthCategory: 'KAKAO',
         });
-        console.log('tokenResponse', tokenResponse);
-        const { access_token, refresh_token } = tokenResponse.data;
-        console.log('refresh_token: ', refresh_token);
-        setKakaoToken(access_token);
-
-        // 사용자 정보 가져오기
-        const userResponse = await axios({
-          method: 'GET',
-          url: 'https://kapi.kakao.com/v2/user/me',
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        });
-
-        const userData = KakaoUserResponseSchema.parse(userResponse.data);
-        console.log('Validated Kakao User Data:', userData);
-
-        // 메인 페이지 리다이렉트 -> 회원가입 페이지로 바꿀 예정
-        navigate('/');
       } catch (error) {
         if (error instanceof z.ZodError) {
           console.error('Data validation error:', error.errors);
@@ -101,11 +170,38 @@ export function KakaoRedirectPage() {
     };
 
     fetchKakaoToken();
-  }, [code, navigate, setKakaoToken]);
+  }, []);
 
-  return (
-    <div className="w-full h-full flex items-center justify-center">
-      <Spinner />
-    </div>
-  );
+  useEffect(() => {
+    if (!memberCheckData) return;
+
+    const fetchMemberStatus = async () => {
+      const status = await checkMember(memberCheckData);
+      setIsMember(status);
+    };
+
+    fetchMemberStatus();
+  }, [memberCheckData]);
+
+  useEffect(() => {
+    if (isMember !== null) {
+      if (isMember) {
+        console.log('기존 회원, 로그인 실행');
+        handleLogin(memberCheckData!);
+      } else {
+        console.log('회원가입 페이지로 이동');
+        navigate('/oauth/signup/form');
+      }
+    }
+  }, [isMember]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return null;
 }
