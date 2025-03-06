@@ -8,7 +8,7 @@ import {
   AppleRedirectPage,
   OauthSignupFormPage,
 } from './pages';
-import { DefaultLayout } from './components/layout/DefaultLayout.tsx';
+import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
 import 'swiper/css';
 import { SignupVerifyPage } from './pages/SignupVerifyPage.tsx';
 import { SignupFormPage } from './pages/SignupFormPage.tsx';

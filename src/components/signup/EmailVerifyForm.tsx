@@ -1,4 +1,4 @@
-import { Button, TextField } from '@/components';
+import { Button, TextField } from '@/components/shared';
 import { useEmailVerify, useEmailVerifyForm } from '@/hooks';
 import { authService } from '@/services';
 import { useSignupStore } from '@/store';

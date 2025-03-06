@@ -1,9 +1,9 @@
-import { Button, TextField, Topbar } from '@/components';
-import { RadioButtonGroup } from '@/components/radio/RadioButtonGroup';
-import { Select } from '@/components/select/Select';
+import { Button, TextField, Topbar } from '@/components/shared';
+import { RadioButtonGroup } from '@/components/shared/radio/RadioButtonGroup';
+import { Select } from '@/components/shared/select/Select';
 import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
 import { useOauthRegister, useSocialSignupForm, useUserIdDuplicateCheck } from '@/hooks';
-import { Label } from '@/label/Label';
+import { Label } from '@/components/shared/label/Label';
 import { useSocialStore } from '@/store';
 import { SignupFormData } from '@/types';
 import { useEffect } from 'react';

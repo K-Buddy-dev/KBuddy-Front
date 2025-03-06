@@ -1,6 +1,6 @@
 import { ComponentProps, forwardRef } from 'react';
-import { Label } from '@/label/Label';
-import { SelectedRadioIcon, UnSelectedRadioIcon } from '@/components/icon';
+import { Label } from '@/components/shared/label/Label';
+import { SelectedRadioIcon, UnSelectedRadioIcon } from '@/components/shared/icon';
 
 interface RadioButtonOption {
   label: string;

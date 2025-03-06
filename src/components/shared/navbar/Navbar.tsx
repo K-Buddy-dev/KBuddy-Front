@@ -1,4 +1,4 @@
-import { AlarmIcon, Logo, SearchIcon, SettingsIcon } from '@/components/icon';
+import { AlarmIcon, Logo, SearchIcon, SettingsIcon } from '@/components/shared/icon';
 
 function NavSearch() {
   return (

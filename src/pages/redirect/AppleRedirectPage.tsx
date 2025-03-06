@@ -1,4 +1,4 @@
-import { Spinner } from '@/components/spinner';
+import { Spinner } from '@/components/shared/spinner';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 

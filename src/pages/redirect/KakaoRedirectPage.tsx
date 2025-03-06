@@ -1,4 +1,4 @@
-import { Spinner } from '@/components/spinner';
+import { Spinner } from '@/components/shared/spinner';
 import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
 import { useSocialStore } from '@/store';
 // import { useSocialTokensStore } from '@/store';

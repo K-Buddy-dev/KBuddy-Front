@@ -1,4 +1,4 @@
-import { Button, InfoMessage, TextField, Topbar } from '@/components';
+import { Button, InfoMessage, TextField, Topbar } from '@/components/shared';
 import { useVerifyCode, useVerifyCodeForm } from '@/hooks';
 import { useSignupStore } from '@/store';
 import { Controller } from 'react-hook-form';

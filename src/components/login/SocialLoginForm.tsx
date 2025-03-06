@@ -1,4 +1,4 @@
-import { AppleLogo, GoogleLogo, KakaoLogo } from '@/components';
+import { AppleLogo, GoogleLogo, KakaoLogo } from '@/components/shared';
 import { SocialButton } from './Social/SocialButton';
 
 export function SocialLoginForm() {

@@ -6,9 +6,9 @@ import {
   EyesIcon,
   EyesSlashIcon,
   ValidationIcon,
-} from '@components/icon';
+} from '@/components/shared/icon';
 import { cn } from '@/utils/utils';
-import { Label } from '@/label/Label';
+import { Label } from '@/components/shared/label/Label';
 import { cva } from 'class-variance-authority';
 import { passwordValidationRules } from '@/utils/validationSchemas';
 
