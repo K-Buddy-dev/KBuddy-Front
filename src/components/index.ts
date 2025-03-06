@@ -1,2 +1,2 @@
-export * from '../components/login';
+export * from './login';
 export * from './signup';
