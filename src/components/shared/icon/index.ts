@@ -17,3 +17,4 @@ export * from './EyesSlashIcon';
 export * from './FloatButton';
 export * from './PreviewBackIcon';
 export * from './DownArrow';
+export * from './UpArrow';
