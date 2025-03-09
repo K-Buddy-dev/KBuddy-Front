@@ -8,3 +8,5 @@ export * from './accordion';
 export * from './icon';
 export * from './typography';
 export * from './selectbox';
+export * from './label';
+export * from './radio';
