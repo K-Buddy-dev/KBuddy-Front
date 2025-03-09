@@ -7,3 +7,4 @@ export * from './checkbox';
 export * from './accordion';
 export * from './icon';
 export * from './typography';
+export * from './selectbox';
