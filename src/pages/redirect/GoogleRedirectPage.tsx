@@ -65,6 +65,11 @@ export function GoogleRedirectPage() {
         );
 
         const { id_token } = tokenResponse.data;
+
+        if (!id_token) {
+          throw new Error('ID token not found. Check browser console for details.');
+        }
+
         const userInfo = parseJwt(id_token);
         const validatedUserInfo = GoogleIdTokenSchema.parse(userInfo);
 
