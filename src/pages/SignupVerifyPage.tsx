@@ -1,5 +1,6 @@
 import { Button, InfoMessage, TextField, Topbar } from '@/components/shared';
 import { useEmailVerifyStateContext, useVerifyCode, useVerifyCodeForm } from '@/hooks';
+import { authService } from '@/services';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,10 +11,15 @@ export function SignupVerifyPage() {
     handleSubmit,
     formState: { isValid },
   } = useVerifyCodeForm();
+
   const { verifyCode, error, isLoading } = useVerifyCode();
   const navigate = useNavigate();
   const handleClickBackButton = () => {
     navigate('/');
+  };
+
+  const reSendCode = () => {
+    authService.sendCode({ email });
   };
 
   const onSubmit = async (data: { code: string }) => {
@@ -43,7 +49,10 @@ export function SignupVerifyPage() {
         <Button variant="solid" color="primary" className="w-full mt-[184px]" disabled={!isValid}>
           {isLoading ? 'Sending...' : 'Next'}
         </Button>
-        <span className="text-text-brand-default text-sm font-semibold leading-[14px] tracking-[0.28px] underline cursor-pointer mt-[13px]">
+        <span
+          className="text-text-brand-default text-sm font-semibold leading-[14px] tracking-[0.28px] underline cursor-pointer mt-[13px]"
+          onClick={reSendCode}
+        >
           I didn't get the code
         </span>
       </form>
