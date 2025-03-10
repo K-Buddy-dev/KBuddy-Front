@@ -1,11 +1,10 @@
 import { Button, InfoMessage, TextField, Topbar } from '@/components/shared';
-import { useVerifyCode, useVerifyCodeForm } from '@/hooks';
-import { useSignupStore } from '@/store';
+import { useEmailVerifyStateContext, useVerifyCode, useVerifyCodeForm } from '@/hooks';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export function SignupVerifyPage() {
-  const { email } = useSignupStore();
+  const { email } = useEmailVerifyStateContext();
   const {
     control,
     handleSubmit,
