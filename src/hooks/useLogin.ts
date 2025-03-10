@@ -1,5 +1,6 @@
 import { authService } from '@/services/authService';
 import { LoginFormData } from '@/types';
+import axios from 'axios';
 import { useState } from 'react';
 
 export const useLogin = () => {
@@ -10,6 +11,8 @@ export const useLogin = () => {
     setIsLoading(true);
     try {
       const result = await authService.login(data);
+      const { accessToken } = result.data;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       setError({ emailOrUserId: '', password: '' });
       return result;
     } catch (error: any) {

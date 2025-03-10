@@ -40,7 +40,7 @@ export const signupSchema = z
       .string()
       .max(30, 'Last name must be at most 30 characters.')
       .regex(/^[a-zA-Z]+$/, 'Last name must contain only letters.'),
-    email: z.string().email('Invalid email address.'),
+    email: emailSchema,
     userId: userIdSchema,
     birthDate: z.object({
       year: z.string().min(1, 'Year is required.'),

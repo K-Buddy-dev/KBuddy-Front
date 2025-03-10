@@ -10,25 +10,14 @@ export const useSignup = () => {
     setIsLoading(true);
     try {
       const {
-        firstName,
-        lastName,
-        email,
-        userId,
-        password,
         birthDate: { year, month, day },
-        country,
-        gender,
+        confirmPassword: _,
+        ...rest
       } = data;
 
       const signupData = {
-        firstName,
-        lastName,
-        email,
-        userId,
-        password,
+        ...rest,
         birthDate: `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`,
-        country,
-        gender,
       };
 
       const result = await authService.signup(signupData);

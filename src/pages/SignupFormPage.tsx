@@ -1,16 +1,12 @@
-import { Button, PasswordField, TextField, Topbar } from '@/components/shared';
-import { RadioButtonGroup } from '@/components/shared/radio/RadioButtonGroup';
-import { Select } from '@/components/shared/select/Select';
+import { Button, Label, PasswordField, RadioButtonGroup, SelectBox, TextField, Topbar } from '@/components/shared';
 import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
-import { useSignup, useSignupForm, useUserIdDuplicateCheck } from '@/hooks';
-import { Label } from '@/components/shared/label/Label';
-import { useSignupStore } from '@/store';
+import { useEmailVerifyStateContext, useSignup, useSignupForm, useUserIdDuplicateCheck } from '@/hooks';
 import { SignupFormData } from '@/types';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export function SignupFormPage() {
-  const { email } = useSignupStore();
+  const { email } = useEmailVerifyStateContext();
   const navigate = useNavigate();
   const {
     control,
@@ -96,26 +92,23 @@ export function SignupFormPage() {
               <div className="w-full flex flex-col items-start mb-4">
                 <Label id={'birthDate'} label={'Birth date'} />
                 <div className="w-full flex justify-between">
-                  <Select
-                    name="birthYear"
+                  <SelectBox
+                    label={'Year'}
                     value={field.value.year}
                     options={BIRTH_YEAR_OPTIONS}
-                    onChange={(e) => field.onChange({ ...field.value, year: e.target.value })}
-                    className="border border-solid border-border-default rounded-[8px] bg-white box-border text-gray-900 placeholder-gray-400 py-3 px-4"
+                    onChange={(value) => field.onChange({ ...field.value, year: value })}
                   />
-                  <Select
-                    name="birthMonth"
+                  <SelectBox
+                    label={'Month'}
                     value={field.value.month}
                     options={BIRTH_MONTH_OPTIONS}
-                    onChange={(e) => field.onChange({ ...field.value, month: e.target.value })}
-                    className="border border-solid border-border-default rounded-[8px] bg-white box-border text-gray-900 placeholder-gray-400 py-3 px-4"
+                    onChange={(value) => field.onChange({ ...field.value, month: value })}
                   />
-                  <Select
-                    name="birthDay"
+                  <SelectBox
+                    label={'Day'}
                     value={field.value.day}
                     options={BIRTH_DAY_OPTIONS}
-                    onChange={(e) => field.onChange({ ...field.value, day: e.target.value })}
-                    className="border border-solid border-border-default rounded-[8px] bg-white box-border text-gray-900 placeholder-gray-400 py-3 px-4"
+                    onChange={(value) => field.onChange({ ...field.value, day: value })}
                   />
                 </div>
               </div>
@@ -127,9 +120,9 @@ export function SignupFormPage() {
             render={({ field }) => (
               <div className="w-full flex flex-col items-start mb-4">
                 <Label id={'country'} label={'Nationality'} />
-                <Select
-                  name="country"
+                <SelectBox
                   size="large"
+                  label={'Select your nationality'}
                   value={field.value}
                   options={NATIONALITIES}
                   onChange={field.onChange}

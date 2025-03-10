@@ -1,5 +1,4 @@
 export const NATIONALITIES = [
-  { label: 'Select your nationality', value: '' },
   { label: 'South Korea', value: 'KR' },
   { label: 'United States', value: 'US' },
   { label: 'Japan', value: 'JP' },
