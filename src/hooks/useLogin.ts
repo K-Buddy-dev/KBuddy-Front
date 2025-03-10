@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 export const useLogin = () => {
   const [error, setError] = useState({ emailOrUserId: '', password: '' });
+  const [isCheckedRemember, setIsCheckRemember] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const login = async (data: LoginFormData) => {
@@ -13,6 +14,9 @@ export const useLogin = () => {
       const result = await authService.login(data);
       const { accessToken } = result.data;
       axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      if (isCheckedRemember) {
+        localStorage.setItem('kBuddyId', data.emailOrUserId);
+      }
       setError({ emailOrUserId: '', password: '' });
       return result;
     } catch (error: any) {
@@ -27,5 +31,5 @@ export const useLogin = () => {
     }
   };
 
-  return { login, error, isLoading };
+  return { login, error, isLoading, setIsCheckRemember };
 };
