@@ -47,6 +47,8 @@ export function AppleRedirectPage() {
     const fetchAppleUserInfo = async () => {
       try {
         const userInfo = parseJwt(idToken);
+        console.log('userInfo: ', userInfo);
+        console.log('idToken: ', idToken);
         const validatedUserInfo = AppleIdTokenSchema.parse(userInfo);
 
         if (validatedUserInfo) {
