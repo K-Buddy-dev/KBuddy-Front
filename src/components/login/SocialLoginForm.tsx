@@ -19,8 +19,6 @@ export function SocialLoginForm() {
         client_id: import.meta.env.VITE_APPLE_CLIENT_ID,
         redirect_uri: import.meta.env.VITE_APPLE_REDIRECT_URI,
         response_type: 'code id_token',
-        scope: 'name email',
-        response_mode: 'form_post',
         state: state,
       });
 
