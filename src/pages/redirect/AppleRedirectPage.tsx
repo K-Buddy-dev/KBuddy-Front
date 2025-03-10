@@ -2,20 +2,22 @@ import { Spinner } from '@/components/shared/spinner';
 import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
 import { useSocialStore } from '@/store';
 import { OauthRequest } from '@/types';
-import { parseJwt } from '@/utils/utils'; // JWT 디코딩 유틸리티
+import { parseJwt } from '@/utils/utils';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-// Apple ID Token 스키마 정의
 const AppleIdTokenSchema = z.object({
-  iss: z.literal('https://appleid.apple.com'), // Apple의 issuer
-  aud: z.string(), // 클라이언트 ID와 일치해야 함
-  sub: z.string(), // 사용자 고유 ID
-  email: z.string().email().optional(), // 이메일 (최초 로그인 시에만 제공됨)
+  iss: z.literal('https://appleid.apple.com'),
+  auth_time: z.number(),
+  aud: z.string(),
+  sub: z.string(),
+  email: z.string().email().optional(),
   email_verified: z.enum(['true', 'false']).optional(),
-  iat: z.number(), // 발급 시간
-  exp: z.number(), // 만료 시간
+  iat: z.number(),
+  exp: z.number(),
+  nonce_supported: z.boolean(),
+  c_hash: z.string(),
 });
 
 type AppleUserResponse = z.infer<typeof AppleIdTokenSchema>;
@@ -47,8 +49,6 @@ export function AppleRedirectPage() {
     const fetchAppleUserInfo = async () => {
       try {
         const userInfo = parseJwt(idToken);
-        console.log('userInfo: ', userInfo);
-        console.log('idToken: ', idToken);
         const validatedUserInfo = AppleIdTokenSchema.parse(userInfo);
 
         if (validatedUserInfo) {
