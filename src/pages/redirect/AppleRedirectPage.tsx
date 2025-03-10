@@ -1,144 +1,169 @@
-import { Spinner } from '@/components/shared/spinner';
-// import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
-// import { useSocialStore } from '@/store';
-// import { OauthRequest } from '@/types';
-import { parseJwt } from '@/utils/utils'; // JWT 디코딩 유틸리티
+import { Button, TextField, Topbar } from '@/components/shared';
+import { RadioButtonGroup } from '@/components/shared/radio/RadioButtonGroup';
+import { Select } from '@/components/shared/select/Select';
+import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
+import { useOauthRegister, useSocialSignupForm, useUserIdDuplicateCheck } from '@/hooks';
+import { Label } from '@/components/shared/label/Label';
+import { useSocialStore } from '@/store';
+import { SignupFormData } from '@/types';
 import { useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
+import { Controller } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
-// Apple ID Token 스키마 정의
-// const AppleIdTokenSchema = z.object({
-//   iss: z.literal('https://appleid.apple.com'), // Apple의 issuer
-//   aud: z.string(), // 클라이언트 ID와 일치해야 함
-//   sub: z.string(), // 사용자 고유 ID
-//   email: z.string().email().optional(), // 이메일 (최초 로그인 시에만 제공됨)
-//   email_verified: z.enum(['true', 'false']).optional(),
-//   iat: z.number(), // 발급 시간
-//   exp: z.number(), // 만료 시간
-// });
+export function OauthSignupFormPage() {
+  const { email, oAuthUid, oAuthCategory } = useSocialStore();
 
-// type AppleUserResponse = z.infer<typeof AppleIdTokenSchema>;
+  const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useSocialSignupForm(email, oAuthUid, oAuthCategory);
+  const { oauthRegister, isLoading } = useOauthRegister();
+  const { checkUserIdDuplicate, error: userIdError } = useUserIdDuplicateCheck();
+  const handleClickBackButton = () => {
+    navigate('/');
+  };
 
-export function AppleRedirectPage() {
-  // const navigate = useNavigate();
-
-  // const { setEmail, setoAuthUid, setoAuthCategory } = useSocialStore();
-  // const { checkMember, isLoading } = useMemberCheckHandler();
-  // const { handleLogin } = useOauthLoginHandler();
-
-  // const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
-  // const [isMember, setIsMember] = useState<boolean | null>(null);
+  const onSubmit = async (data: SignupFormData) => {
+    const sumbitData = {
+      ...data,
+      email: email,
+      oAuthUid: String(oAuthUid),
+      oAuthCategory: oAuthCategory,
+    };
+    await oauthRegister(sumbitData);
+    navigate('/');
+  };
 
   useEffect(() => {
-    const handleAppleCallback = async () => {
-      try {
-        let code = null;
-        let idToken = null;
+    reset({
+      firstName: '',
+      lastName: '',
+      email,
+      userId: '',
+      birthDate: { year: '', month: '', day: '' },
+      country: '',
+      gender: '',
+      oAuthUid,
+      oAuthCategory,
+    });
+  }, [email, oAuthUid, oAuthCategory, reset]);
 
-        // 1. form_post 방식으로 전달된 데이터 확인
-        if (document.forms.length > 0) {
-          console.log('Form detected, extracting data from form');
-          const formData = new FormData(document.forms[0]);
-          code = formData.get('code') as string;
-          idToken = formData.get('id_token') as string;
-          console.log('Form data - code:', code);
-          console.log('Form data - id_token:', idToken);
-        }
-
-        // 2. URL 쿼리 파라미터 확인 (백업)
-        if (!idToken) {
-          console.log('Checking URL query parameters');
-          const urlParams = new URLSearchParams(window.location.search);
-          code = urlParams.get('code');
-          idToken = urlParams.get('id_token');
-          console.log('URL params - code:', code);
-          console.log('URL params - id_token:', idToken);
-        }
-
-        // 3. URL 해시 파라미터 확인 (백업)
-        if (!idToken && window.location.hash) {
-          console.log('Checking URL hash parameters');
-          const hashParams = new URLSearchParams(window.location.hash.substring(1));
-          code = hashParams.get('code');
-          idToken = hashParams.get('id_token');
-          console.log('Hash params - code:', code);
-          console.log('Hash params - id_token:', idToken);
-        }
-
-        if (!idToken) {
-          throw new Error('ID token not found. Check browser console for details.');
-        }
-
-        // id_token 디코딩 및 유효성 검사
-        const userInfo = parseJwt(idToken);
-        console.log('userInfo: ', userInfo);
-        // const validatedUserInfo = AppleIdTokenSchema.parse(userInfo);
-
-        // // 상태에 사용자 정보 저장
-        // setEmail(validatedUserInfo.email || ''); // Apple은 최초 로그인 시에만 email 제공
-        // setoAuthUid(validatedUserInfo.sub); // Apple 사용자 고유 ID
-        // setoAuthCategory('APPLE');
-
-        // 회원 확인용 데이터 설정
-        // setMemberCheckData({
-        //   oAuthUid: validatedUserInfo.sub,
-        //   oAuthCategory: 'APPLE',
-        // });
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          console.error('Apple ID Token validation error:', error.errors);
-        } else {
-          console.error('Apple authentication error:', error);
-        }
-      }
-    };
-
-    if (document.readyState === 'loading') {
-      console.log('Waiting for DOMContentLoaded');
-      document.addEventListener('DOMContentLoaded', handleAppleCallback);
-    } else {
-      console.log('DOM already loaded, running callback immediately');
-      handleAppleCallback();
-    }
-
-    return () => {
-      document.removeEventListener('DOMContentLoaded', handleAppleCallback);
-    };
-  }, []);
-
-  // 회원 여부 확인
-  // useEffect(() => {
-  //   if (!memberCheckData) return;
-
-  //   const fetchMemberStatus = async () => {
-  //     const status = await checkMember(memberCheckData);
-  //     setIsMember(status);
-  //   };
-
-  //   fetchMemberStatus();
-  // }, [memberCheckData]);
-
-  // 회원 여부에 따라 리다이렉트
-  // useEffect(() => {
-  //   if (isMember !== null) {
-  //     if (isMember) {
-  //       console.log('기존 회원, 로그인 실행');
-  //       handleLogin(memberCheckData!);
-  //     } else {
-  //       console.log('회원가입 페이지로 이동');
-  //       navigate('/oauth/signup/form');
-  //     }
-  //   }
-  // }, [isMember]);
-
-  if (isLoading) {
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        <Spinner />
+  return (
+    <>
+      <Topbar title="Create account" type="back" onBack={handleClickBackButton} />
+      <div className="mt-[72px]">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            control={control}
+            name="firstName"
+            render={({ field }) => (
+              <TextField id="firstName" label="First name" {...field} error={errors.firstName?.message} />
+            )}
+          />
+          <Controller
+            control={control}
+            name="lastName"
+            render={({ field }) => (
+              <TextField id="lastName" label="Last name" {...field} error={errors.lastName?.message} />
+            )}
+          />
+          <Controller
+            control={control}
+            name="email"
+            render={({ field }) => (
+              <TextField id="email" label="Email" disabled={true} {...field} error={errors.email?.message} />
+            )}
+          />
+          <Controller
+            control={control}
+            name="userId"
+            render={({ field }) => (
+              <TextField
+                id="userId"
+                label="User ID"
+                {...field}
+                error={errors.userId?.message || userIdError}
+                onBlur={(e) => {
+                  field.onBlur();
+                  checkUserIdDuplicate(e.target.value);
+                }}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="birthDate"
+            render={({ field }) => (
+              <div className="w-full flex flex-col items-start mb-4">
+                <Label id={'birthDate'} label={'Birth date'} />
+                <div className="w-full flex justify-between">
+                  <Select
+                    name="birthYear"
+                    value={field.value.year}
+                    options={BIRTH_YEAR_OPTIONS}
+                    onChange={(e) => field.onChange({ ...field.value, year: e.target.value })}
+                    className="border border-solid border-border-default rounded-[8px] bg-white box-border text-gray-900 placeholder-gray-400 py-3 px-4"
+                  />
+                  <Select
+                    name="birthMonth"
+                    value={field.value.month}
+                    options={BIRTH_MONTH_OPTIONS}
+                    onChange={(e) => field.onChange({ ...field.value, month: e.target.value })}
+                    className="border border-solid border-border-default rounded-[8px] bg-white box-border text-gray-900 placeholder-gray-400 py-3 px-4"
+                  />
+                  <Select
+                    name="birthDay"
+                    value={field.value.day}
+                    options={BIRTH_DAY_OPTIONS}
+                    onChange={(e) => field.onChange({ ...field.value, day: e.target.value })}
+                    className="border border-solid border-border-default rounded-[8px] bg-white box-border text-gray-900 placeholder-gray-400 py-3 px-4"
+                  />
+                </div>
+              </div>
+            )}
+          />
+          <Controller
+            control={control}
+            name="country"
+            render={({ field }) => (
+              <div className="w-full flex flex-col items-start mb-4">
+                <Label id={'country'} label={'Nationality'} />
+                <Select
+                  name="country"
+                  size="large"
+                  value={field.value}
+                  options={NATIONALITIES}
+                  onChange={field.onChange}
+                />
+                {errors.country && <span>{errors.country.message}</span>}
+              </div>
+            )}
+          />
+          <Controller
+            control={control}
+            name="gender"
+            render={({ field }) => (
+              <RadioButtonGroup
+                id="gender"
+                label="Gender"
+                options={[
+                  { label: 'Male', value: 'M' },
+                  { label: 'Female', value: 'F' },
+                ]}
+                value={field.value}
+                onChange={field.onChange}
+                error={errors.gender?.message}
+              />
+            )}
+          />
+          <Button variant="solid" color="primary" className="w-full" disabled={isLoading || !isValid || !!userIdError}>
+            {isLoading ? 'Creating account...' : 'Create account'}
+          </Button>
+        </form>
       </div>
-    );
-  }
-
-  return null;
+    </>
+  );
 }
