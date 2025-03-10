@@ -6,10 +6,12 @@ import {
 } from '@/hooks';
 import { authService, EmailVerifyRequest } from '@/services';
 import { useCallback, useMemo, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 
-export const EmailVerifyContextProvider = ({ children }: { children: React.ReactNode }) => {
+export const EmailVerifyContextProvider = () => {
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [isVerify, setIsVerify] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const emailVerify = useCallback(async (data: EmailVerifyRequest) => {
@@ -17,10 +19,12 @@ export const EmailVerifyContextProvider = ({ children }: { children: React.React
     try {
       const result = await authService.emailVerify(data);
       setError('');
+      setIsVerify(true);
       return result;
     } catch (error: any) {
       const errorMessage = 'Email verification failed';
       setError(errorMessage);
+      setIsVerify(false);
       throw error;
     } finally {
       setIsLoading(false);
@@ -28,7 +32,7 @@ export const EmailVerifyContextProvider = ({ children }: { children: React.React
   }, []);
 
   const emailVerifyStateContextValue = useMemo<EmailVerifyStateContextType>(
-    () => ({ email, error, isLoading }),
+    () => ({ email, error, isLoading, isVerify }),
     [email]
   );
   const emailVerifyActionContextValue = useMemo<EmailVerifyActionContextType>(
@@ -42,7 +46,7 @@ export const EmailVerifyContextProvider = ({ children }: { children: React.React
   return (
     <EmailVerifyActionContext.Provider value={emailVerifyActionContextValue}>
       <EmailVerifyStateContext.Provider value={emailVerifyStateContextValue}>
-        {children}
+        <Outlet />
       </EmailVerifyStateContext.Provider>
     </EmailVerifyActionContext.Provider>
   );

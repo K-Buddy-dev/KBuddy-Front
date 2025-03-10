@@ -1,4 +1,4 @@
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import {
   LoginPage,
@@ -12,23 +12,22 @@ import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
 import 'swiper/css';
 import { SignupVerifyPage } from './pages/SignupVerifyPage.tsx';
 import { SignupFormPage } from './pages/SignupFormPage.tsx';
-import { EmailVerifyContextProvider } from './store';
+import { EmailVerifyGuard } from './components/routes/EmailVerifyGuard.tsx';
+import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<DefaultLayout />}>
-          <Route
-            element={
-              <EmailVerifyContextProvider>
-                <Outlet />
-              </EmailVerifyContextProvider>
-            }
-          >
+          <Route element={<EmailVerifyContextProvider />}>
             <Route path="/" element={<LoginPage />} />
-            <Route path="/signup/verify" element={<SignupVerifyPage />} />
-            <Route path="/signup/form" element={<SignupFormPage />} />
+            <Route element={<EmailVerifyGuard guardType="verifyEmail" />}>
+              <Route path="/signup/verify" element={<SignupVerifyPage />} />
+            </Route>
+            <Route element={<EmailVerifyGuard guardType="requireVerified" />}>
+              <Route path="/signup/form" element={<SignupFormPage />} />
+            </Route>
           </Route>
 
           <Route path="/oauth/callback/kakao" element={<KakaoRedirectPage />} />

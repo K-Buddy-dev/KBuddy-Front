@@ -5,6 +5,7 @@ export interface EmailVerifyStateContextType {
   email: string;
   error: string;
   isLoading: boolean;
+  isVerify: boolean;
 }
 
 export interface EmailVerifyActionContextType {
