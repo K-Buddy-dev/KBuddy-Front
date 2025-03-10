@@ -21,7 +21,7 @@ interface SelectBoxProps extends Omit<ComponentProps<'div'>, 'size' | 'onChange'
 }
 
 export const SelectBox = forwardRef<HTMLDivElement, SelectBoxProps>(
-  ({ size = 'small', label, options, onChange, value, ...props }) => {
+  ({ size = 'small', label, options, onChange, value, ...props }, _) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectBoxRef = useRef<HTMLDivElement>(null);
     const selectedOption = options.find((option) => option.value === value);

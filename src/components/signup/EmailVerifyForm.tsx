@@ -1,7 +1,6 @@
 import { Button, TextField } from '@/components/shared';
-import { useEmailVerify, useEmailVerifyForm } from '@/hooks';
+import { useEmailVerifyActionContext, useEmailVerifyForm, useEmailVerifyStateContext } from '@/hooks';
 import { authService } from '@/services';
-import { useSignupStore } from '@/store';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,8 +10,8 @@ export function EmailVerifyForm() {
     handleSubmit,
     formState: { isValid },
   } = useEmailVerifyForm();
-  const { emailVerify, error, isLoading } = useEmailVerify();
-  const setEmail = useSignupStore((state) => state.setEmail);
+  const { error, isLoading } = useEmailVerifyStateContext();
+  const { setEmail, emailVerify } = useEmailVerifyActionContext();
   const navigate = useNavigate();
 
   const onSubmit = async (data: { email: string }) => {

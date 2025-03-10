@@ -1,13 +1,12 @@
 import { Button, Label, PasswordField, RadioButtonGroup, SelectBox, TextField, Topbar } from '@/components/shared';
 import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
-import { useSignup, useSignupForm, useUserIdDuplicateCheck } from '@/hooks';
-import { useSignupStore } from '@/store';
+import { useEmailVerifyStateContext, useSignup, useSignupForm, useUserIdDuplicateCheck } from '@/hooks';
 import { SignupFormData } from '@/types';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export function SignupFormPage() {
-  const { email } = useSignupStore();
+  const { email } = useEmailVerifyStateContext();
   const navigate = useNavigate();
   const {
     control,
