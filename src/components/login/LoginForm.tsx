@@ -10,7 +10,7 @@ export function LoginForm() {
     handleSubmit,
     formState: { errors },
   } = useLoginForm();
-  const { login, error, isLoading, setIsCheckRemember } = useLogin();
+  const { login, error, isLoading, isCheckedRemember, setIsCheckRemember } = useLogin();
   const navigate = useNavigate();
 
   const handleClickForgotPassword = () => {
@@ -48,7 +48,11 @@ export function LoginForm() {
         )}
       />
       <div className="w-full h-8 mb-6 flex items-center justify-between">
-        <Checkbox label="Remember me" onChange={(e) => setIsCheckRemember(e.target.checked)} />
+        <Checkbox
+          label="Remember me"
+          checked={isCheckedRemember}
+          onChange={(e) => setIsCheckRemember(e.target.checked)}
+        />
         <span
           className="text-text-brand-default text-sm font-semibold leading-[14px] tracking-[0.28px] underline cursor-pointer"
           onClick={handleClickForgotPassword}
