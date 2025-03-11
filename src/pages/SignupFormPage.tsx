@@ -1,4 +1,5 @@
 import { Button, Label, PasswordField, RadioButtonGroup, SelectBox, TextField, Topbar } from '@/components/shared';
+import { Spinner } from '@/components/shared/spinner';
 import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
 import { useEmailVerifyStateContext, useSignup, useSignupForm, useUserIdDuplicateCheck } from '@/hooks';
 import { SignupFormData } from '@/types';
@@ -175,7 +176,7 @@ export function SignupFormPage() {
             )}
           />
           <Button variant="solid" color="primary" className="w-full" disabled={isSubmitDisabled}>
-            {isLoading ? 'Creating account...' : 'Create account'}
+            {isLoading ? <Spinner color="primary" size="sm" /> : 'Create account'}
           </Button>
         </form>
       </div>

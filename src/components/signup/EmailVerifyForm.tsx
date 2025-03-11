@@ -3,6 +3,7 @@ import { useEmailVerifyActionContext, useEmailVerifyForm, useEmailVerifyStateCon
 import { authService } from '@/services';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { Spinner } from '../shared/spinner';
 
 export function EmailVerifyForm() {
   const {
@@ -35,7 +36,7 @@ export function EmailVerifyForm() {
         render={({ field }) => <TextField id="email" label="Email" error={error} {...field} />}
       />
       <Button variant="solid" color="primary" type="submit" className="w-full" disabled={!isValid}>
-        {isLoading ? 'Sending...' : 'Continue'}
+        {isLoading ? <Spinner color="primary" size="sm" /> : 'Continue'}
       </Button>
     </form>
   );

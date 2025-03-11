@@ -5,8 +5,16 @@ import { useState } from 'react';
 
 export const useLogin = () => {
   const [error, setError] = useState({ emailOrUserId: '', password: '' });
-  const [isCheckedRemember, setIsCheckRemember] = useState<boolean>(false);
+  const [isCheckedRemember, setIsCheckRemember] = useState<boolean>(!!localStorage.getItem('kBuddyId'));
   const [isLoading, setIsLoading] = useState(false);
+
+  const updateLocalStorage = (emailOrUserId: string) => {
+    if (isCheckedRemember) {
+      localStorage.setItem('kBuddyId', emailOrUserId);
+    } else {
+      localStorage.removeItem('kBuddyId');
+    }
+  };
 
   const login = async (data: LoginFormData) => {
     setIsLoading(true);
@@ -14,9 +22,7 @@ export const useLogin = () => {
       const result = await authService.login(data);
       const { accessToken } = result.data;
       axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-      if (isCheckedRemember) {
-        localStorage.setItem('kBuddyId', data.emailOrUserId);
-      }
+      updateLocalStorage(data.emailOrUserId);
       setError({ emailOrUserId: '', password: '' });
       return result;
     } catch (error: any) {
@@ -31,5 +37,5 @@ export const useLogin = () => {
     }
   };
 
-  return { login, error, isLoading, setIsCheckRemember };
+  return { login, error, isLoading, isCheckedRemember, setIsCheckRemember };
 };
