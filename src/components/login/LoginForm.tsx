@@ -3,6 +3,7 @@ import { Controller } from 'react-hook-form';
 import { LoginFormData } from '@/types';
 import { useLoginForm, useLogin } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
+import { Spinner } from '../shared/spinner';
 
 export function LoginForm() {
   const {
@@ -61,7 +62,7 @@ export function LoginForm() {
         </span>
       </div>
       <Button type="submit" variant="solid" color="primary" className="w-full">
-        {isLoading ? 'Logging in...' : 'Log in'}
+        {isLoading ? <Spinner color="primary" size="sm" /> : 'Log in'}
       </Button>
     </form>
   );

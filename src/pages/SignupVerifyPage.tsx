@@ -1,4 +1,5 @@
 import { Button, InfoMessage, TextField, Topbar } from '@/components/shared';
+import { Spinner } from '@/components/shared/spinner';
 import { useEmailVerifyStateContext, useVerifyCode, useVerifyCodeForm } from '@/hooks';
 import { authService } from '@/services';
 import { Controller } from 'react-hook-form';
@@ -47,7 +48,7 @@ export function SignupVerifyPage() {
           )}
         />
         <Button variant="solid" color="primary" className="w-full mt-[184px]" disabled={!isValid}>
-          {isLoading ? 'Sending...' : 'Next'}
+          {isLoading ? <Spinner color="primary" size="sm" /> : 'Next'}
         </Button>
         <span
           className="text-text-brand-default text-sm font-semibold leading-[14px] tracking-[0.28px] underline cursor-pointer mt-[13px]"
