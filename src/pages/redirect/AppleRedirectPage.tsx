@@ -19,88 +19,65 @@ const AppleIdTokenSchema = z.object({
   nonce_supported: z.boolean(),
   c_hash: z.string(),
 });
-
 type AppleUserResponse = z.infer<typeof AppleIdTokenSchema>;
 
 export function AppleRedirectPage() {
   const navigate = useNavigate();
 
-  const { setEmail, setoAuthUid, setoAuthCategory } = useSocialStore();
+  const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset } = useSocialStore();
   const { checkMember, isLoading } = useMemberCheckHandler();
   const { handleLogin } = useOauthLoginHandler();
 
   const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
   const [isMember, setIsMember] = useState<boolean | null>(null);
 
-  useEffect(() => {
+  const setOauthSignupData = (data: AppleUserResponse) => {
+    setEmail(data.email || '');
+    setoAuthUid(data.sub);
+    setoAuthCategory('APPLE');
+  };
+
+  const getAppleUserInfo = async () => {
     const idToken = new URL(window.location.href).searchParams.get('id_token');
 
     if (!idToken) {
       console.error('ID token not found');
       return;
     }
+    try {
+      const validatedUserInfo = AppleIdTokenSchema.parse(parseJwt(idToken));
+      setOauthSignupData(validatedUserInfo);
+      setMemberCheckData({ oAuthUid: validatedUserInfo.sub, oAuthCategory: 'APPLE' });
+    } catch (error) {
+      console.error('Apple login error:', error instanceof z.ZodError ? error.errors : error);
+    }
+  };
 
-    const setOauthSignupData = (data: AppleUserResponse) => {
-      setEmail(data.email || '');
-      setoAuthUid(data.sub);
-      setoAuthCategory('APPLE');
-    };
-
-    const fetchAppleUserInfo = async () => {
-      try {
-        const userInfo = parseJwt(idToken);
-        const validatedUserInfo = AppleIdTokenSchema.parse(userInfo);
-
-        if (validatedUserInfo) {
-          setOauthSignupData(validatedUserInfo);
-        }
-
-        setMemberCheckData({
-          oAuthUid: validatedUserInfo.sub,
-          oAuthCategory: 'APPLE',
-        });
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          console.error('Apple ID Token validation error:', error.errors);
-        } else {
-          console.error('Apple authentication error:', error);
-        }
-      }
-    };
-
-    fetchAppleUserInfo();
+  useEffect(() => {
+    getAppleUserInfo();
   }, []);
 
   useEffect(() => {
     if (!memberCheckData) return;
-
-    const fetchMemberStatus = async () => {
-      const status = await checkMember(memberCheckData);
-      setIsMember(status);
-    };
-
-    fetchMemberStatus();
+    checkMember(memberCheckData)
+      .then(setIsMember)
+      .catch((error) => console.error('Member check failed:', error));
   }, [memberCheckData]);
 
   useEffect(() => {
-    if (isMember !== null) {
-      if (isMember) {
-        console.log('기존 회원, 로그인 실행');
-        handleLogin(memberCheckData!);
-      } else {
-        console.log('회원가입 페이지로 이동');
-        navigate('/oauth/signup/form');
-      }
+    if (isMember === null) return;
+
+    if (isMember) {
+      handleLogin(memberCheckData!);
+      socialStoreReset();
+    } else {
+      navigate('/oauth/signup/form');
     }
   }, [isMember]);
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        <Spinner />
-      </div>
-    );
-  }
-
-  return null;
+  return isLoading ? (
+    <div className="w-full h-full flex items-center justify-center">
+      <Spinner />
+    </div>
+  ) : null;
 }
