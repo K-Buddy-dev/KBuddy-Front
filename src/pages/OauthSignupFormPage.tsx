@@ -10,14 +10,14 @@ import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export function OauthSignupFormPage() {
-  const { email, oAuthUid, oAuthCategory } = useSocialStore();
+  const { email, oAuthUid, oAuthCategory, reset } = useSocialStore();
 
   const navigate = useNavigate();
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
-    reset,
+    reset: resetForm,
   } = useSocialSignupForm(email, oAuthUid, oAuthCategory);
   const { oauthRegister, isLoading } = useOauthRegister();
   const { checkUserIdDuplicate, error: userIdError } = useUserIdDuplicateCheck();
@@ -33,11 +33,15 @@ export function OauthSignupFormPage() {
       oAuthCategory: oAuthCategory,
     };
     await oauthRegister(sumbitData);
+    reset();
     navigate('/');
   };
 
   useEffect(() => {
-    reset({
+    if (!email || !oAuthUid || !oAuthCategory) {
+      navigate('/');
+    }
+    resetForm({
       firstName: '',
       lastName: '',
       email,
