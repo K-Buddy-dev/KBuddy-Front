@@ -1,5 +1,6 @@
 import { authService } from '@/services';
 import { OauthRequest, SignupFormData } from '@/types';
+import axios from 'axios';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -128,7 +129,8 @@ export const useOauthLoginHandler = () => {
   const handleLogin = async (data: OauthRequest) => {
     try {
       const result = await oauthLogin(data);
-      console.log('로그인 성공, 메인 페이지로 이동:', result);
+      const { accessToken } = result.data;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       navigate('/community');
     } catch (err: any) {
       console.error('로그인 실패:', err);
