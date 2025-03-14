@@ -1,6 +1,5 @@
 import { authService } from '@/services/authService';
 import { LoginFormData } from '@/types';
-import axios from 'axios';
 import { useState } from 'react';
 
 export const useLogin = () => {
@@ -8,7 +7,8 @@ export const useLogin = () => {
   const [isCheckedRemember, setIsCheckRemember] = useState<boolean>(!!localStorage.getItem('kBuddyId'));
   const [isLoading, setIsLoading] = useState(false);
 
-  const updateLocalStorage = (emailOrUserId: string) => {
+  const updateLocalStorage = (token: string, emailOrUserId: string) => {
+    localStorage.setItem('kBuddyAccessToken', token);
     if (isCheckedRemember) {
       localStorage.setItem('kBuddyId', emailOrUserId);
     } else {
@@ -21,8 +21,7 @@ export const useLogin = () => {
     try {
       const result = await authService.login(data);
       const { accessToken } = result.data;
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-      updateLocalStorage(data.emailOrUserId);
+      updateLocalStorage(accessToken, data.emailOrUserId);
       setError({ emailOrUserId: '', password: '' });
       return result;
     } catch (error: any) {
