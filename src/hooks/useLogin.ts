@@ -1,6 +1,6 @@
+import { authClient } from '@/api/axiosConfig';
 import { authService } from '@/services/authService';
 import { LoginFormData } from '@/types';
-import axios from 'axios';
 import { useState } from 'react';
 
 export const useLogin = () => {
@@ -21,7 +21,7 @@ export const useLogin = () => {
     try {
       const result = await authService.login(data);
       const { accessToken } = result.data;
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       updateLocalStorage(data.emailOrUserId);
       setError({ emailOrUserId: '', password: '' });
       return result;
