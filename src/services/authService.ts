@@ -1,4 +1,4 @@
-import apiClient from '@/api/axiosConfig';
+import { apiClient, authClient } from '@/api/axiosConfig';
 import { OauthRequest } from '@/types';
 
 export interface LoginRequest {
@@ -70,6 +70,10 @@ export const authService = {
   },
   oauthLogin: async (data: OauthRequest) => {
     const response = await apiClient.post('/auth/oauth/login', data);
+    return response.data;
+  },
+  refreshAccessToken: async () => {
+    const response = await authClient.post('토큰 리프래쉬 주소', {});
     return response.data;
   },
 };

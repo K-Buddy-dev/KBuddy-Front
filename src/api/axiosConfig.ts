@@ -1,41 +1,31 @@
+import { authService } from '@/services';
 import axios from 'axios';
 
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: 'https://api.k-buddy.kr/kbuddy/v1',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-const authClient = axios.create({
+export const authClient = axios.create({
   baseURL: 'https://api.k-buddy.kr/kbuddy/v1',
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
-
-authClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('kBuddyAccessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
 
 authClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originRequest = error.config;
-    if (error.response.status === '401' && !originRequest._retry) {
+    if (error.response?.status === 401 && !originRequest._retry) {
       originRequest._retry = true;
       try {
-        const { data } = await axios.post('토큰 리프래쉬 주소', {});
+        const { data } = await authService.refreshAccessToken();
         const { accessToken } = data;
-        localStorage.setItem('kBuddyAccessToken', accessToken);
-        originRequest.headers.Authorization = `Bearer ${accessToken}`;
+        authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
         return authClient(originRequest);
       } catch (refreshError) {
         return Promise.reject(refreshError);
@@ -44,5 +34,3 @@ authClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export default apiClient;
