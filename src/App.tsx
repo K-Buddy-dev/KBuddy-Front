@@ -15,6 +15,7 @@ import { SignupFormPage } from './pages/SignupFormPage.tsx';
 import { EmailVerifyGuard } from './components/routes/EmailVerifyGuard.tsx';
 import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 import { AuthGuard } from './components/routes/AuthGuard.tsx';
+import { ImageSelectorPage } from './pages/ImageSelectorPage.tsx';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
 
             <Route path="/community" element={<CommunityPage />} />
           </Route>
+          <Route path="/image-selector" element={<ImageSelectorPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
