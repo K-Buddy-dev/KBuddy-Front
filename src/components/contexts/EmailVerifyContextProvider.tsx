@@ -33,7 +33,7 @@ export const EmailVerifyContextProvider = () => {
 
   const emailVerifyStateContextValue = useMemo<EmailVerifyStateContextType>(
     () => ({ email, error, isLoading, isVerify }),
-    [email]
+    [email, error, isLoading, isVerify]
   );
   const emailVerifyActionContextValue = useMemo<EmailVerifyActionContextType>(
     () => ({
