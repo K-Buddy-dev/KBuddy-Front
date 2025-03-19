@@ -5,6 +5,7 @@ import { Outlet } from 'react-router-dom';
 export function QnaFormContextProvider() {
   const [categoryId, setCategoryId] = useState<number>(0);
   const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
   const [file, setFile] = useState<File[]>([]);
   const [hashtags, setHashtags] = useState<string[]>([]);
 
@@ -12,6 +13,7 @@ export function QnaFormContextProvider() {
     () => ({
       categoryId,
       title,
+      description,
       file,
       hashtags,
     }),
@@ -22,6 +24,7 @@ export function QnaFormContextProvider() {
     () => ({
       setCategoryId,
       setTitle,
+      setDescription,
       setFile,
       setHashtags,
     }),

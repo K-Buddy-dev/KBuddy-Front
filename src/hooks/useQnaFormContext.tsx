@@ -3,6 +3,7 @@ import { createContext, Dispatch, SetStateAction, useContext } from 'react';
 export interface QnaFormStateContextType {
   categoryId: number;
   title: string;
+  description: string;
   file: File[];
   hashtags: string[];
 }
@@ -10,6 +11,7 @@ export interface QnaFormStateContextType {
 export interface QnaFormActionContextType {
   setCategoryId: Dispatch<SetStateAction<number>>;
   setTitle: Dispatch<SetStateAction<string>>;
+  setDescription: Dispatch<SetStateAction<string>>;
   setFile: Dispatch<SetStateAction<File[]>>;
   setHashtags: Dispatch<SetStateAction<string[]>>;
 }
