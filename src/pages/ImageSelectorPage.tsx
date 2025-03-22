@@ -1,4 +1,4 @@
-import { Topbar } from '@/components';
+import { AlbumItem, Camera, Topbar } from '@/components';
 import { useEffect, useState } from 'react';
 
 export function ImageSelectorPage() {
@@ -12,11 +12,14 @@ export function ImageSelectorPage() {
   };
 
   useEffect(() => {
+    // 테스트용 코드
     if (window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'getAlbum' }));
     }
 
     const handleMessage = (event: MessageEvent) => {
+      if (typeof event.data !== 'string') return;
+
       try {
         const data = JSON.parse(event.data);
         if (data.action === 'albumData') {
@@ -38,17 +41,16 @@ export function ImageSelectorPage() {
     <>
       <Topbar title="Recents" type="cancel" />
       <div className="w-full h-screen py-[72px]">
-        <div className="w-full h-full overflow-scroll grid grid-cols-3 gap-[5px]">
+        <div className="w-full overflow-scroll grid grid-cols-3 gap-[5px]">
           <div
-            className="bg-gray-300 flex items-center justify-center aspect-square rounded-[4px]"
+            className="bg-bg-medium flex flex-col items-center justify-center gap-1 aspect-square rounded-[4px] cursor-pointer"
             onClick={handleClickCamera}
           >
-            📷
+            <Camera />
+            <p className="font-medium">Camera</p>
           </div>
           {albumList.map((img, index) => (
-            <div key={index} className="aspect-square rounded-[4px]">
-              <img src={img} alt={`album-${index}`} className="w-full h-full object-cover" />
-            </div>
+            <AlbumItem key={`${img}-${index}`} img={img} />
           ))}
         </div>
       </div>

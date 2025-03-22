@@ -10,3 +10,4 @@ export * from './typography';
 export * from './selectbox';
 export * from './label';
 export * from './radio';
+export * from './album';
