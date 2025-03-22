@@ -13,30 +13,9 @@ export function ImageSelectorPage() {
 
   useEffect(() => {
     // 테스트용 코드
-    if (!window.ReactNativeWebView) {
-      window.ReactNativeWebView = {
-        postMessage: (message: string) => {
-          const parsed = JSON.parse(message);
-          if (parsed.action === 'getAlbum') {
-            setTimeout(() => {
-              const fakeData = {
-                action: 'albumData',
-                album: [
-                  new URL('@/assets/images/test/1.jpg', import.meta.url).href,
-                  new URL('@/assets/images/test/2.jpg', import.meta.url).href,
-                  new URL('@/assets/images/test/3.jpg', import.meta.url).href,
-                  new URL('@/assets/images/test/4.jpg', import.meta.url).href,
-                  new URL('@/assets/images/test/5.jpg', import.meta.url).href,
-                ],
-              };
-              window.dispatchEvent(new MessageEvent('message', { data: JSON.stringify(fakeData) }));
-            }, 500);
-          }
-        },
-      };
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'getAlbum' }));
     }
-
-    window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'getAlbum' }));
 
     const handleMessage = (event: MessageEvent) => {
       if (typeof event.data !== 'string') return;
