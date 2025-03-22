@@ -18,3 +18,5 @@ export * from './FloatButton';
 export * from './PreviewBackIcon';
 export * from './DownArrow';
 export * from './UpArrow';
+export * from './ImageNonSelect';
+export * from './Camera';
