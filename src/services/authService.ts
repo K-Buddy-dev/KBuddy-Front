@@ -38,7 +38,7 @@ export interface UserIdCheckRequest {
 
 export const authService = {
   login: async (data: LoginRequest) => {
-    const response = await apiClient.post('/auth/login', data);
+    const response = await authClient.post('/auth/login', data);
     return response.data;
   },
   emailVerify: async (data: EmailVerifyRequest) => {
@@ -73,7 +73,7 @@ export const authService = {
     return response.data;
   },
   refreshAccessToken: async () => {
-    const response = await authClient.post('토큰 리프래쉬 주소', {});
+    const response = await authClient.get('/auth/accessToken');
     return response.data;
   },
 };

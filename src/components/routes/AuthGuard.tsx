@@ -31,8 +31,7 @@ export function AuthGuard() {
           authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
           setIsAuthenticated(true);
         }
-      } catch (error) {
-        console.error('토큰 갱신 실패:', error);
+      } catch {
         setIsAuthenticated(false);
       }
     };
