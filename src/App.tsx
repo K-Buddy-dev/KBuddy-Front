@@ -14,7 +14,7 @@ import { SignupVerifyPage } from './pages/SignupVerifyPage.tsx';
 import { SignupFormPage } from './pages/SignupFormPage.tsx';
 import { EmailVerifyGuard } from './components/routes/EmailVerifyGuard.tsx';
 import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
-import { AuthGuard } from './components/routes/AuthGuard.tsx';
+// import { AuthGuard } from './components/routes/AuthGuard.tsx';
 import { ImageSelectorPage } from './pages/ImageSelectorPage.tsx';
 
 function App() {
@@ -22,27 +22,27 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<DefaultLayout />}>
-          <Route element={<AuthGuard />}>
-            <Route element={<EmailVerifyContextProvider />}>
-              <Route path="/" element={<LoginPage />} />
-              <Route element={<EmailVerifyGuard guardType="verifyEmail" />}>
-                <Route path="/signup/verify" element={<SignupVerifyPage />} />
-              </Route>
-              <Route element={<EmailVerifyGuard guardType="requireVerified" />}>
-                <Route path="/signup/form" element={<SignupFormPage />} />
-              </Route>
+          {/* <Route element={<AuthGuard />}> */}
+          <Route element={<EmailVerifyContextProvider />}>
+            <Route path="/" element={<LoginPage />} />
+            <Route element={<EmailVerifyGuard guardType="verifyEmail" />}>
+              <Route path="/signup/verify" element={<SignupVerifyPage />} />
             </Route>
-
-            <Route path="/oauth/callback/kakao" element={<KakaoRedirectPage />} />
-            <Route path="/oauth2/code/google" element={<GoogleRedirectPage />} />
-            <Route path="/oauth/callback/apple" element={<AppleRedirectPage />} />
-
-            <Route path="/oauth/signup/form" element={<OauthSignupFormPage />} />
-
-            <Route path="/community" element={<CommunityPage />} />
+            <Route element={<EmailVerifyGuard guardType="requireVerified" />}>
+              <Route path="/signup/form" element={<SignupFormPage />} />
+            </Route>
           </Route>
-          <Route path="/image-selector" element={<ImageSelectorPage />} />
+
+          <Route path="/oauth/callback/kakao" element={<KakaoRedirectPage />} />
+          <Route path="/oauth2/code/google" element={<GoogleRedirectPage />} />
+          <Route path="/oauth/callback/apple" element={<AppleRedirectPage />} />
+
+          <Route path="/oauth/signup/form" element={<OauthSignupFormPage />} />
+
+          <Route path="/community" element={<CommunityPage />} />
         </Route>
+        <Route path="/image-selector" element={<ImageSelectorPage />} />
+        {/* </Route> */}
       </Routes>
     </BrowserRouter>
   );
