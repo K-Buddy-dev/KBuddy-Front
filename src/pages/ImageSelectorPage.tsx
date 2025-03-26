@@ -12,16 +12,17 @@ export function ImageSelectorPage() {
   };
 
   useEffect(() => {
-    // 테스트용 코드
     if (window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'getAlbum' }));
     }
 
     const handleMessage = (event: MessageEvent) => {
+      console.log('RN 수신 데이터: ', event.data);
       if (typeof event.data !== 'string') return;
 
       try {
         const data = JSON.parse(event.data);
+        console.log('JSON parsed 데이터: ', data);
         if (data.action === 'albumData') {
           setAlbumList(data.album);
         }
