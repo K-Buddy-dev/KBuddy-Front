@@ -1,4 +1,4 @@
-import { Actions, Content, UserInfo } from './card';
+import { Actions, Content } from './card';
 import { BlogCategory } from '@/types/blog';
 
 interface CommunityCardProps {
@@ -29,18 +29,16 @@ const CommunityCard: React.FC<CommunityCardProps> = ({
   onBookmark,
 }) => {
   return (
-    <div className="flex gap-4 p-4 border border-gray-200 rounded-lg bg-white mb-4">
-      <div className="flex-1">
-        <UserInfo id={userId} date={date} profileImageUrl={profileImageUrl} />
-        <Content title={title} category={category} imageUrl={imageUrl} />
-        <Actions
-          likes={likes}
-          comments={comments}
-          isBookmarked={isBookmarked}
-          onLike={onLike}
-          onBookmark={onBookmark}
-        />
-      </div>
+    <div className="w-full px-4 py-[18px]">
+      <Content
+        id={userId}
+        date={date}
+        profileImageUrl={profileImageUrl}
+        title={title}
+        category={category}
+        imageUrl={imageUrl}
+      />
+      <Actions likes={likes} comments={comments} isBookmarked={isBookmarked} onLike={onLike} onBookmark={onBookmark} />
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import {
   LoginPage,
-  CommunityPage,
+  // CommunityPage,
   KakaoRedirectPage,
   GoogleRedirectPage,
   AppleRedirectPage,
@@ -38,8 +38,8 @@ function App() {
           <Route path="/oauth/callback/apple" element={<AppleRedirectPage />} />
 
           <Route path="/oauth/signup/form" element={<OauthSignupFormPage />} />
-
-          <Route path="/community" element={<CommunityPage />} />
+          {/* 
+          <Route path="/community" element={<CommunityPage />} /> */}
         </Route>
         <Route path="/image-selector" element={<ImageSelectorPage />} />
         {/* </Route> */}

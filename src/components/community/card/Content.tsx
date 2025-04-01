@@ -1,17 +1,35 @@
 import { BlogCategory } from '@/types/blog';
 
 interface ContentProps {
+  id: string;
+  date: string;
+  profileImageUrl?: string;
   title: string;
   category: BlogCategory;
   imageUrl?: string;
 }
 
-export const Content: React.FC<ContentProps> = ({ title, category, imageUrl }) => {
+export const Content: React.FC<ContentProps> = ({ id, date, profileImageUrl, title, category, imageUrl }) => {
   return (
-    <div className="mb-2">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <p className="text-sm text-gray-600">{category}</p>
-      {imageUrl && <img src={imageUrl} alt={title} className="w-full h-40 object-cover rounded mt-2" />}
+    <div className="flex items-center justify-between">
+      <div>
+        <div className="flex items-center justify-start gap-2 mb-2">
+          <img
+            src={profileImageUrl || 'https://via.placeholder.com/40'}
+            alt="Profile"
+            className="w-10 h-10 rounded-full"
+          />
+          <div className="font-roboto font-medium">
+            <p className="text-xs text-text-default">@{id}</p>
+            <p className="text-xs text-text-weak">{date}</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <h2 className="text-base font-roboto font-medium">{title}</h2>
+          <p className="text-sm font-roboto font-normal text-gray-600">{category}</p>
+        </div>
+      </div>
+      {imageUrl && <div>{<img src={imageUrl} alt={title} className="w-[100px] h-[100px] object-cover rounded" />}</div>}
     </div>
   );
 };
