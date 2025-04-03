@@ -16,6 +16,7 @@ import { EmailVerifyGuard } from './components/routes/EmailVerifyGuard.tsx';
 import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 // import { AuthGuard } from './components/routes/AuthGuard.tsx';
 import { ImageSelectorPage } from './pages/ImageSelectorPage.tsx';
+import CommunityPostPage from './pages/CommunityPostPage.tsx';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route path="/oauth/signup/form" element={<OauthSignupFormPage />} />
           {/* 
           <Route path="/community" element={<CommunityPage />} /> */}
+          <Route path="/community/post" element={<CommunityPostPage />} />
         </Route>
         <Route path="/image-selector" element={<ImageSelectorPage />} />
         {/* </Route> */}
