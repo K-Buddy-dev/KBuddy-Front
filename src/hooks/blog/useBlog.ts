@@ -1,8 +1,10 @@
-// import { useQuery, useMutation, useQueryClient, useInfiniteQuery, InfiniteData } from '@tanstack/react-query';
 // import { useSearchParams } from 'react-router-dom';
 // import { blogService } from '@/services/blogService';
 // import { blogQueryKeys } from './blogKeys';
 // import { CommunityListResponse, Community, BlogRequest, CommentRequest, ReportRequest, CommunitySort } from '@/types/blog';
+
+// import { Community } from "@/types/blog";
+// import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 // // BlogSort 값 검증 타입 가드
 // const isBlogSort = (value: string | null | undefined): value is CommunitySort => {
@@ -67,8 +69,8 @@
 //   });
 // };
 
-// // 블로그 생성 (낙관적 업데이트 적용)
-// export const useCreateBlog = () => {
+// 블로그 생성 (낙관적 업데이트 적용)
+// export const useCreateQna = () => {
 //   const queryClient = useQueryClient();
 
 //   return useMutation<Community, Error, BlogRequest, { previousBlogs: CommunityListResponse | undefined }>({
