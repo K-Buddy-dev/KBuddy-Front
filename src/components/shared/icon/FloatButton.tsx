@@ -63,7 +63,6 @@ export function FloatPostAction() {
           <feOffset />
           <feGaussianBlur stdDeviation="2" />
           <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0" />
-          <feBlend mode="normal" in2="effect1_dropShadow_4263_69385" result="effect2_dropShadow_4263_69385" />
           <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_4263_69385" result="shape" />
         </filter>
         <clipPath id="clip0_4263_69385">
