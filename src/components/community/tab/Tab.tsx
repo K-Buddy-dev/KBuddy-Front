@@ -1,4 +1,4 @@
-import { useTabsStore } from '@/store';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const menuArr = [
   { name: 'Curated blog', id: 1 },
@@ -19,19 +19,28 @@ function TabList({ children }: { children: React.ReactNode }) {
 }
 
 export function Tab() {
-  const { activeTab, setActiveTab } = useTabsStore();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // URL에서 현재 탭을 가져오기 (기본값: "Curated blog")
+  const currentTab = decodeURIComponent(location.search.replace('?tab=', '')) || 'Curated blog';
+
+  // 탭 변경 시 URL 업데이트
+  const handleTabChange = (tabName: string) => {
+    navigate(`/community?tab=${encodeURIComponent(tabName)}`, { replace: true });
+  };
 
   return (
     <TabWrapper>
       <TabList>
-        {menuArr.map((menu, index) => (
+        {menuArr.map((menu) => (
           <button
-            key={index}
-            onClick={() => setActiveTab(menu.id)}
+            key={menu.id}
+            onClick={() => handleTabChange(menu.name)}
             className={`
               w-full h-full px-[7.5px] pb-2 rounded-t-md transition-colors duration-300 font-medium leading-[24px]
               ${
-                activeTab === menu.id
+                currentTab === menu.name
                   ? 'text-white border-b-[3px] border-white'
                   : 'text-text-brand-weakDown hover:bg-bg-brand-light'
               }

@@ -3,7 +3,11 @@ import { CancelIcon, PreviewBackIcon } from '@/components/shared/icon';
 interface TopbarProps {
   title: string;
   type: 'cancel' | 'back';
+  next?: string;
+  isNext?: boolean;
   onBack?: () => void;
+  onCancle?: () => void;
+  onNext?: () => void;
 }
 
 function TopbarWrapper({ children }: { children: React.ReactNode }) {
@@ -15,19 +19,36 @@ function TopbarWrapper({ children }: { children: React.ReactNode }) {
 }
 
 function PageTitle({ children }: { children: React.ReactNode }) {
-  return <h1 className="flex-1 text-text-primary text-[22px] font-normal leading-7">{children}</h1>;
+  return <h1 className="flex-1 font-roboto font-normal text-text-default text-[22px] leading-7">{children}</h1>;
 }
 
-export function Topbar({ title, type, onBack }: TopbarProps) {
+export function Topbar({ title, type, next, isNext, onBack, onCancle, onNext }: TopbarProps) {
   return (
     <TopbarWrapper>
-      {type === 'cancel' && <CancelIcon />}
-      {type === 'back' && (
-        <button type="button" onClick={onBack}>
-          <PreviewBackIcon />
-        </button>
-      )}
-      <PageTitle>{title}</PageTitle>
+      <div className="flex items-center justify-start gap-2">
+        {type === 'cancel' && (
+          <button type="button" onClick={onCancle}>
+            <CancelIcon />
+          </button>
+        )}
+        {type === 'back' && (
+          <button type="button" onClick={onBack}>
+            <PreviewBackIcon />
+          </button>
+        )}
+        <PageTitle>{title}</PageTitle>
+      </div>
+      <div>
+        {next && (
+          <button
+            className={`font-roboto text-[22px] font-normal ${isNext ? ' text-text-brand-default' : ' text-text-disabled'}`}
+            type="button"
+            onClick={onNext}
+          >
+            {next}
+          </button>
+        )}
+      </div>
     </TopbarWrapper>
   );
 }
