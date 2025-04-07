@@ -7,7 +7,7 @@ interface PreviewProps {
 }
 
 export const Preview = ({ onNext, onBack }: PreviewProps) => {
-  const { title, description, file, hashtags } = useCommunityFormStateContext();
+  const { title, description, file } = useCommunityFormStateContext();
   const { setCategoryId } = useCommunityFormActionContext();
   const [type, setType] = useState<'blog' | 'qna' | ''>('');
   const [categoryId, setLocalCategoryId] = useState<number>(0);
@@ -19,7 +19,6 @@ export const Preview = ({ onNext, onBack }: PreviewProps) => {
       title,
       description,
       file,
-      hashtags,
       type,
     };
     console.log(postData);
@@ -35,7 +34,6 @@ export const Preview = ({ onNext, onBack }: PreviewProps) => {
         <h3>{title}</h3>
         <p>{description}</p>
         <p>Files: {file.map((f) => f.name).join(', ')}</p>
-        <p>Hashtags: {hashtags.join(', ')}</p>
       </div>
       <select value={type} onChange={(e) => setType(e.target.value as 'blog' | 'qna')}>
         <option value="">Type</option>

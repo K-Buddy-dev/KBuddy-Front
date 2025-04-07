@@ -1,10 +1,11 @@
 import { Navbar } from '@/components/shared/navbar/Navbar';
-// import { SwiperList } from '@/components/shared/community/swiper';
-import { Tab } from '@/components/shared/community/tab';
+
+import { Tab } from '@/components/community/tab';
 // import CommunityCard from '@/components/community/CommunityCard';
 import { useLocation } from 'react-router-dom';
 import QnaList from '@/components/community/QnaList';
 import { FloatPostAction } from '@/components';
+// import { SwiperList } from '@/components/community/swiper';
 // import BlogList from '@/components/community/BlogList';
 
 export function CommunityPage() {
@@ -19,9 +20,12 @@ export function CommunityPage() {
         {/* <SwiperList cards={mockData} /> */}
         <Tab />
       </div>
-      <button className="fixed right-4 bottom-3 -translate-x-1/2 -translate-y-1/2">
+      <a
+        className="absolute right-4 bottom-3 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+        href={'/community/post'}
+      >
         <FloatPostAction />
-      </button>
+      </a>
       {/* {currentTab === 'User blog' && <BlogList />} */}
       {currentTab === 'Q&A' && <QnaList />}
     </>

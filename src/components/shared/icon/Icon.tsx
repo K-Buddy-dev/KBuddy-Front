@@ -136,3 +136,36 @@ export function CommentIcon() {
     </div>
   );
 }
+
+export function TrashIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M5 2H11M2 4H14M12 4V12C12 13.1 11.1 14 10 14H6C4.9 14 4 13.1 4 12V4M6 4V2H10V4M6 7V11M10 7V11"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+interface CheckboxIconProps {
+  selected: boolean;
+  allSelected: boolean;
+}
+
+export function CheckboxIcon({ selected, allSelected }: CheckboxIconProps) {
+  const circleColor = allSelected ? '#1F2937' : '#6B7280';
+  const checkColor = selected ? '#1F2937' : '#6B7280';
+
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* 동그란 테두리 */}
+      <circle cx="8" cy="8" r="7" stroke={circleColor} strokeWidth="1.5" fill="none" />
+      {/* 항상 표시되는 체크 표시 */}
+      <path d="M4 8L7 11L12 5" stroke={checkColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}

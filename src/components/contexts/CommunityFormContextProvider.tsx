@@ -13,11 +13,10 @@ interface CommunityFormContextProviderProps {
 }
 
 export const CommunityFormContextProvider = ({ children }: CommunityFormContextProviderProps) => {
-  const [categoryId, setCategoryId] = useState<number>(0);
+  const [categoryId, setCategoryId] = useState<number[] | number>([]);
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [file, setFile] = useState<File[]>([]);
-  const [hashtags, setHashtags] = useState<string[]>([]);
   const [drafts, setDrafts] = useState<{ id: string; createdAt: string; data: PostDraft }[]>(() => {
     const saved = localStorage.getItem('community-form-drafts');
     return saved ? JSON.parse(saved) : [];
@@ -34,10 +33,9 @@ export const CommunityFormContextProvider = ({ children }: CommunityFormContextP
       title,
       description,
       file,
-      hashtags,
       drafts,
     }),
-    [categoryId, title, description, file, hashtags, drafts]
+    [categoryId, title, description, file, drafts]
   );
 
   const actionValue = useMemo<CommunityFormActionContextType>(
@@ -46,13 +44,11 @@ export const CommunityFormContextProvider = ({ children }: CommunityFormContextP
       setTitle,
       setDescription,
       setFile,
-      setHashtags,
       addDraft: () => {
         const draftData: PostDraft = {
           categoryId,
           title,
           description,
-          hashtags,
         };
         const newDraft = {
           id: uuidv4(),
@@ -71,10 +67,9 @@ export const CommunityFormContextProvider = ({ children }: CommunityFormContextP
         setCategoryId(draft.categoryId);
         setTitle(draft.title);
         setDescription(draft.description);
-        setHashtags(draft.hashtags);
       },
     }),
-    [categoryId, title, description, file, hashtags]
+    [categoryId, title, description, file]
   );
 
   return (

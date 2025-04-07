@@ -4,8 +4,8 @@ export function ImageNonSelect() {
       <g id="state-layer">
         <path
           id="container (Stroke)"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M19.75 5.00488H5.75L5.75 19.0049H19.75V5.00488ZM5.75 3.00488C4.64543 3.00488 3.75 3.90031 3.75 5.00488V19.0049C3.75 20.1095 4.64543 21.0049 5.75 21.0049H19.75C20.8546 21.0049 21.75 20.1095 21.75 19.0049V5.00488C21.75 3.90031 20.8546 3.00488 19.75 3.00488H5.75Z"
           fill="white"
         />

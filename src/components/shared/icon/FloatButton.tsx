@@ -20,30 +20,30 @@ export function FloatRight() {
 
 export function FloatPostAction() {
   return (
-    <svg width="100%" height="100%" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g filter="url(#filter0_dd_4263_69385)">
-        <g clip-path="url(#clip0_4263_69385)">
-          <rect x="16" y="8.66992" width="40" height="40" rx="12" fill="#F6F4FE" />
+        <g clipPath="url(#clip0_4263_69385)">
+          <rect x="0" y="0" width="40" height="40" rx="12" fill="#F6F4FE" />
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M43.06 20.2599L44.41 21.6099C45.2 22.3899 45.2 23.6599 44.41 24.4399L31.18 37.6699H27V33.4899L37.4 23.0799L40.23 20.2599C41.01 19.4799 42.28 19.4799 43.06 20.2599ZM29 35.6699L30.41 35.7299L40.23 25.8999L38.82 24.4899L29 34.3099V35.6699Z"
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M27.06 11.59L28.41 12.94C29.2 13.72 29.2 14.99 28.41 15.77L15.18 29H11V24.82L21.4 14.41L24.23 11.59C25.01 10.81 26.28 10.81 27.06 11.59ZM13 27L14.41 27.06L24.23 17.23L22.82 15.82L13 25.64V27Z"
             fill="#6952F9"
           />
         </g>
-        <rect x="16.5" y="9.16992" width="39" height="39" rx="11.5" stroke="#E2DEFD" />
+        <rect x="0.5" y="0.5" width="39" height="39" rx="11.5" stroke="#E2DEFD" />
       </g>
       <defs>
         <filter
           id="filter0_dd_4263_69385"
-          x="0"
-          y="0.669922"
+          x="-16"
+          y="-8"
           width="72"
           height="72"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -67,7 +67,7 @@ export function FloatPostAction() {
           <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_4263_69385" result="shape" />
         </filter>
         <clipPath id="clip0_4263_69385">
-          <rect x="16" y="8.66992" width="40" height="40" rx="12" fill="white" />
+          <rect x="0" y="0" width="40" height="40" rx="12" fill="white" />
         </clipPath>
       </defs>
     </svg>

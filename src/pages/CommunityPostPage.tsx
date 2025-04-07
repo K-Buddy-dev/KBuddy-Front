@@ -61,10 +61,7 @@ const CommunityPage = () => {
 
   return (
     <CommunityFormContextProvider>
-      <div>
-        <h1>Community</h1>
-        {steps[currentStep]}
-      </div>
+      <div className="w-full">{steps[currentStep]}</div>
     </CommunityFormContextProvider>
   );
 };
