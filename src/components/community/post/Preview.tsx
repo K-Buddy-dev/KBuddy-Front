@@ -1,5 +1,27 @@
-import { Checkbox, RadioButtonGroup, Topbar } from '@/components/shared';
+import { Button, Topbar } from '@/components/shared';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
+import { CheckedIcon, UnCheckedIcon, SelectedRadioIcon, UnSelectedRadioIcon } from '@/components/shared/icon';
+import { PostFormData, usePostForm } from '@/hooks/usePostForm';
+import { usePost } from '@/hooks/usePost';
+
+const CATEGORIES = [
+  { id: 0, name: 'Restaurant' },
+  { id: 1, name: 'Shopping' },
+  { id: 2, name: 'Lodging' },
+  { id: 3, name: 'Art' },
+  { id: 4, name: 'Transportation' },
+  { id: 5, name: 'Daily Life' },
+  { id: 6, name: 'Cafe/Dessert' },
+  { id: 7, name: 'Attraction' },
+  { id: 8, name: 'Nature' },
+  { id: 9, name: 'Health' },
+  { id: 10, name: 'Others' },
+] as const;
+
+const POST_TYPES = [
+  { label: 'Blog', value: 'blog' },
+  { label: 'Question', value: 'qna' },
+] as const;
 
 interface PreviewProps {
   onNext: () => void;
@@ -23,12 +45,47 @@ const SectionInfo = ({ title, description }: { title: string; description: strin
   );
 };
 
-export const Preview = ({ onNext: _, onExit }: PreviewProps) => {
-  const { type } = useCommunityFormStateContext();
-  const { setType, setCategoryId } = useCommunityFormActionContext();
+export const Preview = ({ onNext, onExit }: PreviewProps) => {
+  const { type, categoryIds } = useCommunityFormStateContext();
+  const { setType, setCategoryIds } = useCommunityFormActionContext();
+  const { handleSubmit } = usePostForm();
+  const { createPost } = usePost();
+
+  const isValid = type && categoryIds.length > 0;
+
+  const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setType(e.target.value as 'blog' | 'qna');
+    setCategoryIds([]);
+  };
+
+  const handleCategorySelect = (categoryId: number) => {
+    if (type === 'qna') {
+      if (!categoryIds.includes(categoryId)) {
+        setCategoryIds([categoryId]);
+      }
+    } else {
+      setCategoryIds((prev) => {
+        if (prev.includes(categoryId)) {
+          return prev.filter((id) => id !== categoryId);
+        }
+        return [...prev, categoryId];
+      });
+    }
+  };
+
+  const onSubmit = async (data: PostFormData) => {
+    try {
+      data.type = type;
+      data.categoryIds = categoryIds;
+      await createPost(data);
+      onNext();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+  };
 
   return (
-    <div className="font-roboto">
+    <form className="font-roboto" onSubmit={handleSubmit(onSubmit)}>
       <Topbar title="Post Preview" type="back" isNext={true} onBack={onExit} />
       <div className="bg-bg-medium w-full h-[326px] mt-14 px-4">
         <SectionInfo
@@ -38,31 +95,61 @@ export const Preview = ({ onNext: _, onExit }: PreviewProps) => {
       </div>
       <div className="w-full mt-14 px-4">
         <SectionInfo title="Type of a post" description="Please select the correct type of post." />
-        <RadioButtonGroup
-          label="Select a post type"
-          id="post-type"
-          options={[
-            { label: 'Blog', value: 'blog' },
-            { label: 'Question', value: 'qna' },
-          ]}
-          value={type}
-          onChange={(e) => setType(e.target.value as 'blog' | 'qna')}
-        />
+        <div className="w-full flex flex-col items-start mb-4">
+          <div className="w-full grid grid-cols-2 gap-4">
+            {POST_TYPES.map((option) => (
+              <label
+                key={option.value}
+                className="flex items-center gap-2 py-2 px-3 rounded-lg border-2 border-border-default"
+              >
+                <input
+                  type="radio"
+                  name="post-type"
+                  value={option.value}
+                  checked={type === option.value}
+                  onChange={handleTypeChange}
+                  className="hidden"
+                />
+                {type === option.value ? <SelectedRadioIcon /> : <UnSelectedRadioIcon />}
+                <span>{option.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
       </div>
-      <div className="w-full mt-14 px-4">
+      <div
+        className={`w-full mt-14 px-4 border-t border-border-default transition-all duration-500 ease-in-out ${
+          type ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="mt-3 mb-[18px]">
+          <Button type="submit" variant="solid" color="primary" size="large" className="w-full" disabled={!isValid}>
+            Post
+          </Button>
+        </div>
         <SectionInfo
-          title="Select all categories"
-          description="Choose at least one category that fits your blog. Feel free to select multiple categories."
+          title="Select categories"
+          description={
+            type === 'qna'
+              ? 'Choose one category that fits your question.'
+              : 'Choose at least one category that fits your blog. Feel free to select multiple categories.'
+          }
         />
-        <p>Category selection</p>
-        <div className="grid grid-cols-2">
-          {['Restaurant', 'Cafe/Dessert', 'Shopping', 'Attraction', 'Lodging'].map((category) => (
-            <div key={category} className="flex items-center justify-between w-[158px] h-[48px]">
-              <Checkbox label={category} onChange={() => setCategoryId(1)} />
+        <div className="grid grid-cols-2 gap-4">
+          {CATEGORIES.map((category) => (
+            <div
+              key={category.id}
+              className="flex items-center justify-start cursor-pointer gap-1 py-2 px-3 rounded-lg border-2 border-border-default"
+              onClick={() => handleCategorySelect(category.id)}
+            >
+              <div className="h-6 w-6 flex items-center justify-center">
+                {categoryIds.includes(category.id) ? <CheckedIcon /> : <UnCheckedIcon />}
+              </div>
+              <span className="text-sm font-normal">{category.name}</span>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </form>
   );
 };

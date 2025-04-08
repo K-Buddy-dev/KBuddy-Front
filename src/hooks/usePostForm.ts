@@ -2,24 +2,24 @@
 import { useForm } from 'react-hook-form';
 import { useCommunityFormStateContext } from '@/hooks/useCommunityFormContext';
 
-interface CommunityFormData {
+export interface PostFormData {
   title: string;
   description: string;
-  type: 'blog' | 'qna';
-  categoryId: number;
+  type: 'blog' | 'qna' | '';
+  categoryIds: number[];
   file: File[];
 }
 
 export const usePostForm = () => {
   const { title, description, file } = useCommunityFormStateContext();
 
-  return useForm<CommunityFormData>({
+  return useForm<PostFormData>({
     defaultValues: {
       title,
       description,
-      type: 'blog',
-      categoryId: 0,
-      file,
+      type: '',
+      categoryIds: [],
+      file: file || [],
     },
     mode: 'onChange',
   });

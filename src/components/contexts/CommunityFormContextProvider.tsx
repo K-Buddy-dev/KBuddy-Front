@@ -10,7 +10,7 @@ import {
 import { Outlet } from 'react-router-dom';
 
 export const CommunityFormContextProvider = () => {
-  const [categoryId, setCategoryId] = useState<number[] | number>([]);
+  const [categoryIds, setCategoryIds] = useState<number[]>([]);
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [file, setFile] = useState<File[]>([]);
@@ -18,7 +18,7 @@ export const CommunityFormContextProvider = () => {
     const saved = localStorage.getItem('community-form-drafts');
     return saved ? JSON.parse(saved) : [];
   });
-  const [type, setType] = useState<'blog' | 'qna'>('blog');
+  const [type, setType] = useState<'blog' | 'qna' | ''>('');
   // localStorage에 drafts 저장하기 위해 제작
   useEffect(() => {
     localStorage.setItem('community-form-drafts', JSON.stringify(drafts));
@@ -26,26 +26,26 @@ export const CommunityFormContextProvider = () => {
 
   const stateValue = useMemo<CommunityFormStateContextType>(
     () => ({
-      categoryId,
+      categoryIds,
       title,
       description,
       file,
       type,
       drafts,
     }),
-    [categoryId, title, description, file, type, drafts]
+    [categoryIds, title, description, file, type, drafts]
   );
 
   const actionValue = useMemo<CommunityFormActionContextType>(
     () => ({
-      setCategoryId,
+      setCategoryIds,
       setTitle,
       setDescription,
       setFile,
       setType,
       addDraft: () => {
         const draftData: PostDraft = {
-          categoryId,
+          categoryIds,
           title,
           description,
         };
@@ -63,12 +63,12 @@ export const CommunityFormContextProvider = () => {
         setDrafts((prev) => prev.filter((d) => d.id !== id));
       },
       loadDraft: (draft: PostDraft) => {
-        setCategoryId(draft.categoryId);
+        setCategoryIds(draft.categoryIds);
         setTitle(draft.title);
         setDescription(draft.description);
       },
     }),
-    [categoryId, title, description, file]
+    [categoryIds, title, description, file]
   );
 
   return (
