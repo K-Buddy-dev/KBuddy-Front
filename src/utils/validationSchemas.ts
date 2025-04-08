@@ -70,3 +70,14 @@ export const socialSignupSchema = z.object({
   country: z.string().min(1, 'Country is required.'),
   gender: z.string().min(1, 'Gender is required.'),
 });
+
+export const postFormTitleSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+});
+
+export const postFormDescriptionSchema = z.object({
+  description: z.string().min(1, 'Description is required'),
+});
+
+export type PostFormTitleData = z.infer<typeof postFormTitleSchema>;
+export type PostFormDescriptionData = z.infer<typeof postFormDescriptionSchema>;

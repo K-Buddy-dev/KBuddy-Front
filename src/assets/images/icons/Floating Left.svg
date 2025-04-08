@@ -1,14 +1,14 @@
 <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_dd_410_44)">
-<g clip-path="url(#clip0_410_44)">
+<g clipPath="url(#clip0_410_44)">
 <rect x="56" y="48" width="40" height="40" rx="20" transform="rotate(180 56 48)" fill="#F6F4FE"/>
 <path d="M38.295 34L39.705 32.59L35.125 28L39.705 23.41L38.295 22L32.295 28L38.295 34Z" fill="#222222"/>
 </g>
 <rect x="55.5" y="47.5" width="39" height="39" rx="19.5" transform="rotate(180 55.5 47.5)" stroke="#E2DEFD"/>
 </g>
 <defs>
-<filter id="filter0_dd_410_44" x="0" y="0" width="72" height="72" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<filter id="filter0_dd_410_44" x="0" y="0" width="72" height="72" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+<feFlood floodOpacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset dy="8"/>
 <feGaussianBlur stdDeviation="8"/>
