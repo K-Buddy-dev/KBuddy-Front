@@ -1,17 +1,25 @@
 // src/hooks/usePostForm.ts
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { postFormSchema, PostFormData } from '@/utils/validationSchemas';
 import { useCommunityFormStateContext } from '@/hooks/useCommunityFormContext';
 
-export const usePostForm = () => {
-  const { title, description } = useCommunityFormStateContext();
+interface CommunityFormData {
+  title: string;
+  description: string;
+  type: 'blog' | 'qna';
+  categoryId: number;
+  file: File[];
+}
 
-  return useForm<PostFormData>({
-    resolver: zodResolver(postFormSchema),
+export const usePostForm = () => {
+  const { title, description, file } = useCommunityFormStateContext();
+
+  return useForm<CommunityFormData>({
     defaultValues: {
-      title: title || '',
-      description: description || '',
+      title,
+      description,
+      type: 'blog',
+      categoryId: 0,
+      file,
     },
     mode: 'onChange',
   });
