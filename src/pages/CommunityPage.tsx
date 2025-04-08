@@ -1,12 +1,12 @@
 import { Navbar } from '@/components/shared/navbar/Navbar';
 
 import { Tab } from '@/components/community/tab';
-// import CommunityCard from '@/components/community/CommunityCard';
+
 import { useLocation } from 'react-router-dom';
 import QnaList from '@/components/community/QnaList';
 import { FloatPostAction } from '@/components';
+import BlogList from '@/components/community/BlogList';
 // import { SwiperList } from '@/components/community/swiper';
-// import BlogList from '@/components/community/BlogList';
 
 export function CommunityPage() {
   const location = useLocation();
@@ -26,7 +26,7 @@ export function CommunityPage() {
       >
         <FloatPostAction />
       </a>
-      {/* {currentTab === 'User blog' && <BlogList />} */}
+      {currentTab === 'User blog' && <BlogList />}
       {currentTab === 'Q&A' && <QnaList />}
     </>
   );

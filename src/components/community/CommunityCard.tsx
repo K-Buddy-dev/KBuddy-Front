@@ -1,11 +1,11 @@
+// import { CategoryMap } from '@/types/blog';
 import { Actions, Content } from './card';
-import { BlogCategory } from '@/types/blog';
 
 interface CommunityCardProps {
   userId: string;
   date: string;
   title: string;
-  category: BlogCategory;
+  category: string[];
   imageUrl?: string;
   profileImageUrl?: string;
   likes: number;
@@ -15,11 +15,11 @@ interface CommunityCardProps {
   onBookmark: () => void;
 }
 
-const CommunityCard: React.FC<CommunityCardProps> = ({
+export const CommunityCard: React.FC<CommunityCardProps> = ({
   userId,
   date,
   title,
-  category,
+  // category,
   imageUrl,
   profileImageUrl,
   likes,
@@ -28,6 +28,8 @@ const CommunityCard: React.FC<CommunityCardProps> = ({
   onLike,
   onBookmark,
 }) => {
+  // const categoryNames = category.map((id) => CategoryMap[id] || 'Unknown');
+
   return (
     <div className="w-full px-4 py-[18px]">
       <Content
@@ -35,12 +37,10 @@ const CommunityCard: React.FC<CommunityCardProps> = ({
         date={date}
         profileImageUrl={profileImageUrl}
         title={title}
-        category={category}
+        category={[1]}
         imageUrl={imageUrl}
       />
       <Actions likes={likes} comments={comments} isBookmarked={isBookmarked} onLike={onLike} onBookmark={onBookmark} />
     </div>
   );
 };
-
-export default CommunityCard;

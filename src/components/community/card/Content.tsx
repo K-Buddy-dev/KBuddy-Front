@@ -1,11 +1,9 @@
-import { BlogCategory } from '@/types/blog';
-
 interface ContentProps {
   id: string;
   date: string;
   profileImageUrl?: string;
   title: string;
-  category: BlogCategory;
+  category: number[];
   imageUrl?: string;
 }
 

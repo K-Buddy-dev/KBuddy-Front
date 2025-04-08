@@ -1,38 +1,46 @@
-// import { useSearchParams } from 'react-router-dom';
-// import { blogService } from '@/services/blogService';
-// import { blogQueryKeys } from './blogKeys';
-// import { CommunityListResponse, Community, BlogRequest, CommentRequest, ReportRequest, CommunitySort } from '@/types/blog';
+import { BlogFilters, BlogListResponse, CommunitySort, isCommunitySort } from '@/types/blog';
+import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
+import { blogQueryKeys } from './blogKeys';
+import { blogService } from '@/services/blogService';
 
 // import { Community } from "@/types/blog";
 // import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-// // BlogSort 값 검증 타입 가드
-// const isBlogSort = (value: string | null | undefined): value is CommunitySort => {
-//   return Object.values(CommunitySort).includes(value as CommunitySort);
-// };
-
 // // 블로그 목록 조회 (쿼리 파라미터로 필터 관리)
-// export const useBlogs = () => {
-//   const [searchParams] = useSearchParams();
-//   const rawSort = searchParams.get('sort');
-//   const sort: CommunitySort | undefined = isBlogSort(rawSort) ? rawSort : undefined;
+type BlogQueryKey = readonly [string, BlogFilters];
 
-//   const filters = {
-//     size: Number(searchParams.get('size')) || 10,
-//     keyword: searchParams.get('keyword') || undefined,
-//     sort,
-//   };
+export const useBlogs = () => {
+  const [searchParams] = useSearchParams();
 
-//   // return useInfiniteQuery<CommunityListResponse, Error, InfiniteData<CommunityListResponse>, any, number | undefined>({
-//     // queryKey: blogQueryKeys.blog.list(filters),
-//     // queryFn: ({ pageParam }) => blogService.getBlogs(pageParam, filters.size, filters.keyword, filters.sort),
-//     // getNextPageParam: (lastPage) => {
-//       // if (!lastPage.data.hasNext) return undefined;
-//       // return lastPage.data.nextCursor;
-//     // },
-//     // initialPageParam: undefined,
-//   // });
-// };
+  // 쿼리 파라미터 파싱
+  const rawSort = searchParams.get('sort');
+  const sort: CommunitySort | undefined = isCommunitySort(rawSort) ? rawSort : undefined;
+  const keyword = searchParams.get('keyword') ?? '';
+  const size = Number(searchParams.get('size')) || 10;
+
+  const filters: BlogFilters = {
+    size,
+    keyword,
+    sort,
+  };
+
+  return useInfiniteQuery<BlogListResponse, Error, InfiniteData<BlogListResponse>, BlogQueryKey, number | undefined>({
+    queryKey: blogQueryKeys.blog.list(filters),
+    queryFn: ({ pageParam }) =>
+      blogService.getBlogs(
+        pageParam, // id
+        filters.size,
+        filters.keyword,
+        filters.sort
+      ),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.data.nextId === 0) return undefined;
+      return lastPage.data.nextId;
+    },
+    initialPageParam: undefined,
+  });
+};
 
 // // 필터 업데이트 훅
 // export const useUpdateBlogFilters = () => {
