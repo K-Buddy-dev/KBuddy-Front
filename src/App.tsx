@@ -18,6 +18,7 @@ import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyCon
 import { ImageSelectorPage } from './pages/ImageSelectorPage.tsx';
 import CommunityPostPage from './pages/CommunityPostPage.tsx';
 import { CommunityPage } from './pages/CommunityPage.tsx';
+import { CommunityFormContextProvider } from './components/contexts/CommunityFormContextProvider.tsx';
 
 function App() {
   return (
@@ -42,7 +43,9 @@ function App() {
           <Route path="/oauth/signup/form" element={<OauthSignupFormPage />} />
 
           <Route path="/community" element={<CommunityPage />} />
-          <Route path="/community/post" element={<CommunityPostPage />} />
+          <Route element={<CommunityFormContextProvider />}>
+            <Route path="/community/post" element={<CommunityPostPage />} />
+          </Route>
         </Route>
         <Route path="/image-selector" element={<ImageSelectorPage />} />
         {/* </Route> */}

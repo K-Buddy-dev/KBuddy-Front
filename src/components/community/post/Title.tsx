@@ -1,23 +1,16 @@
 import { useState } from 'react';
-import { useCommunityFormActionContext } from '@/hooks/useCommunityFormContext';
+import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks/useCommunityFormContext';
 import { TextField, Topbar } from '@/components/shared';
-import { usePostForm } from '@/hooks/usePostForm';
-import { Controller } from 'react-hook-form';
 
 interface FormProps {
   onNext: () => void;
   onExit: () => void;
 }
 
-export const Form = ({ onNext, onExit }: FormProps) => {
+export const Title = ({ onNext, onExit }: FormProps) => {
   const { setTitle, setDescription, setFile, addDraft } = useCommunityFormActionContext();
+  const { title } = useCommunityFormStateContext();
   const [showExitModal, setShowExitModal] = useState(false);
-
-  const {
-    control,
-    handleSubmit,
-    formState: { isValid },
-  } = usePostForm();
 
   const handleSave = () => {
     addDraft();
@@ -35,9 +28,8 @@ export const Form = ({ onNext, onExit }: FormProps) => {
     setShowExitModal(true);
   };
 
-  const onSubmit = (data: { title: string; description: string }) => {
-    setTitle(data.title);
-    setDescription(data.description);
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     onNext();
   };
 
@@ -47,39 +39,18 @@ export const Form = ({ onNext, onExit }: FormProps) => {
         title="New Post"
         type="back"
         next="Next"
-        isNext={isValid}
+        isNext={title.length > 0}
         onBack={handleClickBackButton}
         onNext={onNext}
       />
-      <form className="mt-[72px] px-4" onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          control={control}
-          name="title"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              id="title"
-              type="text"
-              label="Title of a post"
-              placeholder="Type here"
-              error={error?.message}
-              {...field}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="description"
-          render={({ field, fieldState: { error } }) => (
-            <div className="mt-4">
-              <textarea
-                id="description"
-                placeholder="Start writing a blog or question"
-                {...field}
-                className="w-full h-40 p-3 border border-border-default rounded-lg text-text-default placeholder-text-weak focus:outline-none focus:ring-2 focus:ring-bg-brand-default resize-none"
-              />
-              {error && <p className="text-text-error text-sm mt-1">{error.message}</p>}
-            </div>
-          )}
+      <form className="mt-[72px] px-4" onSubmit={onSubmit}>
+        <TextField
+          id="title"
+          type="text"
+          label="Title of a post"
+          placeholder="Type here"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
       </form>
       {showExitModal && (

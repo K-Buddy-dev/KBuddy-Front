@@ -12,7 +12,7 @@ export interface CommunityFormStateContextType {
   title: string;
   description: string;
   file: File[];
-  type?: 'blog' | 'qna';
+  type: 'blog' | 'qna';
   drafts: { id: string; createdAt: string; data: PostDraft }[];
 }
 
@@ -21,6 +21,7 @@ export interface CommunityFormActionContextType {
   setTitle: Dispatch<SetStateAction<string>>;
   setDescription: Dispatch<SetStateAction<string>>;
   setFile: Dispatch<SetStateAction<File[]>>;
+  setType: Dispatch<SetStateAction<'blog' | 'qna'>>;
   addDraft: () => void;
   deleteDraft: (id: string) => void;
   loadDraft: (draft: PostDraft) => void;
