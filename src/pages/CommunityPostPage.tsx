@@ -4,23 +4,23 @@ import { Complete, Form, Preview, Write } from '@/components/community/post';
 
 const CommunityPage = () => {
   const [currentStep, setCurrentStep] = useState<number>(() => {
-    const savedStep = localStorage.getItem('community-current-step');
+    const savedStep = sessionStorage.getItem('community-current-step');
     return savedStep ? parseInt(savedStep, 10) : 0;
   });
 
   const [isPostCompleted, setIsPostCompleted] = useState<boolean>(() => {
-    const saved = localStorage.getItem('community-post-completed');
+    const saved = sessionStorage.getItem('community-post-completed');
     return saved ? JSON.parse(saved) : false;
   });
 
-  // localStorage에 저장
+  // sessionStorage에 저장
   useEffect(() => {
-    localStorage.setItem('community-current-step', currentStep.toString());
+    sessionStorage.setItem('community-current-step', currentStep.toString());
     window.history.pushState({ step: currentStep }, '', window.location.href);
   }, [currentStep]);
 
   useEffect(() => {
-    localStorage.setItem('community-post-completed', JSON.stringify(isPostCompleted));
+    sessionStorage.setItem('community-post-completed', JSON.stringify(isPostCompleted));
   }, [isPostCompleted]);
 
   // 뒤로가기 이벤트 처리
