@@ -1,6 +1,8 @@
 import { Button, Topbar } from '@/components/shared';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
 import { CheckedIcon, UnCheckedIcon, SelectedRadioIcon, UnSelectedRadioIcon } from '@/components/shared/icon';
+import { PostFormData, usePostForm } from '@/hooks/usePostForm';
+import { usePost } from '@/hooks/usePost';
 
 const CATEGORIES = [
   { id: 0, name: 'Restaurant' },
@@ -43,9 +45,11 @@ const SectionInfo = ({ title, description }: { title: string; description: strin
   );
 };
 
-export const Preview = ({ onNext: _, onExit }: PreviewProps) => {
+export const Preview = ({ onNext, onExit }: PreviewProps) => {
   const { type, categoryIds } = useCommunityFormStateContext();
   const { setType, setCategoryIds } = useCommunityFormActionContext();
+  const { handleSubmit } = usePostForm();
+  const { createPost } = usePost();
 
   const isValid = type && categoryIds.length > 0;
 
@@ -69,8 +73,19 @@ export const Preview = ({ onNext: _, onExit }: PreviewProps) => {
     }
   };
 
+  const onSubmit = async (data: PostFormData) => {
+    try {
+      data.type = type;
+      data.categoryIds = categoryIds;
+      await createPost(data);
+      onNext();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+  };
+
   return (
-    <div className="font-roboto">
+    <form className="font-roboto" onSubmit={handleSubmit(onSubmit)}>
       <Topbar title="Post Preview" type="back" isNext={true} onBack={onExit} />
       <div className="bg-bg-medium w-full h-[326px] mt-14 px-4">
         <SectionInfo
@@ -108,7 +123,7 @@ export const Preview = ({ onNext: _, onExit }: PreviewProps) => {
         }`}
       >
         <div className="mt-3 mb-[18px]">
-          <Button variant="solid" color="primary" size="large" className="w-full" disabled={!isValid}>
+          <Button type="submit" variant="solid" color="primary" size="large" className="w-full" disabled={!isValid}>
             Post
           </Button>
         </div>
@@ -135,6 +150,6 @@ export const Preview = ({ onNext: _, onExit }: PreviewProps) => {
           ))}
         </div>
       </div>
-    </div>
+    </form>
   );
 };
