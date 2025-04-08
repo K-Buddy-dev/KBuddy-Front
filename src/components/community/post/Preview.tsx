@@ -58,17 +58,17 @@ export const Preview = ({ onNext, onExit }: PreviewProps) => {
     setCategoryId([]);
   };
 
-  const handleCategorySelect = (categoryId: number) => {
+  const handleCategorySelect = (id: number) => {
     if (type === 'qna') {
-      if (!categoryId.includes(categoryId)) {
-        setCategoryId([categoryId]);
+      if (!categoryId.includes(id)) {
+        setCategoryId([id]);
       }
     } else {
       setCategoryId((prev) => {
-        if (prev.includes(categoryId)) {
-          return prev.filter((id) => id !== categoryId);
+        if (prev.includes(id)) {
+          return prev.filter((_id) => _id !== id);
         }
-        return [...prev, categoryId];
+        return [...prev, id];
       });
     }
   };
