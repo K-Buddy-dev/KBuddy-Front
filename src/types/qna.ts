@@ -9,6 +9,6 @@ export interface Qna {
 export interface QnaRequest {
   title: string;
   description: string;
-  categoryIds: number;
+  categoryId: number;
   file: File[];
 }

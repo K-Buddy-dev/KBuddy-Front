@@ -7,7 +7,7 @@ export const usePost = () => {
   const [error, setError] = useState({
     title: '',
     description: '',
-    categoryIds: '',
+    categoryId: '',
     file: '',
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +22,7 @@ export const usePost = () => {
       } else if (type === 'qna') {
         const qnaRequest = {
           ...rest,
-          categoryIds: rest.categoryIds[0],
+          categoryId: rest.categoryId[0],
         };
         await qnaService.createBlog(qnaRequest);
       }
@@ -30,7 +30,7 @@ export const usePost = () => {
       setError({
         title: '',
         description: '',
-        categoryIds: '',
+        categoryId: '',
         file: '',
       });
     } catch (error: any) {

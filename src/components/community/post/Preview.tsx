@@ -46,25 +46,25 @@ const SectionInfo = ({ title, description }: { title: string; description: strin
 };
 
 export const Preview = ({ onNext, onExit }: PreviewProps) => {
-  const { type, categoryIds } = useCommunityFormStateContext();
-  const { setType, setCategoryIds } = useCommunityFormActionContext();
+  const { type, categoryId } = useCommunityFormStateContext();
+  const { setType, setCategoryId } = useCommunityFormActionContext();
   const { handleSubmit } = usePostForm();
   const { createPost } = usePost();
 
-  const isValid = type && categoryIds.length > 0;
+  const isValid = type && categoryId.length > 0;
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setType(e.target.value as 'blog' | 'qna');
-    setCategoryIds([]);
+    setCategoryId([]);
   };
 
   const handleCategorySelect = (categoryId: number) => {
     if (type === 'qna') {
-      if (!categoryIds.includes(categoryId)) {
-        setCategoryIds([categoryId]);
+      if (!categoryId.includes(categoryId)) {
+        setCategoryId([categoryId]);
       }
     } else {
-      setCategoryIds((prev) => {
+      setCategoryId((prev) => {
         if (prev.includes(categoryId)) {
           return prev.filter((id) => id !== categoryId);
         }
@@ -76,7 +76,7 @@ export const Preview = ({ onNext, onExit }: PreviewProps) => {
   const onSubmit = async (data: PostFormData) => {
     try {
       data.type = type;
-      data.categoryIds = categoryIds;
+      data.categoryId = categoryId;
       await createPost(data);
       onNext();
     } catch (error) {
@@ -143,7 +143,7 @@ export const Preview = ({ onNext, onExit }: PreviewProps) => {
               onClick={() => handleCategorySelect(category.id)}
             >
               <div className="h-6 w-6 flex items-center justify-center">
-                {categoryIds.includes(category.id) ? <CheckedIcon /> : <UnCheckedIcon />}
+                {categoryId.includes(category.id) ? <CheckedIcon /> : <UnCheckedIcon />}
               </div>
               <span className="text-sm font-normal">{category.name}</span>
             </div>

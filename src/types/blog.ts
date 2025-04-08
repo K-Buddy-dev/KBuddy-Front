@@ -2,7 +2,7 @@ export interface Blog {
   id: number;
   title: string;
   description: string;
-  categoryIds: number[];
+  categoryId: number[];
   file: File[];
 }
 
@@ -117,7 +117,7 @@ export interface CommunityResponse {
 export interface BlogRequest {
   title: string;
   description: string;
-  categoryIds: number[];
+  categoryId: number[];
   file: File[];
 }
 

@@ -1,14 +1,14 @@
 import { createContext, Dispatch, SetStateAction, useContext } from 'react';
 
 export interface PostDraft {
-  categoryIds: number[];
+  categoryId: number[];
   title: string;
   description: string;
   file?: File[];
 }
 
 export interface CommunityFormStateContextType {
-  categoryIds: number[];
+  categoryId: number[];
   title: string;
   description: string;
   file: File[];
@@ -17,7 +17,7 @@ export interface CommunityFormStateContextType {
 }
 
 export interface CommunityFormActionContextType {
-  setCategoryIds: Dispatch<SetStateAction<number[]>>;
+  setCategoryId: Dispatch<SetStateAction<number[]>>;
   setTitle: Dispatch<SetStateAction<string>>;
   setDescription: Dispatch<SetStateAction<string>>;
   setFile: Dispatch<SetStateAction<File[]>>;
