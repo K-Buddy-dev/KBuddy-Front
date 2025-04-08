@@ -6,7 +6,7 @@ export interface PostFormData {
   title: string;
   description: string;
   type: 'blog' | 'qna' | '';
-  categoryIds: number[];
+  categoryId: number[];
   file: File[];
 }
 
@@ -18,7 +18,7 @@ export const usePostForm = () => {
       title,
       description,
       type: '',
-      categoryIds: [],
+      categoryId: [],
       file: file || [],
     },
     mode: 'onChange',

@@ -10,7 +10,7 @@ import {
 import { Outlet } from 'react-router-dom';
 
 export const CommunityFormContextProvider = () => {
-  const [categoryIds, setCategoryIds] = useState<number[]>([]);
+  const [categoryId, setCategoryId] = useState<number[]>([]);
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [file, setFile] = useState<File[]>([]);
@@ -26,26 +26,26 @@ export const CommunityFormContextProvider = () => {
 
   const stateValue = useMemo<CommunityFormStateContextType>(
     () => ({
-      categoryIds,
+      categoryId,
       title,
       description,
       file,
       type,
       drafts,
     }),
-    [categoryIds, title, description, file, type, drafts]
+    [categoryId, title, description, file, type, drafts]
   );
 
   const actionValue = useMemo<CommunityFormActionContextType>(
     () => ({
-      setCategoryIds,
+      setCategoryId,
       setTitle,
       setDescription,
       setFile,
       setType,
       addDraft: () => {
         const draftData: PostDraft = {
-          categoryIds,
+          categoryId,
           title,
           description,
         };
@@ -63,12 +63,12 @@ export const CommunityFormContextProvider = () => {
         setDrafts((prev) => prev.filter((d) => d.id !== id));
       },
       loadDraft: (draft: PostDraft) => {
-        setCategoryIds(draft.categoryIds);
+        setCategoryId(draft.categoryId);
         setTitle(draft.title);
         setDescription(draft.description);
       },
     }),
-    [categoryIds, title, description, file]
+    [categoryId, title, description, file]
   );
 
   return (
