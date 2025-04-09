@@ -48,8 +48,9 @@ const SectionInfo = ({ title, description }: { title: string; description: strin
 export const Preview = ({ onNext, onExit }: PreviewProps) => {
   const { type, categoryId } = useCommunityFormStateContext();
   const { setType, setCategoryId } = useCommunityFormActionContext();
+
   const { handleSubmit } = usePostForm();
-  const { createPost } = usePost();
+  const { createPost: _ } = usePost();
 
   const isValid = type && categoryId.length > 0;
 
@@ -75,9 +76,10 @@ export const Preview = ({ onNext, onExit }: PreviewProps) => {
 
   const onSubmit = async (data: PostFormData) => {
     try {
-      data.type = type;
-      data.categoryId = categoryId;
-      await createPost(data);
+      // data.type = type;
+      // data.categoryId = categoryId;
+      // await createPost(data);
+      console.log('data', data);
       onNext();
     } catch (error) {
       console.error('Error submitting form:', error);
