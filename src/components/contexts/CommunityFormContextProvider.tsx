@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, ReactNode } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CommunityFormStateContext,
@@ -7,13 +7,10 @@ import {
   CommunityFormActionContextType,
   PostDraft,
 } from '@/hooks/useCommunityFormContext';
+import { Outlet } from 'react-router-dom';
 
-interface CommunityFormContextProviderProps {
-  children: ReactNode;
-}
-
-export const CommunityFormContextProvider = ({ children }: CommunityFormContextProviderProps) => {
-  const [categoryId, setCategoryId] = useState<number[] | number>([]);
+export const CommunityFormContextProvider = () => {
+  const [categoryId, setCategoryId] = useState<number[]>([]);
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [file, setFile] = useState<File[]>([]);
@@ -21,7 +18,7 @@ export const CommunityFormContextProvider = ({ children }: CommunityFormContextP
     const saved = localStorage.getItem('community-form-drafts');
     return saved ? JSON.parse(saved) : [];
   });
-
+  const [type, setType] = useState<'blog' | 'qna' | ''>('');
   // localStorage에 drafts 저장하기 위해 제작
   useEffect(() => {
     localStorage.setItem('community-form-drafts', JSON.stringify(drafts));
@@ -33,9 +30,10 @@ export const CommunityFormContextProvider = ({ children }: CommunityFormContextP
       title,
       description,
       file,
+      type,
       drafts,
     }),
-    [categoryId, title, description, file, drafts]
+    [categoryId, title, description, file, type, drafts]
   );
 
   const actionValue = useMemo<CommunityFormActionContextType>(
@@ -44,6 +42,7 @@ export const CommunityFormContextProvider = ({ children }: CommunityFormContextP
       setTitle,
       setDescription,
       setFile,
+      setType,
       addDraft: () => {
         const draftData: PostDraft = {
           categoryId,
@@ -74,7 +73,9 @@ export const CommunityFormContextProvider = ({ children }: CommunityFormContextP
 
   return (
     <CommunityFormStateContext.Provider value={stateValue}>
-      <CommunityFormActionContext.Provider value={actionValue}>{children}</CommunityFormActionContext.Provider>
+      <CommunityFormActionContext.Provider value={actionValue}>
+        <Outlet />
+      </CommunityFormActionContext.Provider>
     </CommunityFormStateContext.Provider>
   );
 };

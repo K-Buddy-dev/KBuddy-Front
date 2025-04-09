@@ -1,26 +1,27 @@
 import { createContext, Dispatch, SetStateAction, useContext } from 'react';
 
 export interface PostDraft {
-  categoryId: number[] | number;
+  categoryId: number[];
   title: string;
   description: string;
   file?: File[];
 }
 
 export interface CommunityFormStateContextType {
-  categoryId: number[] | number;
+  categoryId: number[];
   title: string;
   description: string;
   file: File[];
-  type?: 'blog' | 'qna';
+  type: 'blog' | 'qna' | '';
   drafts: { id: string; createdAt: string; data: PostDraft }[];
 }
 
 export interface CommunityFormActionContextType {
-  setCategoryId: Dispatch<SetStateAction<number[] | number>>;
+  setCategoryId: Dispatch<SetStateAction<number[]>>;
   setTitle: Dispatch<SetStateAction<string>>;
   setDescription: Dispatch<SetStateAction<string>>;
   setFile: Dispatch<SetStateAction<File[]>>;
+  setType: Dispatch<SetStateAction<'blog' | 'qna' | ''>>;
   addDraft: () => void;
   deleteDraft: (id: string) => void;
   loadDraft: (draft: PostDraft) => void;

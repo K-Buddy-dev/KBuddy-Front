@@ -92,12 +92,12 @@ export interface CommunityResponse {
 }
 
 // 블로그 생성/수정 요청 타입
-// export interface BlogRequest {
-//   title: string;
-//   content: string;
-//   category: BlogCategory;
-//   imageUrls: string[];
-// }
+export interface BlogRequest {
+  title: string;
+  description: string;
+  categoryId: number[];
+  file: File[];
+}
 
 // 댓글 생성/수정 요청 타입 -> 댓글 과 밑 신고는 추후 수정 예정
 export interface CommentRequest {
