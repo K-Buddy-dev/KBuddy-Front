@@ -15,6 +15,7 @@ export const Description = ({ onNext, onExit }: PreviewProps) => {
 
   useEffect(() => {
     const urls = file.map((f) => URL.createObjectURL(f));
+    console.log('urls', urls);
     setImageUrls(urls);
 
     return () => {
