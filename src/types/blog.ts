@@ -32,18 +32,14 @@ interface Community {
   modifiedAt: string;
 }
 
-interface BlogListData {
+interface CommunityListData {
   nextId: number;
   results: Community[];
 }
 
-export interface BlogListResponse {
-  timestamp: string;
-  status: number;
-  code: string | null;
-  path: string | null;
-  data: BlogListData;
-  details: any[];
+interface CommunityPostData {
+  status: boolean;
+  message: string;
 }
 
 // 요청 필터 타입
@@ -71,23 +67,16 @@ export interface CommunityListResponse {
   status: number;
   code: string | null;
   path: string | null;
-  data: {
-    nextId: number;
-    results: Community[];
-  };
+  data: CommunityListData;
   details: any[];
 }
 
-// 커뮤니티 콘텐츠 목록 응답 타입
-export interface CommunityResponse {
+export interface CommunityPostResponse {
   timestamp: string;
   status: number;
   code: string | null;
   path: string | null;
-  data: {
-    nextId: number;
-    results: Community[];
-  };
+  data: CommunityPostData;
   details: any[];
 }
 

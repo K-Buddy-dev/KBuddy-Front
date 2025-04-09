@@ -1,7 +1,7 @@
 import { apiClient } from '@/api/axiosConfig';
 // import { BlogListResponse, Blog, BlogRequest, CommentRequest, ReportRequest, BlogSort } from '@/types/blog';
 
-import { BlogListResponse, CommunitySort } from '@/types/blog';
+import { BlogRequest, CommunityListResponse, CommunityPostResponse, CommunitySort } from '@/types/blog';
 
 // // blogService 정의
 export const blogService = {
@@ -11,8 +11,8 @@ export const blogService = {
     size: number = 10,
     keyword?: string,
     sort?: CommunitySort
-  ): Promise<BlogListResponse> => {
-    const response = await apiClient.get<BlogListResponse>('/blog', {
+  ): Promise<CommunityListResponse> => {
+    const response = await apiClient.get<CommunityListResponse>('/blog', {
       params: {
         id,
         size,
@@ -29,8 +29,8 @@ export const blogService = {
   //     return response.data;
   //   },
   // 블로그 생성
-  createBlog: async (data: BlogRequest): Promise<Blog> => {
-    const response = await apiClient.post<Blog>('/blog', data);
+  createBlog: async (data: BlogRequest): Promise<CommunityPostResponse> => {
+    const response = await apiClient.post<CommunityPostResponse>('/blog', data);
     return response.data;
   },
   //   // 블로그 수정

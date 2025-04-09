@@ -1,4 +1,4 @@
-import { BlogFilters, BlogListResponse, CommunitySort, isCommunitySort } from '@/types/blog';
+import { BlogFilters, CommunityListResponse, CommunitySort, isCommunitySort } from '@/types/blog';
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { blogQueryKeys } from './blogKeys';
@@ -25,7 +25,13 @@ export const useBlogs = () => {
     sort,
   };
 
-  return useInfiniteQuery<BlogListResponse, Error, InfiniteData<BlogListResponse>, BlogQueryKey, number | undefined>({
+  return useInfiniteQuery<
+    CommunityListResponse,
+    Error,
+    InfiniteData<CommunityListResponse>,
+    BlogQueryKey,
+    number | undefined
+  >({
     queryKey: blogQueryKeys.blog.list(filters),
     queryFn: ({ pageParam }) =>
       blogService.getBlogs(
