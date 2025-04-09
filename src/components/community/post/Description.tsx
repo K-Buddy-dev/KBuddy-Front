@@ -1,6 +1,6 @@
 import { useCommunityFormStateContext, useCommunityFormActionContext } from '@/hooks/useCommunityFormContext';
 import { TextField, Topbar } from '@/components/shared';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface PreviewProps {
   onNext: () => void;
@@ -11,6 +11,16 @@ export const Description = ({ onNext, onExit }: PreviewProps) => {
   const { title, description, file } = useCommunityFormStateContext();
   const { setDescription, addDraft, setTitle, setFile } = useCommunityFormActionContext();
   const [showExitModal, setShowExitModal] = useState(false);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    const urls = file.map((f) => URL.createObjectURL(f));
+    setImageUrls(urls);
+
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [file]);
 
   const handleSave = () => {
     addDraft();
@@ -50,10 +60,10 @@ export const Description = ({ onNext, onExit }: PreviewProps) => {
           </div>
           <div className="bg-bg-medium">
             <div className="w-full h-[272px] overflow-x-hidden flex items-center gap-6 p-4">
-              {file.map((f, index) => (
+              {imageUrls.map((url, index) => (
                 <img
                   key={index}
-                  src={URL.createObjectURL(f)}
+                  src={url}
                   alt={`Preview ${index + 1}`}
                   className="w-40 h-[200px] object-cover rounded"
                 />
