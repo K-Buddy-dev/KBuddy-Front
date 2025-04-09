@@ -3,6 +3,7 @@ import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/h
 import { CheckedIcon, UnCheckedIcon, SelectedRadioIcon, UnSelectedRadioIcon } from '@/components/shared/icon';
 import { PostFormData, usePostForm } from '@/hooks/usePostForm';
 import { usePost } from '@/hooks/usePost';
+import { CommunityCard } from '../CommunityCard';
 
 const CATEGORIES = [
   { id: 0, name: 'Restaurant' },
@@ -38,7 +39,7 @@ const Description = ({ children }: { children: React.ReactNode }) => {
 
 const SectionInfo = ({ title, description }: { title: string; description: string }) => {
   return (
-    <div className="w-full mt-6 mb-4">
+    <div className="w-full mb-4">
       <Title>{title}</Title>
       <Description>{description}</Description>
     </div>
@@ -46,7 +47,7 @@ const SectionInfo = ({ title, description }: { title: string; description: strin
 };
 
 export const Preview = ({ onNext, onExit }: PreviewProps) => {
-  const { type, categoryId } = useCommunityFormStateContext();
+  const { type, categoryId, title } = useCommunityFormStateContext();
   const { setType, setCategoryId } = useCommunityFormActionContext();
   const { handleSubmit } = usePostForm();
   const { createPost } = usePost();
@@ -87,13 +88,28 @@ export const Preview = ({ onNext, onExit }: PreviewProps) => {
   return (
     <form className="font-roboto" onSubmit={handleSubmit(onSubmit)}>
       <Topbar title="Post Preview" type="back" isNext={true} onBack={onExit} />
-      <div className="bg-bg-medium w-full h-[326px] mt-14 px-4">
+      <div className="bg-bg-medium w-full h-full pt-20 px-4">
         <SectionInfo
           title="Post Preview"
           description="Here's a sneak peek of how your blog preview will look once it's published in the community space."
         />
+        <div className="px-2 pb-6">
+          <CommunityCard
+            userId="@user" // UserId가져와야함  실제 유저 ID로 대체
+            date={new Date().toLocaleDateString()} // 현재 날짜 사용
+            title={title || 'Untitled'}
+            category={categoryId.map(String)}
+            profileImageUrl="https://via.placeholder.com/40" // TODO: 실제 프로필 이미지 URL로 대체
+            imageUrl="https://via.placeholder.com/40" // 유저 이미지 가져와야함
+            likes={0}
+            comments={0}
+            isBookmarked={false} // 초기값 false
+            onLike={() => {}}
+            onBookmark={() => {}}
+          />
+        </div>
       </div>
-      <div className="w-full mt-14 px-4">
+      <div className="w-full mt-6 px-4">
         <SectionInfo title="Type of a post" description="Please select the correct type of post." />
         <div className="w-full flex flex-col items-start mb-4">
           <div className="w-full grid grid-cols-2 gap-4">

@@ -31,7 +31,7 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({
   // const categoryNames = category.map((id) => CategoryMap[id] || 'Unknown');
 
   return (
-    <div className="w-full px-4 py-[18px]">
+    <div className="w-full px-4 py-[18px] bg-bg-default rounded-lg">
       <Content
         id={userId}
         date={date}

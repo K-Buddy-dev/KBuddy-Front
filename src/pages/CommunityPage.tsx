@@ -3,9 +3,8 @@ import { Navbar } from '@/components/shared/navbar/Navbar';
 import { Tab } from '@/components/community/tab';
 
 import { useLocation } from 'react-router-dom';
-import QnaList from '@/components/community/QnaList';
-import { FloatPostAction } from '@/components';
-import BlogList from '@/components/community/BlogList';
+import { BlogList, FloatPostAction } from '@/components';
+import { QnaList } from '@/components/community';
 // import { SwiperList } from '@/components/community/swiper';
 
 export function CommunityPage() {

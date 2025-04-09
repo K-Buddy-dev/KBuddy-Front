@@ -1,4 +1,5 @@
-import { FaHeart, FaComment, FaBookmark } from 'react-icons/fa';
+import { Comment } from '@/components/shared/icon/Icon';
+import { FaRegHeart, FaRegBookmark, FaHeart, FaBookmark } from 'react-icons/fa';
 
 interface ActionsProps {
   likes: number;
@@ -10,22 +11,32 @@ interface ActionsProps {
 
 export const Actions: React.FC<ActionsProps> = ({ likes, comments, isBookmarked, onLike, onBookmark }) => {
   return (
-    <div className="flex items-center justify-end gap-3 mt-2">
-      {/* 좋아요 버튼 */}
-      <button onClick={onLike} className="flex items-center gap-1 text-gray-600 hover:text-red-500 transition-colors">
-        <FaHeart className={`w-4 h-4 ${likes > 0 ? 'text-red-500' : 'text-gray-600'}`} />
-        <span className="text-sm">{likes}</span>
-      </button>
+    <div className="flex items-center justify-end gap-4 mt-1">
+      <div className="flex items-center justify-start gap-1">
+        {/* 좋아요 버튼 */}
+        <button onClick={onLike} className="flex items-center gap-1 text-gray-900 hover:text-red-500 transition-colors">
+          {likes > 0 ? (
+            <FaHeart className="w-4 h-4 text-red-500 fill-current" />
+          ) : (
+            <FaRegHeart className="w-4 h-4 text-gray-900 stroke-current" />
+          )}
+          <span className="text-sm">{likes}</span>
+        </button>
 
-      {/* 댓글 */}
-      <div className="flex items-center gap-1 text-gray-600">
-        <FaComment className="w-4 h-4" />
-        <span className="text-sm">{comments}</span>
+        {/* 댓글 */}
+        <div className="flex items-center gap-1 text-gray-900">
+          <Comment />
+          <span className="text-sm">{comments}</span>
+        </div>
       </div>
 
       {/* 북마크 버튼 */}
-      <button onClick={onBookmark} className="flex items-center text-gray-600 hover:text-blue-500 transition-colors">
-        <FaBookmark className={`w-4 h-4 ${isBookmarked ? 'text-blue-500' : 'text-gray-600'}`} />
+      <button onClick={onBookmark} className="flex items-center text-gray-900 hover:text-[#6952F9] transition-colors">
+        {isBookmarked ? (
+          <FaBookmark className="w-4 h-4 text-[#6952F9] fill-current" />
+        ) : (
+          <FaRegBookmark className="w-4 h-4 text-gray-900 stroke-current" />
+        )}
       </button>
     </div>
   );
