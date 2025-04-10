@@ -1,11 +1,28 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useBlogs } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
 import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
+import { FiltersModal } from './filter';
+import { useSearchParams } from 'react-router-dom';
 
 export const BlogList: React.FC = () => {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // URL 쿼리 파라미터에서 초기값 설정
+  const initialSort = searchParams.get('sort') || 'popular';
+  const initialCategoryIds =
+    searchParams
+      .get('categoryIds')
+      ?.split(',')
+      .map(Number)
+      .filter((id) => !isNaN(id)) || [];
+
+  const [sort, setSort] = useState<string>(initialSort);
+  const [categoryIds, setCategoryIds] = useState<number[]>(initialCategoryIds);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs(); //useBlogs({ sort, categoryIds });
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
@@ -44,6 +61,27 @@ export const BlogList: React.FC = () => {
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage, data?.pages.length]);
 
+  const handleApplyFilters = (filters: { sort: string; categoryIds: number[] }) => {
+    setSort(filters.sort);
+    setCategoryIds(filters.categoryIds);
+
+    setSearchParams({
+      sort: filters.sort,
+      categoryIds: filters.categoryIds.join(','),
+    });
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isModalOpen]);
+
   if (isError) {
     return <div>Error: {error?.message || 'Something went wrong'}</div>;
   }
@@ -52,11 +90,27 @@ export const BlogList: React.FC = () => {
     <div className="max-w-2xl mx-auto">
       <h1 className="font-roboto font-medium text-lg ml-4 mt-6 mb-4">All blogs</h1>
       <div className="mb-4 ml-4">
-        <div className="w-[30px] h-[30px] p-[4px] border-[1px] border-border-default rounded-lg">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="w-[30px] h-[30px] p-[4px] border-[1px] border-border-default rounded-lg"
+        >
           <div className="w-5 h-5 flex items-center justify-center">
             <FilterIcon />
           </div>
-        </div>
+        </button>
+      </div>
+
+      <div
+        className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${
+          isModalOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
+        }`}
+      >
+        <FiltersModal
+          onApply={handleApplyFilters}
+          onClose={() => setIsModalOpen(false)}
+          initialSort={sort}
+          initialCategoryIds={categoryIds}
+        />
       </div>
 
       {isLoading ? (
@@ -77,7 +131,7 @@ export const BlogList: React.FC = () => {
                   key={blog.id}
                 >
                   <CommunityCard
-                    userId={`@${blog.writerId}`}
+                    userId={`${blog.writerId}`}
                     date={new Date(blog.createdAt).toLocaleDateString()}
                     title={blog.title}
                     category={[blog.categoryId.toString()]}

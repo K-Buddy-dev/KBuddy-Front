@@ -4,20 +4,7 @@ import { CheckedIcon, UnCheckedIcon, SelectedRadioIcon, UnSelectedRadioIcon } fr
 import { PostFormData, usePostForm } from '@/hooks/usePostForm';
 import { usePost } from '@/hooks/usePost';
 import { CommunityCard } from '../CommunityCard';
-
-const CATEGORIES = [
-  { id: 0, name: 'Restaurant' },
-  { id: 1, name: 'Shopping' },
-  { id: 2, name: 'Lodging' },
-  { id: 3, name: 'Art' },
-  { id: 4, name: 'Transportation' },
-  { id: 5, name: 'Daily Life' },
-  { id: 6, name: 'Cafe/Dessert' },
-  { id: 7, name: 'Attraction' },
-  { id: 8, name: 'Nature' },
-  { id: 9, name: 'Health' },
-  { id: 10, name: 'Others' },
-] as const;
+import { CATEGORIES } from '@/types/blog';
 
 const POST_TYPES = [
   { label: 'Blog', value: 'blog' },
@@ -95,7 +82,7 @@ export const Preview = ({ onNext, onExit }: PreviewProps) => {
         />
         <div className="px-2 pb-6">
           <CommunityCard
-            userId="@user" // UserId가져와야함  실제 유저 ID로 대체
+            userId="user" // UserId가져와야함  실제 유저 ID로 대체
             date={new Date().toLocaleDateString()} // 현재 날짜 사용
             title={title || 'Untitled'}
             category={categoryId.map(String)}

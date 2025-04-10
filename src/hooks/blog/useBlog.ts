@@ -216,27 +216,35 @@ export const useBlogs = () => {
 //     void,
 //     Error,
 //     number,
-//     { previousBlog: Blog | undefined; previousBookmarkedBlogs: CommunityListResponse | undefined }
+//     { previousBlog: Community | undefined; previousBookmarkedBlogs: CommunityListResponse | undefined }
 //   >({
 //     mutationFn: (blogId) => blogService.addBookmark(blogId),
 //     onMutate: async (blogId) => {
 //       await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       const previousBlog = queryClient.getQueryData<Blog>(blogQueryKeys.blog.detail(blogId));
-//       const previousBookmarkedBlogs = queryClient.getQueryData<CommunityListResponse>(blogQueryKeys.blog.bookmarked({}));
+//       await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.bookmarked({}) });
+
+//       const previousBlog = queryClient.getQueryData<Community>(blogQueryKeys.blog.detail(blogId));
+//       const previousBookmarkedBlogs = queryClient.getQueryData<CommunityListResponse>(
+//         blogQueryKeys.blog.bookmarked({})
+//       );
+
 //       if (previousBlog) {
-//         queryClient.setQueryData<Blog>(blogQueryKeys.blog.detail(blogId), {
+//         queryClient.setQueryData<Community>(blogQueryKeys.blog.detail(blogId), {
 //           ...previousBlog,
+//           isBookmarked: true,
 //         });
+
+//         if (previousBookmarkedBlogs) {
+//           queryClient.setQueryData<CommunityListResponse>(blogQueryKeys.blog.bookmarked({}), {
+//             ...previousBookmarkedBlogs,
+//             data: {
+//               ...previousBookmarkedBlogs.data,
+//               blogs: [previousBlog, ...previousBookmarkedBlogs.data.blogs],
+//             },
+//           });
+//         }
 //       }
-//       if (previousBookmarkedBlogs && previousBlog) {
-//         queryClient.setQueryData<CommunityListResponse>(blogQueryKeys.blog.bookmarked({}), {
-//           ...previousBookmarkedBlogs,
-//           data: {
-//             ...previousBookmarkedBlogs.data,
-//             blogs: [previousBlog, ...previousBookmarkedBlogs.data.blogs],
-//           },
-//         });
-//       }
+
 //       return { previousBlog, previousBookmarkedBlogs };
 //     },
 //     onError: (error, blogId, context) => {
@@ -246,13 +254,13 @@ export const useBlogs = () => {
 //       if (context?.previousBookmarkedBlogs) {
 //         queryClient.setQueryData(blogQueryKeys.blog.bookmarked({}), context.previousBookmarkedBlogs);
 //       }
-//       console.error(`Failed to add bookmark for blog ${blogId}:`, error.message);
+//       alert(`Failed to add bookmark: ${error.message}`);
 //     },
 //     onSettled: (data, error, blogId) => {
-//       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       queryClient.invalidateQueries({
-//         predicate: (query) => query.queryKey.includes('blogBookmarks'),
-//       });
+//       if (!error) {
+//         queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+//         queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.bookmarked({}) });
+//       }
 //     },
 //   });
 // };
@@ -271,7 +279,9 @@ export const useBlogs = () => {
 //     onMutate: async (blogId) => {
 //       await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
 //       const previousBlog = queryClient.getQueryData<Blog>(blogQueryKeys.blog.detail(blogId));
-//       const previousBookmarkedBlogs = queryClient.getQueryData<CommunityListResponse>(blogQueryKeys.blog.bookmarked({}));
+//       const previousBookmarkedBlogs = queryClient.getQueryData<CommunityListResponse>(
+//         blogQueryKeys.blog.bookmarked({})
+//       );
 //       if (previousBlog) {
 //         queryClient.setQueryData<Blog>(blogQueryKeys.blog.detail(blogId), {
 //           ...previousBlog,

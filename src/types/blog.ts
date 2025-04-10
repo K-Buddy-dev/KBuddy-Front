@@ -1,25 +1,19 @@
-export const CategoryMap: Record<number, string> = {
-  0: 'Restaurant',
-  1: 'Shopping',
-  2: 'Lodging',
-  3: 'Art',
-  4: 'Transportation',
-  5: 'Daily Life',
-  6: 'Cafe/Dessert',
-  7: 'Attraction',
-  8: 'Nature',
-  9: 'Health',
-  10: 'Others',
-};
-
-export const CategoryNameToId: Record<string, number> = Object.fromEntries(
-  Object.entries(CategoryMap).map(([id, name]) => [name, parseInt(id)])
-);
-
-export const CategoryNames = Object.values(CategoryMap);
+export const CATEGORIES = [
+  { id: 0, name: 'Restaurant' },
+  { id: 1, name: 'Shopping' },
+  { id: 2, name: 'Lodging' },
+  { id: 3, name: 'Art' },
+  { id: 4, name: 'Transportation' },
+  { id: 5, name: 'Daily Life' },
+  { id: 6, name: 'Cafe/Dessert' },
+  { id: 7, name: 'Attraction' },
+  { id: 8, name: 'Nature' },
+  { id: 9, name: 'Health' },
+  { id: 10, name: 'Others' },
+] as const;
 
 // 응답 데이터 타입
-interface Community {
+export interface Community {
   id: number;
   writerId: number;
   categoryId: number[];
