@@ -35,10 +35,8 @@ const CommunityPostPage = () => {
 
   const handleImageSelection = () => {
     if (window.ReactNativeWebView) {
-      // 모바일에서 앨범 선택
       window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'getAlbum' }));
     } else {
-      // 데스크탑에서 파일 선택
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
@@ -49,12 +47,12 @@ const CommunityPostPage = () => {
         if (target.files && target.files.length > 0) {
           const files = Array.from(target.files);
           setFile(files);
-          setCurrentStep(2);
         }
       };
 
       input.click();
     }
+    setCurrentStep(2);
   };
 
   useEffect(() => {
