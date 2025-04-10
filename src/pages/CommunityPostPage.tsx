@@ -1,16 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Complete, Description, Title, Write, Preview } from '@/components/community/post';
-import { useCommunityFormActionContext } from '@/hooks';
+import { useCommunityFormActionContext, useStackActionContext } from '@/hooks';
 import { base64ToFile } from '@/utils/utils';
+import { Activity } from '@/types';
+import { StackRenderer } from '@/components/shared/stack/StackRenderer';
 
 const CommunityPostPage = () => {
-  const [currentStep, setCurrentStep] = useState<number>(() => {
-    const savedStep = localStorage.getItem('community-current-step');
-    return savedStep ? parseInt(savedStep, 10) : 0;
-  });
+  const { push, pop, init } = useStackActionContext();
   const { setFile } = useCommunityFormActionContext();
 
-  const handleRNAlbumMessage = (event: MessageEvent) => {
+  const handleAlbumDataFromRN = (event: MessageEvent) => {
     console.log('RN 수신 데이터: ', event.data);
     if (typeof event.data !== 'string') return;
 
@@ -33,69 +32,89 @@ const CommunityPostPage = () => {
     }
   };
 
+  const handleWebFileSelection = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+
+    input.onchange = (e) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files.length > 0) {
+        const files = Array.from(target.files);
+        setFile(files);
+      }
+    };
+
+    input.click();
+  };
+
   const handleImageSelection = () => {
     if (window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'getAlbum' }));
     } else {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.multiple = true;
-
-      input.onchange = (e) => {
-        const target = e.target as HTMLInputElement;
-        if (target.files && target.files.length > 0) {
-          const files = Array.from(target.files);
-          setFile(files);
-        }
-      };
-
-      input.click();
+      handleWebFileSelection();
     }
-    setCurrentStep(2);
   };
 
   useEffect(() => {
-    localStorage.setItem('community-current-step', currentStep.toString());
-    window.history.pushState({ step: currentStep }, '', window.location.href);
-  }, [currentStep]);
+    const getActivity = (key: string): Activity => {
+      switch (key) {
+        case 'write':
+          return {
+            key: 'write',
+            element: <Write onNext={() => push(getActivity('title'))} />,
+          };
+        case 'title':
+          return {
+            key: 'title',
+            element: (
+              <Title
+                onNext={() => {
+                  handleImageSelection();
+                  push(getActivity('description'));
+                }}
+                onExit={() => pop()}
+              />
+            ),
+          };
+        case 'description':
+          return {
+            key: 'description',
+            element: <Description onNext={() => push(getActivity('preview'))} onExit={() => pop()} />,
+          };
+        case 'preview':
+          return {
+            key: 'preview',
+            element: <Preview onNext={() => push(getActivity('complete'))} onExit={() => pop()} />,
+          };
+        case 'complete':
+          return {
+            key: 'complete',
+            element: <Complete />,
+          };
+        default:
+          throw new Error(`Unknown activity key: ${key}`);
+      }
+    };
 
-  useEffect(() => {
+    init([getActivity('write')]);
+
     const handlePopState = () => {
-      setCurrentStep((prev) => Math.max(0, prev - 1));
+      pop();
     };
 
     window.addEventListener('popstate', handlePopState);
-    window.addEventListener('message', handleRNAlbumMessage);
-    window.history.replaceState({ step: currentStep }, '', window.location.href);
+    window.addEventListener('message', handleAlbumDataFromRN);
+    window.history.replaceState({ step: 0 }, '', window.location.href);
 
     return () => {
-      window.removeEventListener('message', handleRNAlbumMessage);
+      window.removeEventListener('message', handleAlbumDataFromRN);
       window.removeEventListener('popstate', handlePopState);
     };
   }, []);
 
-  const steps = [
-    <Write key="write" onNext={() => setCurrentStep(1)} />,
-    <Title key="title" onNext={() => handleImageSelection()} onExit={() => setCurrentStep(0)} />,
-    <Description
-      key="description"
-      onNext={() => {
-        setCurrentStep(3);
-      }}
-      onExit={() => setCurrentStep(0)}
-    />,
-    <Preview
-      key="preview"
-      onNext={() => {
-        setCurrentStep(4);
-      }}
-      onExit={() => setCurrentStep(2)}
-    />,
-    <Complete key="complete" />,
-  ];
-
-  return <div className="w-full">{steps[currentStep]}</div>;
+  return <StackRenderer />;
 };
 
 export default CommunityPostPage;

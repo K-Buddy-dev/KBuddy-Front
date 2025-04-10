@@ -60,7 +60,7 @@ export const Description = ({ onNext, onExit }: PreviewProps) => {
             <TextField label="Title of a post" id="title" value={title} disabled />
           </div>
           <div className="bg-bg-medium">
-            <div className="w-full h-[272px] overflow-x-hidden flex items-center gap-6 p-4">
+            <div className="w-full overflow-x-hidden flex items-center gap-6 p-4">
               {imageUrls.map((url, index) => (
                 <img
                   key={index}
