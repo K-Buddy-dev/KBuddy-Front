@@ -20,3 +20,5 @@ export * from './DownArrow';
 export * from './UpArrow';
 export * from './ImageNonSelect';
 export * from './Camera';
+export * from './RightArrowTriangle';
+export * from './LeftArrowTriangle';

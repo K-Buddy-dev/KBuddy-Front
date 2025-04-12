@@ -1,11 +1,7 @@
 import { Topbar } from '@/components/shared';
 import { CheckboxIcon, TrashIcon } from '@/components/shared/icon/Icon';
-import {
-  useCommunityFormStateContext,
-  useCommunityFormActionContext,
-  PostDraft,
-} from '@/hooks/useCommunityFormContext';
-import { useState } from 'react';
+import { PostDraft, useCommunityFormActionContext } from '@/hooks/useCommunityFormContext';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface WriteProps {
@@ -13,13 +9,12 @@ interface WriteProps {
 }
 
 export const Write = ({ onNext }: WriteProps) => {
-  const { drafts } = useCommunityFormStateContext();
-  console.log('drafts: ', drafts);
-  const { setTitle, setDescription, deleteDraft, loadDraft } = useCommunityFormActionContext();
+  const [drafts, setDrafts] = useState<PostDraft[]>([]);
+  const { setTitle, setDescription } = useCommunityFormActionContext();
   const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [selectedDrafts, setSelectedDrafts] = useState<string[]>([]);
+  const [selectedDrafts, setSelectedDrafts] = useState<number[]>([]);
 
   const handleNewPost = () => {
     setTitle('');
@@ -35,8 +30,7 @@ export const Write = ({ onNext }: WriteProps) => {
     return `${month}/${day}/${year}`;
   };
 
-  const handleSelectDraft = (draft: PostDraft) => {
-    loadDraft(draft);
+  const handleSelectDraft = () => {
     onNext();
   };
 
@@ -49,8 +43,8 @@ export const Write = ({ onNext }: WriteProps) => {
     setSelectedDrafts([]);
   };
 
-  const handleSelectDraftItem = (id: string) => {
-    setSelectedDrafts((prev) => (prev.includes(id) ? prev.filter((draftId) => draftId !== id) : [...prev, id]));
+  const handleSelectDraftItem = (id: number) => {
+    setSelectedDrafts((prev) => [...prev, id]);
   };
 
   const handleSelectAll = () => {
@@ -62,11 +56,17 @@ export const Write = ({ onNext }: WriteProps) => {
   };
 
   const handleDeleteSelected = () => {
-    selectedDrafts.forEach((id) => deleteDraft(id));
     setSelectedDrafts([]);
   };
 
   const isAllSelected = selectedDrafts.length === drafts.length && drafts.length > 0;
+
+  useEffect(() => {
+    const saved = localStorage.getItem('community-form-drafts');
+    if (saved) {
+      setDrafts(JSON.parse(saved));
+    }
+  }, []);
 
   return (
     <div className="font-roboto">
@@ -111,10 +111,10 @@ export const Write = ({ onNext }: WriteProps) => {
             <div
               key={draft.id}
               className="border-t-[1px] border-border-default py-[22px] px-[28px] h-[88px] font-roboto flex items-center justify-between cursor-pointer"
-              onClick={isEditing ? () => handleSelectDraftItem(draft.id) : () => handleSelectDraft(draft.data)}
+              onClick={isEditing ? () => handleSelectDraftItem(draft.id) : () => handleSelectDraft()}
             >
               <div className={`flex-1`}>
-                <h2 className="text-text-default font-normal">{draft.data.title || '제목 없음'}</h2>
+                <h2 className="text-text-default font-normal">{draft.title || '제목 없음'}</h2>
                 <p className="text-text-weak text-sm font-normal">{formatDate(draft.createdAt)}</p>
               </div>
               {isEditing && (

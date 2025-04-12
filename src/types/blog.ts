@@ -119,6 +119,7 @@ export interface BlogRequest {
   description: string;
   categoryId: number[];
   file: File[];
+  status: 'PUBLISHED' | 'DRAFT';
 }
 
 // 댓글 생성/수정 요청 타입 -> 댓글 과 밑 신고는 추후 수정 예정
