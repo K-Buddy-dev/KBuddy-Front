@@ -28,7 +28,9 @@ export function Topbar({ title, type, next, isNext, onBack, onCancle, onNext }: 
       <div className="flex items-center justify-start gap-2">
         {type === 'cancel' && (
           <button type="button" onClick={onCancle}>
-            <CancelIcon />
+            <div className="w-12 flex items-center gap-2 p-2 h-[30px] justify-center relative">
+              <CancelIcon />
+            </div>
           </button>
         )}
         {type === 'back' && (
@@ -44,6 +46,7 @@ export function Topbar({ title, type, next, isNext, onBack, onCancle, onNext }: 
             className={`font-roboto text-[22px] font-normal ${isNext ? ' text-text-brand-default' : ' text-text-disabled'}`}
             type="button"
             onClick={onNext}
+            disabled={!isNext}
           >
             {next}
           </button>
