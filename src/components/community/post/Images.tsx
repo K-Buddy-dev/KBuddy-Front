@@ -6,8 +6,10 @@ import { useEffect, useState } from 'react';
 export const Images = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const { file } = useCommunityFormStateContext();
+  const { file, type } = useCommunityFormStateContext();
   const { setFile } = useCommunityFormActionContext();
+
+  const MAX_IMAGES = type === 'qna' ? 5 : 10;
 
   const handleAlbumDataFromRN = (event: MessageEvent) => {
     console.log('RN 수신 데이터: ', event.data);
@@ -23,7 +25,14 @@ export const Images = () => {
           const files = data.album.map((base64: string, index: number) =>
             base64ToFile(base64, `selected-image-${index}.jpg`)
           );
-          setFile((prev) => [...prev, ...files]);
+          setFile((prev) => {
+            const newFiles = [...prev, ...files];
+            return newFiles.slice(0, MAX_IMAGES);
+          });
+          setImageUrls((prev) => {
+            const newUrls = [...prev, ...data.album];
+            return newUrls.slice(0, MAX_IMAGES);
+          });
         }
       }
     } catch (e) {
@@ -41,7 +50,15 @@ export const Images = () => {
       const target = e.target as HTMLInputElement;
       if (target.files && target.files.length > 0) {
         const files = Array.from(target.files);
-        setFile((prev) => [...prev, ...files]);
+        setFile((prev) => {
+          const newFiles = [...prev, ...files];
+          return newFiles.slice(0, MAX_IMAGES);
+        });
+        const urls = files.map((file) => URL.createObjectURL(file));
+        setImageUrls((prev) => {
+          const newUrls = [...prev, ...urls];
+          return newUrls.slice(0, MAX_IMAGES);
+        });
       }
     };
 
@@ -49,6 +66,10 @@ export const Images = () => {
   };
 
   const handleImageSelection = () => {
+    if (imageUrls.length >= MAX_IMAGES) {
+      alert(`최대 ${MAX_IMAGES}개의 이미지만 첨부할 수 있습니다.`);
+      return;
+    }
     if (window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'getAlbum' }));
     } else {
@@ -58,13 +79,14 @@ export const Images = () => {
 
   const handleDeleteImage = (index: number) => {
     setFile((prev) => prev.filter((_, i) => i !== index));
+    setImageUrls((prev) => prev.filter((_, i) => i !== index));
     if (currentIndex >= imageUrls.length - 1) {
       setCurrentIndex(Math.max(0, imageUrls.length - 2));
     }
   };
 
   useEffect(() => {
-    if (file) {
+    if (file && !window.ReactNativeWebView) {
       const urls = file.map((file) => URL.createObjectURL(file));
       setImageUrls(urls);
     }
