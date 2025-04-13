@@ -11,7 +11,7 @@ interface PreviewProps {
 }
 
 export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
-  const { title, description, file, type, categoryId } = useCommunityFormStateContext();
+  const { title, description, images, type, categoryId } = useCommunityFormStateContext();
   const { createPost } = usePost();
 
   const isValid = title.length > 0 && description.length > 0;
@@ -21,7 +21,7 @@ export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
       const data = {
         title,
         description,
-        file,
+        images,
         type,
         categoryId,
       };

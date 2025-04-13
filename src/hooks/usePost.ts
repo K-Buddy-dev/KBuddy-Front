@@ -12,7 +12,6 @@ export const usePost = () => {
     try {
       const { type, ...rest } = data;
       const request: BlogRequest = { ...rest, status };
-
       if (type === 'blog') {
         await blogService.createBlog(request);
       } else if (type === 'qna') {
@@ -20,7 +19,7 @@ export const usePost = () => {
           ...request,
           categoryId: request.categoryId[0],
         };
-        await qnaService.createBlog(qnaRequest);
+        await qnaService.createQna(qnaRequest);
       }
     } catch (error: any) {
       console.error(error);

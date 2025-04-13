@@ -1,5 +1,5 @@
 import { authClient } from '@/api/axiosConfig';
-import { Qna, QnaRequest } from '@/types/qna';
+import { CreateQnaRequest } from '@/types/qna';
 
 // blogService 정의
 export const qnaService = {
@@ -20,25 +20,23 @@ export const qnaService = {
   //     const response = await apiClient.get<Blog>(`/blog/${blogId}`);
   //     return response.data;
   //   },
-  // 블로그 생성
-  createBlog: async (data: QnaRequest): Promise<Qna> => {
+  createQna: async (data: CreateQnaRequest): Promise<boolean> => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item) => {
-          formData.append(key, item);
-        });
+      if (key === 'images') {
+        (value as File[]).forEach((file) => formData.append('images', file));
+      } else if (Array.isArray(value)) {
+        value.forEach((item) => formData.append(key, String(item)));
       } else {
-        formData.append(key, value);
+        formData.append(key, String(value));
       }
     });
-
-    const response = await authClient.post<Qna>('/qna', formData, {
+    const response = await authClient.post<{ data: { status: boolean } }>('/qna', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data;
+    return response.data.data.status;
   },
   //   // 블로그 수정
   //   updateBlog: async (blogId: number, data: BlogRequest): Promise<Blog> => {

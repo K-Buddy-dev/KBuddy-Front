@@ -5,5 +5,5 @@ export interface PostFormData {
   description: string;
   type: PostFormType;
   categoryId: number[];
-  file: File[];
+  images: File[];
 }

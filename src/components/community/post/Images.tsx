@@ -6,26 +6,22 @@ import { useEffect, useState } from 'react';
 export const Images = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const { file, type } = useCommunityFormStateContext();
-  const { setFile } = useCommunityFormActionContext();
+  const { images, type } = useCommunityFormStateContext();
+  const { setImages } = useCommunityFormActionContext();
 
   const MAX_IMAGES = type === 'qna' ? 5 : 10;
 
   const handleAlbumDataFromRN = (event: MessageEvent) => {
-    console.log('RN 수신 데이터: ', event.data);
     if (typeof event.data !== 'string') return;
 
     try {
       const data = JSON.parse(event.data);
-      console.log('JSON parsed 데이터: ', data);
       if (data.action === 'albumData') {
-        console.log('앨범 데이터 수신: ', data.album);
-
         if (data.album && data.album.length > 0) {
           const files = data.album.map((base64: string, index: number) =>
             base64ToFile(base64, `selected-image-${index}.jpg`)
           );
-          setFile((prev) => {
+          setImages((prev) => {
             const newFiles = [...prev, ...files];
             return newFiles.slice(0, MAX_IMAGES);
           });
@@ -33,6 +29,12 @@ export const Images = () => {
             const newUrls = [...prev, ...data.album];
             return newUrls.slice(0, MAX_IMAGES);
           });
+        }
+      } else if (data.action === 'swipe') {
+        if (data.direction === 'left' && currentIndex < imageUrls.length - 1) {
+          setCurrentIndex(currentIndex + 1);
+        } else if (data.direction === 'right' && currentIndex > 0) {
+          setCurrentIndex(currentIndex - 1);
         }
       }
     } catch (e) {
@@ -50,7 +52,7 @@ export const Images = () => {
       const target = e.target as HTMLInputElement;
       if (target.files && target.files.length > 0) {
         const files = Array.from(target.files);
-        setFile((prev) => {
+        setImages((prev) => {
           const newFiles = [...prev, ...files];
           return newFiles.slice(0, MAX_IMAGES);
         });
@@ -67,7 +69,6 @@ export const Images = () => {
 
   const handleImageSelection = () => {
     if (imageUrls.length >= MAX_IMAGES) {
-      alert(`최대 ${MAX_IMAGES}개의 이미지만 첨부할 수 있습니다.`);
       return;
     }
     if (window.ReactNativeWebView) {
@@ -78,7 +79,7 @@ export const Images = () => {
   };
 
   const handleDeleteImage = (index: number) => {
-    setFile((prev) => prev.filter((_, i) => i !== index));
+    setImages((prev) => prev.filter((_, i) => i !== index));
     setImageUrls((prev) => prev.filter((_, i) => i !== index));
     if (currentIndex >= imageUrls.length - 1) {
       setCurrentIndex(Math.max(0, imageUrls.length - 2));
@@ -86,11 +87,11 @@ export const Images = () => {
   };
 
   useEffect(() => {
-    if (file && !window.ReactNativeWebView) {
-      const urls = file.map((file) => URL.createObjectURL(file));
+    if (images && !window.ReactNativeWebView) {
+      const urls = images.map((file) => URL.createObjectURL(file));
       setImageUrls(urls);
     }
-  }, [file]);
+  }, [images]);
 
   useEffect(() => {
     window.addEventListener('message', handleAlbumDataFromRN);
@@ -103,7 +104,36 @@ export const Images = () => {
   return (
     <div className="bg-bg-medium">
       <div className="w-full flex flex-col justify-center items-center gap-4 p-4">
-        <div className="overflow-x-hidden flex items-center gap-4 w-[528px] h-[200px] relative">
+        <div
+          className="overflow-x-hidden flex items-center gap-4 w-[528px] h-[200px] relative"
+          onTouchStart={(e) => {
+            const touch = e.touches[0];
+            const startX = touch.clientX;
+
+            const handleTouchMove = (e: TouchEvent) => {
+              const touch = e.touches[0];
+              const diffX = touch.clientX - startX;
+
+              if (Math.abs(diffX) > 50) {
+                if (diffX > 0 && currentIndex > 0) {
+                  setCurrentIndex(currentIndex - 1);
+                } else if (diffX < 0 && currentIndex < imageUrls.length - 1) {
+                  setCurrentIndex(currentIndex + 1);
+                }
+                document.removeEventListener('touchmove', handleTouchMove);
+                document.removeEventListener('touchend', handleTouchEnd);
+              }
+            };
+
+            const handleTouchEnd = () => {
+              document.removeEventListener('touchmove', handleTouchMove);
+              document.removeEventListener('touchend', handleTouchEnd);
+            };
+
+            document.addEventListener('touchmove', handleTouchMove);
+            document.addEventListener('touchend', handleTouchEnd);
+          }}
+        >
           {imageUrls.map((url, index) => (
             <div
               key={index}

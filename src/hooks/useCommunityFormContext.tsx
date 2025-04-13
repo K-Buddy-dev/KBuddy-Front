@@ -5,7 +5,7 @@ export interface PostDraft {
   categoryId: number[];
   title: string;
   description: string;
-  file?: File[];
+  images?: File[];
   type: 'blog' | 'qna' | '';
   createdAt: string;
 }
@@ -14,7 +14,7 @@ export interface CommunityFormStateContextType {
   categoryId: number[];
   title: string;
   description: string;
-  file: File[];
+  images: File[];
   type: 'blog' | 'qna' | '';
 }
 
@@ -22,7 +22,7 @@ export interface CommunityFormActionContextType {
   setCategoryId: Dispatch<SetStateAction<number[]>>;
   setTitle: Dispatch<SetStateAction<string>>;
   setDescription: Dispatch<SetStateAction<string>>;
-  setFile: Dispatch<SetStateAction<File[]>>;
+  setImages: Dispatch<SetStateAction<File[]>>;
   setType: Dispatch<SetStateAction<'blog' | 'qna' | ''>>;
   reset: () => void;
 }
