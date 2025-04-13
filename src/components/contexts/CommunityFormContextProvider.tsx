@@ -11,7 +11,7 @@ export const CommunityFormContextProvider = () => {
   const [categoryId, setCategoryId] = useState<number[]>([]);
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [file, setFile] = useState<File[]>([]);
+  const [images, setImages] = useState<File[]>([]);
   const [type, setType] = useState<'blog' | 'qna' | ''>('');
 
   const stateValue = useMemo<CommunityFormStateContextType>(
@@ -19,10 +19,10 @@ export const CommunityFormContextProvider = () => {
       categoryId,
       title,
       description,
-      file,
+      images,
       type,
     }),
-    [categoryId, title, description, file, type]
+    [categoryId, title, description, images, type]
   );
 
   const actionValue = useMemo<CommunityFormActionContextType>(
@@ -30,17 +30,17 @@ export const CommunityFormContextProvider = () => {
       setCategoryId,
       setTitle,
       setDescription,
-      setFile,
+      setImages,
       setType,
       reset: () => {
         setCategoryId([]);
         setTitle('');
         setDescription('');
-        setFile([]);
+        setImages([]);
         setType('');
       },
     }),
-    [categoryId, title, description, file]
+    [categoryId, title, description, images, type]
   );
 
   return (

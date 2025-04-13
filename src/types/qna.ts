@@ -1,14 +1,22 @@
-export interface Qna {
-  id: number;
+type QnaStatus = 'PUBLISHED' | 'DRAFT';
+
+export interface CreateQnaRequest {
   title: string;
   description: string;
   categoryId: number;
-  file: File[];
+  images: File[];
 }
 
-export interface QnaRequest {
+export interface QnaListResponseData {
+  id: number;
+  writerId: number;
+  categoryId: number;
   title: string;
   description: string;
-  categoryId: number;
-  file: File[];
+  viewCount: number;
+  heartCount: number;
+  commentCount: number;
+  createdAt: string;
+  modifiedAt: string;
+  status: QnaStatus;
 }
