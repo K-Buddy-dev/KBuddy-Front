@@ -3,7 +3,7 @@ export interface Blog {
   title: string;
   description: string;
   categoryId: number[];
-  file: File[];
+  images?: File[];
 }
 
 // 카테고리 열거형으로 제작 -> 추가 예정
@@ -118,7 +118,7 @@ export interface BlogRequest {
   title: string;
   description: string;
   categoryId: number[];
-  file: File[];
+  images: File[];
   status: 'PUBLISHED' | 'DRAFT';
 }
 
