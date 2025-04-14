@@ -21,9 +21,10 @@ export interface Community {
   description: string;
   viewCount: number;
   heartCount: number;
+  isHearted: boolean;
+  isBookmarked: boolean;
   commentCount: number;
   createdAt: string;
-  modifiedAt: string;
 }
 
 interface CommunityListData {

@@ -23,6 +23,7 @@ export const BlogList: React.FC = () => {
   const [categoryIds, setCategoryIds] = useState<number[]>(initialCategoryIds);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs(); //useBlogs({ sort, categoryIds });
+  console.log('data: ', data);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
@@ -131,14 +132,15 @@ export const BlogList: React.FC = () => {
                   key={blog.id}
                 >
                   <CommunityCard
-                    userId={`${blog.writerId}`}
-                    date={new Date(blog.createdAt).toLocaleDateString()}
+                    writerId={`${blog.writerId}`}
+                    createdAt={new Date(blog.createdAt).toLocaleDateString()}
                     title={blog.title}
-                    category={[blog.categoryId.toString()]}
+                    categoryId={blog.categoryId}
                     profileImageUrl="https://via.placeholder.com/40"
-                    likes={blog.heartCount}
+                    heartCount={blog.heartCount}
                     comments={blog.commentCount}
-                    isBookmarked={false}
+                    isBookmarked={blog.isBookmarked}
+                    isHearted={blog.isHearted}
                     onLike={() => console.log('좋아요')}
                     onBookmark={() => console.log('북마크')}
                   />
