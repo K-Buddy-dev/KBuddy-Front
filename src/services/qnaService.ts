@@ -22,21 +22,22 @@ export const qnaService = {
   //   },
   createQna: async (data: CreateQnaRequest): Promise<boolean> => {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === 'images') {
-        (value as File[]).forEach((file) => formData.append('images', file));
-      } else if (Array.isArray(value)) {
-        value.forEach((item) => formData.append(key, String(item)));
-      } else {
-        formData.append(key, String(value));
-      }
-    });
+
+    // qnaSaveRequest를 JSON 문자열로 변환
+    const { images, ...qnaSaveRequest } = data;
+    formData.append('qnaSaveRequest', JSON.stringify(qnaSaveRequest));
+
+    // images는 별도로 추가
+    if (images && images.length > 0) {
+      images.forEach((file) => formData.append('images', file));
+    }
+
     const response = await authClient.post<{ data: { status: boolean } }>('/qna', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data.data.status;
+    return response.status === 204;
   },
   //   // 블로그 수정
   //   updateBlog: async (blogId: number, data: BlogRequest): Promise<Blog> => {
