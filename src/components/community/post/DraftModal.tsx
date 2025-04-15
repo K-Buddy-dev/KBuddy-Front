@@ -7,7 +7,7 @@ interface DraftModalProps {
 }
 
 export const DraftModal = ({ onExit, setShowExitModal }: DraftModalProps) => {
-  const { type, categoryId, title, description, file } = useCommunityFormStateContext();
+  const { type, categoryId, title, description, images } = useCommunityFormStateContext();
   const { createPost } = usePost();
   const handleDelete = () => onExit;
 
@@ -17,7 +17,7 @@ export const DraftModal = ({ onExit, setShowExitModal }: DraftModalProps) => {
       categoryId,
       title,
       description,
-      file,
+      images,
     };
     await createPost(data, 'DRAFT');
     onExit();
