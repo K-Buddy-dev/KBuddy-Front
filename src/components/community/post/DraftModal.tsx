@@ -25,19 +25,22 @@ export const DraftModal = ({ onExit, setShowExitModal }: DraftModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-4 rounded-lg">
-        <button onClick={handleSave} className="mr-2 p-2 bg-bg-brand-default text-text-inverted-default rounded">
-          저장
-        </button>
-        <button onClick={handleDelete} className="mr-2 p-2 bg-text-error text-white rounded">
-          삭제
-        </button>
-        <button onClick={onExit} className="mr-2 p-2 bg-gray-200 rounded">
-          돌아가기
-        </button>
-        <button onClick={() => setShowExitModal(false)} className="p-2 bg-gray-200 rounded">
-          취소
-        </button>
+      <div className="bg-white rounded-lg pb-2">
+        <div className="w-full p-6">
+          <h1 className="text-text-default text-[22px] font-medium m-auto mb-4">Save this post as a draft?</h1>
+          <p className="text-text-weak text-sm font-normal m-auto">If you discard now, you’ll lose this post.</p>
+        </div>
+        <div className="w-full flex flex-col px-4">
+          <button onClick={handleDelete} className="py-[21px] text-text-danger-default font-semibold border-b-2">
+            Discard post
+          </button>
+          <button onClick={handleSave} className="py-[21px] text-text-default font-semibold border-b-2">
+            Save draft
+          </button>
+          <button onClick={() => setShowExitModal(false)} className="py-[21px] text-text-default font-semibold">
+            Keep editing
+          </button>
+        </div>
       </div>
     </div>
   );

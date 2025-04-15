@@ -65,7 +65,8 @@ export const Write = ({ onNext }: WriteProps) => {
   useEffect(() => {
     const fetchDrafts = async () => {
       try {
-        const saved = await authService.getUserDrafts();
+        const response = await authService.getUserDrafts();
+        const saved = response.data;
         if (saved) {
           setDrafts(saved);
         }
