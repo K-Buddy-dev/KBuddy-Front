@@ -26,8 +26,6 @@ export const blogService = {
     Object.entries(data).forEach(([key, value]) => {
       if (key === 'images') {
         (value as File[]).forEach((file) => formData.append('images', file));
-      } else if (Array.isArray(value)) {
-        value.forEach((item) => formData.append(key, String(item)));
       } else {
         formData.append(key, String(value));
       }
