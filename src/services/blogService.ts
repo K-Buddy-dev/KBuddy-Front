@@ -23,19 +23,20 @@ export const blogService = {
   // 블로그 생성
   createBlog: async (data: BlogRequest): Promise<boolean> => {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === 'images') {
-        (value as File[]).forEach((file) => formData.append('images', file));
-      } else {
-        formData.append(key, String(value));
-      }
-    });
+
+    const { images, ...blogSaveRequest } = data;
+    formData.append('blogSaveRequest', JSON.stringify(blogSaveRequest));
+
+    if (images && images.length > 0) {
+      images.forEach((file) => formData.append('images', file));
+    }
+
     const response = await authClient.post<{ data: { status: boolean } }>('/blog', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data.data.status;
+    return response.status === 204;
   },
   //   // 블로그 수정
   //   updateBlog: async (blogId: number, data: BlogRequest): Promise<Blog> => {
