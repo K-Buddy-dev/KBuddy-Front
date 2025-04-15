@@ -91,6 +91,10 @@ export const Images = () => {
       const urls = images.map((file) => URL.createObjectURL(file));
       setImageUrls(urls);
     }
+
+    return () => {
+      imageUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
   }, [images]);
 
   useEffect(() => {
