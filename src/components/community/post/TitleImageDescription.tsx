@@ -4,6 +4,7 @@ import { Title } from './Title';
 import { Images } from './Images';
 import { useCommunityFormStateContext } from '@/hooks';
 import { usePost } from '@/hooks/usePost';
+import { useEffect } from 'react';
 
 interface PreviewProps {
   onNext: () => void;
@@ -31,6 +32,14 @@ export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
       console.error('Error submitting form:', error);
     }
   };
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   return (
     <div className="font-roboto">

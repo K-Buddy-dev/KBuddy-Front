@@ -1,6 +1,7 @@
 import { Topbar } from '@/components/shared';
 import { CheckboxIcon, TrashIcon } from '@/components/shared/icon/Icon';
 import { PostDraft, useCommunityFormActionContext } from '@/hooks/useCommunityFormContext';
+import { authService } from '@/services';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -62,10 +63,17 @@ export const Write = ({ onNext }: WriteProps) => {
   const isAllSelected = selectedDrafts.length === drafts.length && drafts.length > 0;
 
   useEffect(() => {
-    const saved = localStorage.getItem('community-form-drafts');
-    if (saved) {
-      setDrafts(JSON.parse(saved));
-    }
+    const fetchDrafts = async () => {
+      try {
+        const saved = await authService.getUserDrafts();
+        if (saved) {
+          setDrafts(saved);
+        }
+      } catch (error) {
+        console.error('Error fetching drafts:', error);
+      }
+    };
+    fetchDrafts();
   }, []);
 
   return (
