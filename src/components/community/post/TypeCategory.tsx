@@ -1,6 +1,6 @@
 import { Topbar } from '@/components/shared';
 import { DraftModal } from './DraftModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CategorySelector } from './CategorySelector';
 import { TypeSelector } from './TypeSelector';
 import { useCommunityFormStateContext } from '@/hooks';
@@ -21,6 +21,14 @@ export const TypeCategory = ({ onNext, onExit }: PreviewProps) => {
       onExit();
     }
   };
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   return (
     <div className="font-roboto">
