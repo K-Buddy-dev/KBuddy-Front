@@ -8,7 +8,7 @@ export const blogService = {
   //   // 블로그 목록 조회
   getBlogs: async (
     id: number | undefined,
-    size: number = 10,
+    size: number,
     keyword?: string,
     sort?: CommunitySort
   ): Promise<CommunityListResponse> => {

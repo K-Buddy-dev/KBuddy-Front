@@ -17,7 +17,7 @@ export const useBlogs = () => {
   const rawSort = searchParams.get('sort');
   const sort: CommunitySort | undefined = isCommunitySort(rawSort) ? rawSort : undefined;
   const keyword = searchParams.get('keyword') ?? '';
-  const size = Number(searchParams.get('size')) || 10;
+  const size = Number(searchParams.get('size')) || 5;
 
   const filters: BlogFilters = {
     size,
@@ -33,15 +33,13 @@ export const useBlogs = () => {
     number | undefined
   >({
     queryKey: blogQueryKeys.blog.list(filters),
-    queryFn: ({ pageParam }) =>
-      blogService.getBlogs(
-        pageParam, // id
-        filters.size,
-        filters.keyword,
-        filters.sort
-      ),
+    queryFn: ({ pageParam }) => {
+      console.log('Fetching blogs with id:', pageParam); // 디버깅용 로그
+      return blogService.getBlogs(pageParam, filters.size, filters.keyword, filters.sort);
+    },
     getNextPageParam: (lastPage) => {
-      if (lastPage.data.nextId === 0) return undefined;
+      console.log('Next ID:', lastPage.data.nextId); // 디버깅용 로그
+      if (lastPage.data.nextId === -1 || !lastPage.data.nextId) return undefined;
       return lastPage.data.nextId;
     },
     initialPageParam: undefined,

@@ -60,9 +60,10 @@ export const BlogList: React.FC = () => {
       }
       observer.disconnect();
     };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, data?.pages.length]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleApplyFilters = (filters: { sort: string; categoryIds: number[] }) => {
+    const scrollY = window.scrollY;
     setSort(filters.sort);
     setCategoryIds(filters.categoryIds);
 
@@ -70,6 +71,8 @@ export const BlogList: React.FC = () => {
       sort: filters.sort,
       categoryIds: filters.categoryIds.join(','),
     });
+
+    setTimeout(() => window.scrollTo(0, scrollY), 0);
   };
 
   useEffect(() => {
@@ -125,12 +128,7 @@ export const BlogList: React.FC = () => {
           {data?.pages.map((page, pageIndex) => (
             <div key={pageIndex}>
               {page.data.results.map((blog, index) => (
-                <div
-                  className={`bg-white border-y-[2px] ${index === 0 ? 'border-b-0' : ''} ${
-                    index === page.data.results.length - 1 ? 'border-t-0' : ''
-                  } border-border-weak2`}
-                  key={blog.id}
-                >
+                <div className={`bg-white border-y-[2px] border-b-0 border-border-weak2`} key={blog.id}>
                   <CommunityCard
                     writerId={`${blog.writerId}`}
                     createdAt={new Date(blog.createdAt).toLocaleDateString()}
