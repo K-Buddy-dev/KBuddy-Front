@@ -13,6 +13,6 @@ export const blogQueryKeys = {
     list: (filters: BlogFilters) => [...blogQueryKeys.all, filters] as const,
 
     // 북마크된 블로그 목록 조회
-    bookmarked: (filters: { id?: number; size: number }) => [...blogQueryKeys.bookmarks, filters] as const,
+    bookmarked: (blogId?: number) => [...blogQueryKeys.bookmarks, ...(blogId ? [blogId] : [])] as const,
   },
 };

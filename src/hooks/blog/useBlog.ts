@@ -1,5 +1,5 @@
 import { BlogFilters, CommunityListResponse, CommunitySort, isCommunitySort } from '@/types/blog';
-import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { blogQueryKeys } from './blogKeys';
 import { blogService } from '@/services/blogService';
@@ -34,11 +34,9 @@ export const useBlogs = () => {
   >({
     queryKey: blogQueryKeys.blog.list(filters),
     queryFn: ({ pageParam }) => {
-      console.log('Fetching blogs with id:', pageParam); // 디버깅용 로그
       return blogService.getBlogs(pageParam, filters.size, filters.keyword, filters.sort);
     },
     getNextPageParam: (lastPage) => {
-      console.log('Next ID:', lastPage.data.nextId); // 디버깅용 로그
       if (lastPage.data.nextId === -1 || !lastPage.data.nextId) return undefined;
       return lastPage.data.nextId;
     },
@@ -206,177 +204,69 @@ export const useBlogs = () => {
 //   });
 // };
 
-// // 블로그 북마크 추가 (낙관적 업데이트 적용)
-// export const useAddBookmark = () => {
-//   const queryClient = useQueryClient();
+// 블로그 북마크 추가
+export const useAddBookmark = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation<
-//     void,
-//     Error,
-//     number,
-//     { previousBlog: Community | undefined; previousBookmarkedBlogs: CommunityListResponse | undefined }
-//   >({
-//     mutationFn: (blogId) => blogService.addBookmark(blogId),
-//     onMutate: async (blogId) => {
-//       await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.bookmarked({}) });
+  return useMutation<void, Error, number>({
+    mutationFn: (blogId) => blogService.addBookmark(blogId),
+    onSuccess: (_, blogId) => {
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.bookmarks });
+    },
+    onError: (error, blogId) => {
+      console.error(`Failed to add bookmark blog ${blogId}:`, error.message);
+    },
+  });
+};
 
-//       const previousBlog = queryClient.getQueryData<Community>(blogQueryKeys.blog.detail(blogId));
-//       const previousBookmarkedBlogs = queryClient.getQueryData<CommunityListResponse>(
-//         blogQueryKeys.blog.bookmarked({})
-//       );
+// 블로그 북마크 삭제
+export const useRemoveBookmark = () => {
+  const queryClient = useQueryClient();
 
-//       if (previousBlog) {
-//         queryClient.setQueryData<Community>(blogQueryKeys.blog.detail(blogId), {
-//           ...previousBlog,
-//           isBookmarked: true,
-//         });
+  return useMutation<void, Error, number>({
+    mutationFn: (blogId) => blogService.removeBookmark(blogId),
+    onSuccess: (_, blogId) => {
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.bookmarks });
+    },
+    onError: (error, blogId) => {
+      console.error(`Failed to remove bookmark blog ${blogId}:`, error.message);
+    },
+  });
+};
 
-//         if (previousBookmarkedBlogs) {
-//           queryClient.setQueryData<CommunityListResponse>(blogQueryKeys.blog.bookmarked({}), {
-//             ...previousBookmarkedBlogs,
-//             data: {
-//               ...previousBookmarkedBlogs.data,
-//               blogs: [previousBlog, ...previousBookmarkedBlogs.data.blogs],
-//             },
-//           });
-//         }
-//       }
+// 블로그 좋아요 추가
+export const useAddBlogHeart = () => {
+  const queryClient = useQueryClient();
 
-//       return { previousBlog, previousBookmarkedBlogs };
-//     },
-//     onError: (error, blogId, context) => {
-//       if (context?.previousBlog) {
-//         queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), context.previousBlog);
-//       }
-//       if (context?.previousBookmarkedBlogs) {
-//         queryClient.setQueryData(blogQueryKeys.blog.bookmarked({}), context.previousBookmarkedBlogs);
-//       }
-//       alert(`Failed to add bookmark: ${error.message}`);
-//     },
-//     onSettled: (data, error, blogId) => {
-//       if (!error) {
-//         queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//         queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.bookmarked({}) });
-//       }
-//     },
-//   });
-// };
+  return useMutation<void, Error, number>({
+    mutationFn: (blogId) => blogService.addBlogHeart(blogId),
+    onSuccess: (_, blogId) => {
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.all });
+    },
+    onError: (error, blogId) => {
+      console.error(`Failed to add heart blog ${blogId}:`, error.message);
+    },
+  });
+};
 
-// // 블로그 북마크 삭제 (낙관적 업데이트 적용)
-// export const useRemoveBookmark = () => {
-//   const queryClient = useQueryClient();
+// 블로그 좋아요 삭제
+export const useRemoveBlogHeart = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation<
-//     void,
-//     Error,
-//     number,
-//     { previousBlog: Blog | undefined; previousBookmarkedBlogs: CommunityListResponse | undefined }
-//   >({
-//     mutationFn: (blogId) => blogService.removeBookmark(blogId),
-//     onMutate: async (blogId) => {
-//       await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       const previousBlog = queryClient.getQueryData<Blog>(blogQueryKeys.blog.detail(blogId));
-//       const previousBookmarkedBlogs = queryClient.getQueryData<CommunityListResponse>(
-//         blogQueryKeys.blog.bookmarked({})
-//       );
-//       if (previousBlog) {
-//         queryClient.setQueryData<Blog>(blogQueryKeys.blog.detail(blogId), {
-//           ...previousBlog,
-//         });
-//       }
-//       if (previousBookmarkedBlogs) {
-//         queryClient.setQueryData<CommunityListResponse>(blogQueryKeys.blog.bookmarked({}), {
-//           ...previousBookmarkedBlogs,
-//           data: {
-//             ...previousBookmarkedBlogs.data,
-//             blogs: previousBookmarkedBlogs.data.blogs.filter((blog: any) => blog.id !== blogId),
-//           },
-//         });
-//       }
-//       return { previousBlog, previousBookmarkedBlogs };
-//     },
-//     onError: (error, blogId, context) => {
-//       if (context?.previousBlog) {
-//         queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), context.previousBlog);
-//       }
-//       if (context?.previousBookmarkedBlogs) {
-//         queryClient.setQueryData(blogQueryKeys.blog.bookmarked({}), context.previousBookmarkedBlogs);
-//       }
-//       console.error(`Failed to remove bookmark for blog ${blogId}:`, error.message);
-//     },
-//     onSettled: (data, error, blogId) => {
-//       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       queryClient.invalidateQueries({
-//         predicate: (query) => query.queryKey.includes('blogBookmarks'),
-//       });
-//     },
-//   });
-// };
-
-// // 블로그 좋아요 추가 (낙관적 업데이트 적용)
-// export const useAddBlogHeart = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation<void, Error, number, { previousBlog: Blog | undefined }>({
-//     mutationFn: (blogId) => blogService.addBlogHeart(blogId),
-//     onMutate: async (blogId) => {
-//       await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       const previousBlog = queryClient.getQueryData<Blog>(blogQueryKeys.blog.detail(blogId));
-//       if (previousBlog) {
-//         queryClient.setQueryData<Blog>(blogQueryKeys.blog.detail(blogId), {
-//           ...previousBlog,
-//           heartCount: previousBlog.heartCount + 1,
-//         });
-//       }
-//       return { previousBlog };
-//     },
-//     onError: (error, blogId, context) => {
-//       if (context?.previousBlog) {
-//         queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), context.previousBlog);
-//       }
-//       console.error(`Failed to add heart for blog ${blogId}:`, error.message);
-//     },
-//     onSettled: (data, error, blogId) => {
-//       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       queryClient.invalidateQueries({
-//         predicate: (query) => query.queryKey.includes('blogs'),
-//       });
-//     },
-//   });
-// };
-
-// // 블로그 좋아요 삭제 (낙관적 업데이트 적용)
-// export const useRemoveBlogHeart = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation<void, Error, number, { previousBlog: Blog | undefined }>({
-//     mutationFn: (blogId) => blogService.removeBlogHeart(blogId),
-//     onMutate: async (blogId) => {
-//       await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       const previousBlog = queryClient.getQueryData<Blog>(blogQueryKeys.blog.detail(blogId));
-//       if (previousBlog) {
-//         queryClient.setQueryData<Blog>(blogQueryKeys.blog.detail(blogId), {
-//           ...previousBlog,
-//           heartCount: previousBlog.heartCount - 1,
-//         });
-//       }
-//       return { previousBlog };
-//     },
-//     onError: (error, blogId, context) => {
-//       if (context?.previousBlog) {
-//         queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), context.previousBlog);
-//       }
-//       console.error(`Failed to remove heart for blog ${blogId}:`, error.message);
-//     },
-//     onSettled: (data, error, blogId) => {
-//       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       queryClient.invalidateQueries({
-//         predicate: (query) => query.queryKey.includes('blogs'),
-//       });
-//     },
-//   });
-// };
+  return useMutation<void, Error, number>({
+    mutationFn: (blogId) => blogService.removeBlogHeart(blogId),
+    onSuccess: (_, blogId) => {
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.all });
+    },
+    onError: (error, blogId) => {
+      console.error(`Failed to remove heart blog ${blogId}:`, error.message);
+    },
+  });
+};
 
 // // 댓글 작성 (낙관적 업데이트 적용)
 // export const useCreateComment = (blogId: number) => {

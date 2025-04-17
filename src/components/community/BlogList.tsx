@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useBlogs } from '@/hooks';
+import { useAddBlogHeart, useAddBookmark, useBlogs, useRemoveBlogHeart, useRemoveBookmark } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
 import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
@@ -23,7 +23,11 @@ export const BlogList: React.FC = () => {
   const [categoryIds, setCategoryIds] = useState<number[]>(initialCategoryIds);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs(); //useBlogs({ sort, categoryIds });
-  console.log('data: ', data);
+
+  const addBlogHeart = useAddBlogHeart();
+  const removeBlogHeart = useRemoveBlogHeart();
+  const addBookmark = useAddBookmark();
+  const removeBookmark = useRemoveBookmark();
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
@@ -36,15 +40,10 @@ export const BlogList: React.FC = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          console.log('Fetching next page triggered', {
-            hasNextPage,
-            isFetchingNextPage,
-            pageCount: data?.pages.length,
-          });
           fetchNextPage();
         }
       },
-      { threshold: 0, rootMargin: '100px' } // 요소가 뷰포트에 완전히 들어오기 전에 트리거
+      { threshold: 0.1, rootMargin: '20px' }
     );
 
     observerInstance.current = observer;
@@ -60,7 +59,7 @@ export const BlogList: React.FC = () => {
       }
       observer.disconnect();
     };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, data?.pages.length]);
 
   const handleApplyFilters = (filters: { sort: string; categoryIds: number[] }) => {
     const scrollY = window.scrollY;
@@ -85,6 +84,38 @@ export const BlogList: React.FC = () => {
       document.body.style.overflow = 'auto';
     };
   }, [isModalOpen]);
+
+  const handleLike = (blogId: number, isHearted: boolean) => {
+    if (isHearted) {
+      removeBlogHeart.mutate(blogId, {
+        onError: (error) => {
+          alert(`좋아요 취소 실패: ${error.message}`);
+        },
+      });
+    } else {
+      addBlogHeart.mutate(blogId, {
+        onError: (error) => {
+          alert(`좋아요 추가 실패: ${error.message}`);
+        },
+      });
+    }
+  };
+
+  const handleBookmark = (blogId: number, isBookmarked: boolean) => {
+    if (isBookmarked) {
+      removeBookmark.mutate(blogId, {
+        onError: (error) => {
+          alert(`북마크 취소 실패: ${error.message}`);
+        },
+      });
+    } else {
+      addBookmark.mutate(blogId, {
+        onError: (error) => {
+          alert(`북마크 추가 실패: ${error.message}`);
+        },
+      });
+    }
+  };
 
   if (isError) {
     return <div>Error: {error?.message || 'Something went wrong'}</div>;
@@ -127,40 +158,46 @@ export const BlogList: React.FC = () => {
         <>
           {data?.pages.map((page, pageIndex) => (
             <div key={pageIndex}>
-              {page.data.results.map((blog, index) => (
-                <div className={`bg-white border-y-[2px] border-b-0 border-border-weak2`} key={blog.id}>
-                  <CommunityCard
-                    writerId={`${blog.writerId}`}
-                    createdAt={new Date(blog.createdAt).toLocaleDateString()}
-                    title={blog.title}
-                    categoryId={blog.categoryId}
-                    profileImageUrl="https://via.placeholder.com/40"
-                    heartCount={blog.heartCount}
-                    comments={blog.commentCount}
-                    isBookmarked={blog.isBookmarked}
-                    isHearted={blog.isHearted}
-                    onLike={() => console.log('좋아요')}
-                    onBookmark={() => console.log('북마크')}
-                  />
-                  {pageIndex === data.pages.length - 1 && index === page.data.results.length - 1 && hasNextPage && (
-                    <div ref={observerRef} className="h-10 flex justify-center items-center">
-                      {isFetchingNextPage ? <div>Loading more...</div> : <div>Scroll to load more</div>}
-                    </div>
-                  )}
-                </div>
-              ))}
+              {page.data.results.map((blog, index) => {
+                const isLastItem = pageIndex === data.pages.length - 1 && index === page.data.results.length - 1;
+
+                return (
+                  <div
+                    className={`bg-white border-y-[2px] border-b-0 border-border-weak2`}
+                    key={blog.id}
+                    ref={isLastItem ? observerRef : null}
+                  >
+                    <CommunityCard
+                      writerId={`${blog.writerId}`}
+                      createdAt={new Date(blog.createdAt).toLocaleDateString()}
+                      title={blog.title}
+                      categoryId={blog.categoryId}
+                      profileImageUrl="https://via.placeholder.com/40"
+                      heartCount={blog.heartCount}
+                      comments={blog.commentCount}
+                      isBookmarked={blog.isBookmarked}
+                      isHearted={blog.isHearted}
+                      onLike={() => handleLike(blog.id, blog.isHearted)}
+                      onBookmark={() => handleBookmark(blog.id, blog.isBookmarked)}
+                    />
+                    {isLastItem && isFetchingNextPage && (
+                      <div className="h-10 flex justify-center items-center">
+                        <div>로딩 중...</div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ))}
-          {isFetchingNextPage && (
-            <div>
-              {Array.from({ length: 2 }).map((_, index) => (
-                <SkeletonCard key={`fetching-${index}`} />
-              ))}
+          {hasNextPage && (
+            <div ref={observerRef} className="h-10 flex justify-center items-center">
+              {isFetchingNextPage ? <div>Loading more...</div> : <div>Load more</div>}
             </div>
           )}
-          {data?.pages[0]?.data.results.length === 0 && <div className="text-center py-10">No blogs found</div>}
         </>
       )}
+      <div className="h-[136px]"></div>
     </div>
   );
 };
