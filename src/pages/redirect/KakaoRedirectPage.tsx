@@ -101,7 +101,6 @@ export function KakaoRedirectPage() {
   const { handleLogin } = useOauthLoginHandler();
 
   const code = new URL(window.location.href).searchParams.get('code');
-  console.log('code: ', code);
 
   const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
   const [isMember, setIsMember] = useState<boolean | null>(null);

@@ -7,7 +7,7 @@ export function DefaultLayout() {
   return (
     <div className="w-full h-full min-h-screen flex items-start justify-center bg-slate-200">
       <div
-        className={`box-border relative min-w-[280px] xs:w-full sm:w-[600px] h-full min-h-screen bg-bg-default ${isPaddingDisabled ? '' : ' px-4'}`}
+        className={`relative min-w-[280px] w-full sm:w-[600px] h-full min-h-screen bg-bg-default ${isPaddingDisabled ? '' : ' px-4'}`}
       >
         <Outlet />
       </div>
