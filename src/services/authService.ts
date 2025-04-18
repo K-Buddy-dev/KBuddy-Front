@@ -76,4 +76,8 @@ export const authService = {
     const response = await authClient.get('/auth/accessToken');
     return response.data;
   },
+  getUserDrafts: async () => {
+    const response = await authClient.get('/user/drafts');
+    return response.data;
+  },
 };

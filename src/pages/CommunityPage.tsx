@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/shared/navbar/Navbar';
+import { Link } from 'react-router-dom';
 
 import { Tab } from '@/components/community/tab';
 
@@ -19,12 +20,9 @@ export function CommunityPage() {
         {/* <SwiperList cards={mockData} /> */}
         <Tab />
       </div>
-      <a
-        className="absolute right-4 bottom-3 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-        href={'/community/post'}
-      >
+      <Link to="/community/post" className="absolute right-4 bottom-3 -translate-x-1/2 -translate-y-1/2 cursor-pointer">
         <FloatPostAction />
-      </a>
+      </Link>
       {currentTab === 'User blog' && <BlogList />}
       {currentTab === 'Q&A' && <QnaList />}
     </>

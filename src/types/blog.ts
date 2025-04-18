@@ -11,6 +11,13 @@ export const CATEGORIES = [
   { id: 9, name: 'Health' },
   { id: 10, name: 'Others' },
 ] as const;
+export interface Blog {
+  id: number;
+  title: string;
+  description: string;
+  categoryId: number[];
+  images?: File[];
+}
 
 // 응답 데이터 타입
 export interface Community {
@@ -80,7 +87,8 @@ export interface BlogRequest {
   title: string;
   description: string;
   categoryId: number[];
-  file: File[];
+  images: File[];
+  status: 'PUBLISHED' | 'DRAFT';
 }
 
 // 댓글 생성/수정 요청 타입 -> 댓글 과 밑 신고는 추후 수정 예정

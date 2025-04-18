@@ -1,45 +1,32 @@
 import { useState } from 'react';
-import { PostFormData } from './usePostForm';
+import { PostFormData } from '@/types/post';
 import { blogService } from '@/services/blogService';
 import { qnaService } from '@/services/qnaService';
+import { BlogRequest } from '@/types';
 
 export const usePost = () => {
-  const [error, setError] = useState({
-    title: '',
-    description: '',
-    categoryId: '',
-    file: '',
-  });
   const [isLoading, setIsLoading] = useState(false);
 
-  const createPost = async (data: PostFormData) => {
+  const createPost = async (data: PostFormData, status: 'PUBLISHED' | 'DRAFT') => {
     setIsLoading(true);
     try {
       const { type, ...rest } = data;
-
+      const request: BlogRequest = { ...rest, status };
       if (type === 'blog') {
-        await blogService.createBlog(rest);
+        await blogService.createBlog(request);
       } else if (type === 'qna') {
         const qnaRequest = {
-          ...rest,
-          categoryId: rest.categoryId[0],
+          ...request,
+          categoryId: request.categoryId[0],
         };
-        await qnaService.createBlog(qnaRequest);
+        await qnaService.createQna(qnaRequest);
       }
-
-      setError({
-        title: '',
-        description: '',
-        categoryId: '',
-        file: '',
-      });
     } catch (error: any) {
-      setError(error);
-      throw error;
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { createPost, error, isLoading };
+  return { createPost, isLoading };
 };

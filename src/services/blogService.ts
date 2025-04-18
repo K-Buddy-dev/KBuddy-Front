@@ -1,7 +1,5 @@
 import { authClient } from '@/api/axiosConfig';
-// import { BlogListResponse, Blog, BlogRequest, CommentRequest, ReportRequest, BlogSort } from '@/types/blog';
-
-import { BlogRequest, CommunityListResponse, CommunityPostResponse, CommunitySort } from '@/types/blog';
+import { BlogRequest, CommunityListResponse, CommunitySort } from '@/types/blog';
 
 // // blogService 정의
 export const blogService = {
@@ -29,9 +27,22 @@ export const blogService = {
   //     return response.data;
   //   },
   // 블로그 생성
-  createBlog: async (data: BlogRequest): Promise<CommunityPostResponse> => {
-    const response = await authClient.post<CommunityPostResponse>('/blog', data);
-    return response.data;
+  createBlog: async (data: BlogRequest): Promise<boolean> => {
+    const formData = new FormData();
+
+    const { images, ...blogSaveRequest } = data;
+    formData.append('blogSaveRequest', JSON.stringify(blogSaveRequest));
+
+    if (images && images.length > 0) {
+      images.forEach((file) => formData.append('images', file));
+    }
+
+    const response = await authClient.post<{ data: { status: boolean } }>('/blog', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.status === 204;
   },
   //   // 블로그 수정
   //   updateBlog: async (blogId: number, data: BlogRequest): Promise<Blog> => {
