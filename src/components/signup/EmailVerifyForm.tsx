@@ -21,7 +21,7 @@ export function EmailVerifyForm() {
       if (result) {
         authService.sendCode(data);
         setEmail(data.email);
-        navigate('/signup/verify');
+        navigate('/signup/verify', { state: { from: '/signup' } });
       }
     } catch (error) {
       console.error('Email verification failed:', error);
