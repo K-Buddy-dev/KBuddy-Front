@@ -9,7 +9,7 @@ interface DraftModalProps {
 export const DraftModal = ({ onExit, setShowExitModal }: DraftModalProps) => {
   const { type, categoryId, title, description, images } = useCommunityFormStateContext();
   const { createPost } = usePost();
-  const handleDelete = () => onExit;
+  const handleDelete = () => onExit();
 
   const handleSave = async () => {
     const data = {

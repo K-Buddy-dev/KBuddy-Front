@@ -1,4 +1,4 @@
-type QnaStatus = 'PUBLISHED' | 'DRAFT';
+import { PostStatus } from './post';
 
 export interface CreateQnaRequest {
   title: string;
@@ -18,5 +18,5 @@ export interface QnaListResponseData {
   commentCount: number;
   createdAt: string;
   modifiedAt: string;
-  status: QnaStatus;
+  status: PostStatus;
 }
