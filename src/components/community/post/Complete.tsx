@@ -2,12 +2,15 @@ import { Button, Topbar } from '@/components/shared';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CompleteImage from '@/assets/images/post/post_success.png';
+import { useCommunityFormActionContext } from '@/hooks';
 
 export const Complete = () => {
   const navigate = useNavigate();
+  const { reset } = useCommunityFormActionContext();
 
   useEffect(() => {
     localStorage.removeItem('community-current-step');
+    reset();
   }, []);
 
   return (
