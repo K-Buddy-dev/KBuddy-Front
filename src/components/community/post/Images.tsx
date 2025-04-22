@@ -9,7 +9,7 @@ export const Images = () => {
   const { images, type } = useCommunityFormStateContext();
   const { setImages } = useCommunityFormActionContext();
 
-  const MAX_IMAGES = type === 'qna' ? 5 : 10;
+  const MAX_IMAGES = type === 'Q&A' ? 5 : 10;
 
   const handleAlbumDataFromRN = (event: MessageEvent) => {
     if (typeof event.data !== 'string') return;
@@ -93,7 +93,12 @@ export const Images = () => {
     }
 
     return () => {
-      imageUrls.forEach((url) => URL.revokeObjectURL(url));
+      imageUrls.forEach((url) => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
+      setImageUrls([]);
     };
   }, [images]);
 

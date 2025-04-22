@@ -12,8 +12,9 @@ interface PreviewProps {
 }
 
 export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
-  const { title, description, images, type, categoryId } = useCommunityFormStateContext();
-  const { createPost } = usePost();
+  const { title, description, images, type, categoryId, draftId, isEditMode, originalType } =
+    useCommunityFormStateContext();
+  const { createPost, updatePost } = usePost();
 
   const isValid = title.length > 0 && description.length > 0;
 
@@ -26,7 +27,18 @@ export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
         type,
         categoryId,
       };
-      await createPost(data, 'PUBLISHED');
+
+      if (isEditMode && draftId) {
+        // 타입이 변경되었고 원본 타입이 있는 경우 originalType을 전달
+        if (originalType && originalType !== type) {
+          await updatePost(draftId, data, originalType);
+        } else {
+          await updatePost(draftId, data);
+        }
+      } else {
+        await createPost(data, 'PUBLISHED');
+      }
+
       onNext();
     } catch (error) {
       console.error('Error submitting form:', error);

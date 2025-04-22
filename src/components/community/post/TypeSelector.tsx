@@ -8,7 +8,7 @@ export const TypeSelector = () => {
   const { setType, setCategoryId } = useCommunityFormActionContext();
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setType(e.target.value as 'blog' | 'qna');
+    setType(e.target.value as 'Blog' | 'Q&A');
     setCategoryId([]);
   };
 

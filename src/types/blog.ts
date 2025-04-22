@@ -1,3 +1,5 @@
+import { PostStatus } from './post';
+
 export const CATEGORIES = [
   { id: 0, name: 'Restaurant' },
   { id: 1, name: 'Shopping' },
@@ -88,7 +90,7 @@ export interface BlogRequest {
   description: string;
   categoryId: number[];
   images: File[];
-  status: 'PUBLISHED' | 'DRAFT';
+  status: PostStatus;
 }
 
 // 댓글 생성/수정 요청 타입 -> 댓글 과 밑 신고는 추후 수정 예정

@@ -39,11 +39,33 @@ export const qnaService = {
     });
     return response.status === 204;
   },
-  //   // 블로그 수정
-  //   updateBlog: async (blogId: number, data: BlogRequest): Promise<Blog> => {
-  //     const response = await authClient.patch<Blog>(`/blog/${blogId}`, data);
-  //     return response.data;
-  //   },
+  // Q&A 게시글 수정 (PATCH 방식)
+  updateQna: async (qnaId: number, data: CreateQnaRequest): Promise<boolean> => {
+    const formData = new FormData();
+
+    // qnaUpdateRequest를 JSON 문자열로 변환
+    const { images, ...qnaUpdateRequest } = data;
+    formData.append('qnaUpdateRequest', JSON.stringify(qnaUpdateRequest));
+
+    // images는 별도로 추가
+    if (images && images.length > 0) {
+      images.forEach((file) => formData.append('images', file));
+    }
+
+    const response = await authClient.patch<{ data: { status: boolean } }>(`/qna/${qnaId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.status === 204;
+  },
+
+  // Q&A 게시글 삭제
+  deleteQna: async (qnaId: number): Promise<boolean> => {
+    const response = await authClient.delete(`/qna/${qnaId}`);
+    return response.status === 204;
+  },
+
   //   // 블로그 삭제
   //   deleteBlog: async (blogId: number): Promise<void> => {
   //     await authClient.delete(`/blog/${blogId}`);
