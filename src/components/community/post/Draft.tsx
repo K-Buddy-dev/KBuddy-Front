@@ -2,6 +2,7 @@ import { useCommunityFormActionContext } from '@/hooks';
 import { PostDraft } from '@/types';
 import { formatDate, urlToFile } from '@/utils/utils';
 import { Dispatch, SetStateAction } from 'react';
+import { Checkbox } from '@/components/shared/checkbox/Checkbox';
 
 interface DraftProps {
   draft: PostDraft;
@@ -23,7 +24,7 @@ export const Draft = ({ draft, isSelected, isEditing, setSelectedDrafts, onNext 
     setSelectedDrafts((prev) => prev.filter((id) => id !== draft.id));
   };
 
-  const handleChecked = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleChecked = (e: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (isSelected) {
       deleteDraftItem();
@@ -69,7 +70,7 @@ export const Draft = ({ draft, isSelected, isEditing, setSelectedDrafts, onNext 
     <div
       key={draft.id}
       className="border-t-[1px] border-border-default py-[22px] px-[28px] h-[88px] font-roboto flex items-center justify-between cursor-pointer"
-      onClick={handleClickDraft}
+      onClick={isEditing ? undefined : handleClickDraft}
     >
       <div className={`flex-1`}>
         <h2 className="text-text-default font-normal">{draft.title || '제목 없음'}</h2>
@@ -78,8 +79,8 @@ export const Draft = ({ draft, isSelected, isEditing, setSelectedDrafts, onNext 
         </p>
       </div>
       {isEditing && (
-        <div onClick={handleChecked}>
-          <input type="checkbox" checked={isSelected} className="w-5 h-5" />
+        <div onClick={(e) => e.stopPropagation()}>
+          <Checkbox checked={isSelected} onChange={handleChecked} className="w-5 h-5" />
         </div>
       )}
     </div>

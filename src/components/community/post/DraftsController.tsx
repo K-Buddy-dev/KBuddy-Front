@@ -1,15 +1,29 @@
 import { CheckboxIcon, TrashIcon } from '@/components/shared/icon/Icon';
 import { PostDraft } from '@/types';
 import { cn } from '@/utils/utils';
+import { useState } from 'react';
+import { blogService } from '@/services/blogService';
+import { qnaService } from '@/services/qnaService';
 
 interface DraftsControllerProps {
   isDraftEmpty: boolean;
   isAllSelected: boolean;
   setSelectedDrafts: (drafts: number[]) => void;
+  selectedDrafts: number[];
   drafts: PostDraft[];
+  refreshDrafts: () => void;
 }
 
-export const DraftsController = ({ isDraftEmpty, isAllSelected, setSelectedDrafts, drafts }: DraftsControllerProps) => {
+export const DraftsController = ({
+  isDraftEmpty,
+  isAllSelected,
+  setSelectedDrafts,
+  selectedDrafts,
+  drafts,
+  refreshDrafts,
+}: DraftsControllerProps) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleSelectAll = () => {
     if (isAllSelected) {
       setSelectedDrafts([]);
@@ -18,8 +32,36 @@ export const DraftsController = ({ isDraftEmpty, isAllSelected, setSelectedDraft
     }
   };
 
-  const handleDeleteDraft = () => {
-    console.log('삭제');
+  const handleDeleteDraft = async () => {
+    const selectedDraftIds = drafts
+      .filter((draft) => {
+        return isAllSelected || (draft.id && selectedDrafts.includes(draft.id));
+      })
+      .map((draft) => ({ id: draft.id, type: draft.type }));
+
+    if (selectedDraftIds.length === 0) return;
+
+    try {
+      setIsDeleting(true);
+
+      const deletePromises = selectedDraftIds.map(({ id, type }) => {
+        if (type === 'Blog') {
+          return blogService.deleteBlog(id);
+        } else if (type === 'Q&A') {
+          return qnaService.deleteQna(id);
+        }
+        return Promise.resolve(false);
+      });
+
+      await Promise.all(deletePromises);
+
+      setSelectedDrafts([]);
+      refreshDrafts();
+    } catch (error) {
+      console.error('임시저장 글 삭제 실패:', error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -27,15 +69,19 @@ export const DraftsController = ({ isDraftEmpty, isAllSelected, setSelectedDraft
       <button
         className={cn(
           'flex items-center gap-2 text-text-default font-semibold',
-          isDraftEmpty ? 'opacity-50 cursor-not-allowed' : ''
+          isDraftEmpty || isDeleting || selectedDrafts.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
         )}
         onClick={handleDeleteDraft}
-        disabled={isDraftEmpty}
+        disabled={isDraftEmpty || isDeleting || selectedDrafts.length === 0}
       >
         <TrashIcon />
-        Delete
+        {isDeleting ? 'Deleting...' : 'Delete'}
       </button>
-      <button className="flex items-center gap-2 font-semibold" onClick={handleSelectAll}>
+      <button
+        className="flex items-center gap-2 font-semibold"
+        onClick={handleSelectAll}
+        disabled={isDeleting || isDraftEmpty}
+      >
         <CheckboxIcon selected={isAllSelected} allSelected={isAllSelected} />
         <span className={isAllSelected ? 'text-text-default' : 'text-text-weak'}>Select all</span>
       </button>
