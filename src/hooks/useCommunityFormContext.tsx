@@ -1,21 +1,15 @@
+import { PostFormType } from '@/types';
 import { createContext, Dispatch, SetStateAction, useContext } from 'react';
-
-export interface PostDraft {
-  id: number;
-  categoryId: number[];
-  title: string;
-  description: string;
-  images?: File[];
-  type: 'blog' | 'qna' | '';
-  createdAt: string;
-}
 
 export interface CommunityFormStateContextType {
   categoryId: number[];
   title: string;
   description: string;
   images: File[];
-  type: 'blog' | 'qna' | '';
+  type: PostFormType;
+  draftId: number | null;
+  isEditMode: boolean;
+  originalType: PostFormType | null;
 }
 
 export interface CommunityFormActionContextType {
@@ -23,7 +17,10 @@ export interface CommunityFormActionContextType {
   setTitle: Dispatch<SetStateAction<string>>;
   setDescription: Dispatch<SetStateAction<string>>;
   setImages: Dispatch<SetStateAction<File[]>>;
-  setType: Dispatch<SetStateAction<'blog' | 'qna' | ''>>;
+  setType: Dispatch<SetStateAction<PostFormType>>;
+  setDraftId: Dispatch<SetStateAction<number | null>>;
+  setIsEditMode: Dispatch<SetStateAction<boolean>>;
+  setOriginalType: Dispatch<SetStateAction<PostFormType | null>>;
   reset: () => void;
 }
 

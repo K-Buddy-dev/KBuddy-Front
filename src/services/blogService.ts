@@ -44,11 +44,29 @@ export const blogService = {
     });
     return response.status === 204;
   },
-  //   // 블로그 수정
-  //   updateBlog: async (blogId: number, data: BlogRequest): Promise<Blog> => {
-  //     const response = await authClient.patch<Blog>(`/blog/${blogId}`, data);
-  //     return response.data;
-  //   },
+  // 블로그 수정 (PATCH 방식)
+  updateBlog: async (blogId: number, data: BlogRequest): Promise<boolean> => {
+    const formData = new FormData();
+
+    const { images, ...blogUpdateRequest } = data;
+    formData.append('blogUpdateRequest', JSON.stringify(blogUpdateRequest));
+
+    if (images && images.length > 0) {
+      images.forEach((file) => formData.append('images', file));
+    }
+
+    const response = await authClient.patch<{ data: { status: boolean } }>(`/blog/${blogId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.status === 204;
+  },
+  // 블로그 삭제
+  deleteBlog: async (blogId: number): Promise<boolean> => {
+    const response = await authClient.delete(`/blog/${blogId}`);
+    return response.status === 204;
+  },
   //   // 블로그 삭제
   //   deleteBlog: async (blogId: number): Promise<void> => {
   //     await authClient.delete(`/blog/${blogId}`);

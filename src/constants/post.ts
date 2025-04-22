@@ -13,6 +13,6 @@ export const POST_CATEGORIES = [
 ];
 
 export const POST_TYPES = [
-  { label: 'Blog', value: 'blog' },
-  { label: 'Question', value: 'qna' },
+  { label: 'Blog', value: 'Blog' },
+  { label: 'Question', value: 'Q&A' },
 ];
