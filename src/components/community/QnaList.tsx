@@ -1,7 +1,8 @@
+// import { useBlogs } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
 
-const QnaList: React.FC = () => {
-  // const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error, isError } = useBlogs();
+export const QnaList: React.FC = () => {
+  // const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useBlogs();
   // const updateFilters = useUpdateBlogFilters();
   // const addHeartMutation = useAddBlogHeart();
   // const removeHeartMutation = useRemoveBlogHeart();
@@ -88,5 +89,3 @@ const QnaList: React.FC = () => {
     </div>
   );
 };
-
-export default QnaList;

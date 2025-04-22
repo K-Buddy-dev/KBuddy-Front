@@ -1,46 +1,55 @@
+// import { CategoryMap } from '@/types/blog';
 import { Actions, Content } from './card';
-import { BlogCategory } from '@/types/blog';
 
 interface CommunityCardProps {
-  userId: string;
-  date: string;
+  writerId: string;
+  createdAt: string;
   title: string;
-  category: BlogCategory;
+  categoryId: number[];
   imageUrl?: string;
   profileImageUrl?: string;
-  likes: number;
+  heartCount: number;
   comments: number;
   isBookmarked: boolean;
+  isHearted: boolean;
   onLike: () => void;
   onBookmark: () => void;
 }
 
-const CommunityCard: React.FC<CommunityCardProps> = ({
-  userId,
-  date,
+export const CommunityCard: React.FC<CommunityCardProps> = ({
+  writerId,
+  createdAt,
   title,
-  category,
+  categoryId,
   imageUrl,
   profileImageUrl,
-  likes,
+  heartCount,
   comments,
   isBookmarked,
+  isHearted,
   onLike,
   onBookmark,
 }) => {
+  // const categoryNames = category.map((id) => CategoryMap[id] || 'Unknown');
+
   return (
-    <div className="w-full px-4 py-[18px]">
+    <div className="w-full px-4 py-[18px] bg-bg-default rounded-lg">
       <Content
-        id={userId}
-        date={date}
+        id={writerId}
+        date={createdAt}
         profileImageUrl={profileImageUrl}
         title={title}
-        category={category}
+        categoryId={categoryId}
         imageUrl={imageUrl}
       />
-      <Actions likes={likes} comments={comments} isBookmarked={isBookmarked} onLike={onLike} onBookmark={onBookmark} />
+      <Actions
+        heartCount={heartCount}
+        isHearted={isHearted}
+        comments={comments}
+        isBookmarked={isBookmarked}
+        onLike={onLike}
+        onBookmark={onBookmark}
+      />
     </div>
   );
 };
-
-export default CommunityCard;
