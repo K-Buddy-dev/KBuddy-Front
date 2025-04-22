@@ -41,3 +41,24 @@ export const base64ToFile = (base64String: string, fileName: string): File => {
   const blob = new Blob(byteArrays, { type: 'image/jpeg' });
   return new File([blob], fileName, { type: 'image/jpeg' });
 };
+
+// URL 문자열을 File 객체로 변환 (이미지 URL이나 Base64 문자열 처리)
+export const urlToFile = async (url: string, fileName: string): Promise<File> => {
+  // 이미 Base64 문자열인 경우
+  if (url.startsWith('data:')) {
+    return base64ToFile(url, fileName);
+  }
+
+  // 원격 URL인 경우
+  const response = await fetch(url);
+  const blob = await response.blob();
+  return new File([blob], fileName, { type: blob.type });
+};
+
+export const formatDate = (isoDate: string): string => {
+  const date = new Date(isoDate);
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+};

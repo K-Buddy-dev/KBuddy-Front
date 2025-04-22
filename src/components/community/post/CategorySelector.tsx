@@ -14,7 +14,7 @@ export const CategorySelector = ({ onNext }: CategorySelectorProps) => {
   const isValid = type && categoryId.length > 0;
 
   const handleCategorySelect = (id: number) => {
-    if (type === 'qna') {
+    if (type === 'Q&A') {
       if (!categoryId.includes(id)) {
         setCategoryId([id]);
       }
@@ -52,7 +52,7 @@ export const CategorySelector = ({ onNext }: CategorySelectorProps) => {
       <SectionInfo
         title="Select categories"
         description={
-          type === 'qna'
+          type === 'Q&A'
             ? 'Choose one category that fits your question.'
             : 'Choose at least one category that fits your blog. Feel free to select multiple categories.'
         }

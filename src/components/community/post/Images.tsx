@@ -9,7 +9,7 @@ export const Images = () => {
   const { images, type } = useCommunityFormStateContext();
   const { setImages } = useCommunityFormActionContext();
 
-  const MAX_IMAGES = type === 'qna' ? 5 : 10;
+  const MAX_IMAGES = type === 'Q&A' ? 5 : 10;
 
   const handleAlbumDataFromRN = (event: MessageEvent) => {
     if (typeof event.data !== 'string') return;
@@ -87,13 +87,20 @@ export const Images = () => {
   };
 
   useEffect(() => {
+    let urlsToCleanup: string[] = [];
+
     if (images && !window.ReactNativeWebView) {
       const urls = images.map((file) => URL.createObjectURL(file));
+      urlsToCleanup = urls;
       setImageUrls(urls);
     }
 
     return () => {
-      imageUrls.forEach((url) => URL.revokeObjectURL(url));
+      urlsToCleanup.forEach((url) => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
     };
   }, [images]);
 

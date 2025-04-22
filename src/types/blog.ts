@@ -1,3 +1,18 @@
+import { PostStatus } from './post';
+
+export const CATEGORIES = [
+  { id: 0, name: 'Restaurant' },
+  { id: 1, name: 'Shopping' },
+  { id: 2, name: 'Lodging' },
+  { id: 3, name: 'Art' },
+  { id: 4, name: 'Transportation' },
+  { id: 5, name: 'Daily Life' },
+  { id: 6, name: 'Cafe/Dessert' },
+  { id: 7, name: 'Attraction' },
+  { id: 8, name: 'Nature' },
+  { id: 9, name: 'Health' },
+  { id: 10, name: 'Others' },
+] as const;
 export interface Blog {
   id: number;
   title: string;
@@ -6,86 +21,49 @@ export interface Blog {
   images?: File[];
 }
 
-// 카테고리 열거형으로 제작 -> 추가 예정
-export enum BlogCategory {
-  RESTAURANT_CAFE = 'RESTAURANT_CAFE',
-  SHOPPING = 'SHOPPING',
-}
-
-export enum CommunitySort {
-  VIEW_COUNT = 'VIEW_COUNT',
-  HEART_COUNT = 'HEART_COUNT',
-  COMMENT_COUNT = 'COMMENT_COUNT',
-  LATEST = 'LATEST',
-  OLDEST = 'OLDEST',
-}
-
-// 댓글 타입
-export interface Comment {
-  id: number;
-  content: string;
-  writer: string;
-  heartCount: number;
-  isReply: boolean;
-  parentId: number | null;
-  createdDate: string;
-  deleted: boolean;
-}
-
-// 커뮤니티 콘텐츠 타입
+// 응답 데이터 타입
 export interface Community {
   id: number;
   writerId: number;
-  categoryId: number;
+  categoryId: number[];
   title: string;
   description: string;
-  imageUrls?: string[];
   viewCount: number;
-  likeCount: number;
+  heartCount: number;
+  isHearted: boolean;
+  isBookmarked: boolean;
   commentCount: number;
-
   createdAt: string;
-  createdDate: string;
 }
-// 전체
-// "id": 0,
-// "writerId": 0,
-// "categoryId": 0,
-// "title": "string",
-// "description": "string",
-// "viewCount": 0,
-// "likeCount": 0,
-// "commentCount": 0,
 
-// }
-// 한개
-// "id": 0,
-// "writerId": 0,
-// "categoryId": 0,
-// "title": "string",
-// "description": "string",
-// "viewCount": 0,
+interface CommunityListData {
+  nextId: number;
+  results: Community[];
+}
 
-// "images": [
-//   {
-//     "type": "PNG",
-//     "name": "string",
-//     "url": "string"
-//   }
-// ],
-// "comments": [
-//   {
-//     "id": 0,
-//     "qnaId": 0,
-//     "writerId": 0,
-//     "description": "string",
-//     "createdAt": "2025-03-31T13:50:12.250Z",
-//     "modifiedAt": "2025-03-31T13:50:12.250Z"
-//   }
-// ],
-// "heartCount": 0,
-// "commentCount": 0
-// },
+interface CommunityPostData {
+  status: boolean;
+  message: string;
+}
+
+// 요청 필터 타입
+export interface BlogFilters {
+  size: number;
+  id?: number; // 다음 페이지를 위한 커서 (nextId)
+  keyword: string; // 검색어가 없으면 빈 문자열
+  sort?: CommunitySort;
+}
+
+// CommunitySort 타입
+export enum CommunitySort {
+  LATEST = 'latest',
+  POPULAR = 'popular',
+}
+
+// sort 값 검증 함수
+export const isCommunitySort = (value: string | null): value is CommunitySort => {
+  return value === 'latest' || value === 'popular'; // 임시구현
+};
 
 // 커뮤니티 콘텐츠 목록 응답 타입
 export interface CommunityListResponse {
@@ -93,23 +71,16 @@ export interface CommunityListResponse {
   status: number;
   code: string | null;
   path: string | null;
-  data: {
-    nextId: number;
-    results: Community[];
-  };
+  data: CommunityListData;
   details: any[];
 }
 
-// 커뮤니티 콘텐츠 목록 응답 타입
-export interface CommunityResponse {
+export interface CommunityPostResponse {
   timestamp: string;
   status: number;
   code: string | null;
   path: string | null;
-  data: {
-    nextId: number;
-    results: Community[];
-  };
+  data: CommunityPostData;
   details: any[];
 }
 
@@ -119,7 +90,7 @@ export interface BlogRequest {
   description: string;
   categoryId: number[];
   images: File[];
-  status: 'PUBLISHED' | 'DRAFT';
+  status: PostStatus;
 }
 
 // 댓글 생성/수정 요청 타입 -> 댓글 과 밑 신고는 추후 수정 예정
