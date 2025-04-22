@@ -11,3 +11,4 @@ export * from './selectbox';
 export * from './label';
 export * from './radio';
 export * from './album';
+export * from './toast';

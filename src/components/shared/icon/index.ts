@@ -22,3 +22,5 @@ export * from './ImageNonSelect';
 export * from './Camera';
 export * from './RightArrowTriangle';
 export * from './LeftArrowTriangle';
+export * from './CheckCircleIcon';
+export * from './XIcon';

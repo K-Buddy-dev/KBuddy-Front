@@ -1,12 +1,15 @@
-import { Button, InfoMessage, TextField, Topbar } from '@/components/shared';
+import { Button, InfoMessage, TextField, Toast, Topbar } from '@/components/shared';
 import { Spinner } from '@/components/shared/spinner';
-import { useEmailVerifyStateContext, useVerifyCode, useVerifyCodeForm } from '@/hooks';
+import { useEmailVerifyStateContext, useToast, useVerifyCode, useVerifyCodeForm } from '@/hooks';
 import { authService } from '@/services';
+import { useEffect } from 'react';
 import { Controller } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export function SignupVerifyPage() {
+  const location = useLocation();
   const { email } = useEmailVerifyStateContext();
+  const { toast, showToast, hideToast } = useToast();
   const {
     control,
     handleSubmit,
@@ -15,12 +18,30 @@ export function SignupVerifyPage() {
 
   const { verifyCode, error, isLoading } = useVerifyCode();
   const navigate = useNavigate();
+
+  // 새로운 페이지로 이동했을 때 코드 전송 메시지 표시
+  useEffect(() => {
+    const isFromEmailVerify = location.state?.from === '/signup';
+    if (isFromEmailVerify) {
+      showToast({
+        message: 'Confirmation code resent.',
+        type: 'success',
+        duration: 3000,
+      });
+    }
+  }, [location, showToast]);
+
   const handleClickBackButton = () => {
     navigate('/');
   };
 
   const reSendCode = () => {
     authService.sendCode({ email });
+    showToast({
+      message: 'Confirmation code resent.',
+      type: 'success',
+      duration: 3000,
+    });
   };
 
   const onSubmit = async (data: { code: string }) => {
@@ -35,6 +56,7 @@ export function SignupVerifyPage() {
   return (
     <>
       <Topbar title="Create account" type="back" onBack={handleClickBackButton} />
+      {toast && <Toast message={toast.message} type={toast.type} duration={toast.duration} onClose={hideToast} />}
       <form className="mt-[72px] flex flex-col items-center" onSubmit={handleSubmit(onSubmit)}>
         <InfoMessage
           title="Enter the confirmation code"
