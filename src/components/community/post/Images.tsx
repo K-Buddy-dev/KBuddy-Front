@@ -3,9 +3,13 @@ import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/h
 import { base64ToFile } from '@/utils/utils';
 import { useEffect, useState } from 'react';
 
-export const Images = () => {
+interface ImagesProps {
+  imageUrls?: string[];
+  setImageUrls?: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const { images, type } = useCommunityFormStateContext();
   const { setImages } = useCommunityFormActionContext();
 
@@ -25,7 +29,7 @@ export const Images = () => {
             const newFiles = [...prev, ...files];
             return newFiles.slice(0, MAX_IMAGES);
           });
-          setImageUrls((prev) => {
+          setImageUrls?.((prev) => {
             const newUrls = [...prev, ...data.album];
             return newUrls.slice(0, MAX_IMAGES);
           });
@@ -57,7 +61,7 @@ export const Images = () => {
           return newFiles.slice(0, MAX_IMAGES);
         });
         const urls = files.map((file) => URL.createObjectURL(file));
-        setImageUrls((prev) => {
+        setImageUrls?.((prev) => {
           const newUrls = [...prev, ...urls];
           return newUrls.slice(0, MAX_IMAGES);
         });
@@ -80,26 +84,27 @@ export const Images = () => {
 
   const handleDeleteImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
-    setImageUrls((prev) => prev.filter((_, i) => i !== index));
+    setImageUrls?.((prev) => prev.filter((_, i) => i !== index));
     if (currentIndex >= imageUrls.length - 1) {
       setCurrentIndex(Math.max(0, imageUrls.length - 2));
     }
   };
 
   useEffect(() => {
-    if (images && !window.ReactNativeWebView) {
+    if (images && !window.ReactNativeWebView && setImageUrls) {
       const urls = images.map((file) => URL.createObjectURL(file));
       setImageUrls(urls);
     }
 
     return () => {
-      imageUrls.forEach((url) => {
-        if (url.startsWith('blob:')) {
-          URL.revokeObjectURL(url);
-        }
-      });
-
-      setImageUrls([]);
+      if (setImageUrls) {
+        imageUrls.forEach((url) => {
+          if (url.startsWith('blob:')) {
+            URL.revokeObjectURL(url);
+          }
+        });
+        setImageUrls([]);
+      }
     };
   }, [images]);
 
