@@ -4,7 +4,7 @@ import { Title } from './Title';
 import { Images } from './Images';
 import { useCommunityFormStateContext } from '@/hooks';
 import { usePost } from '@/hooks/usePost';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface PreviewProps {
   onNext: () => void;
@@ -15,6 +15,7 @@ export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
   const { title, description, images, type, categoryId, draftId, isEditMode, originalType } =
     useCommunityFormStateContext();
   const { createPost, updatePost } = usePost();
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   const isValid = title.length > 0 && description.length > 0;
 
@@ -39,6 +40,14 @@ export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
         await createPost(data, 'PUBLISHED');
       }
 
+      // 이미지 URL 메모리 정리
+      imageUrls.forEach((url) => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
+      setImageUrls([]);
+
       onNext();
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -58,7 +67,7 @@ export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
       <Topbar title="New Post" type="back" next="Post" isNext={isValid} onBack={onExit} onNext={onSubmit} />
       <div className="mt-[72px]">
         <Title />
-        <Images />
+        <Images imageUrls={imageUrls} setImageUrls={setImageUrls} />
         <Description />
       </div>
     </div>
