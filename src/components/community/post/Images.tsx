@@ -87,20 +87,19 @@ export const Images = () => {
   };
 
   useEffect(() => {
-    let urlsToCleanup: string[] = [];
-
     if (images && !window.ReactNativeWebView) {
       const urls = images.map((file) => URL.createObjectURL(file));
-      urlsToCleanup = urls;
       setImageUrls(urls);
     }
 
     return () => {
-      urlsToCleanup.forEach((url) => {
+      imageUrls.forEach((url) => {
         if (url.startsWith('blob:')) {
           URL.revokeObjectURL(url);
         }
       });
+
+      setImageUrls([]);
     };
   }, [images]);
 
