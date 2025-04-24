@@ -9,6 +9,7 @@ interface ImagesProps {
 }
 
 export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
+  const [maxImageMessage, setMaxImageMessage] = useState<string>('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const { images, type } = useCommunityFormStateContext();
   const { setImages } = useCommunityFormActionContext();
@@ -109,6 +110,14 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
   }, [images]);
 
   useEffect(() => {
+    if (imageUrls.length >= MAX_IMAGES) {
+      setMaxImageMessage(`최대 ${MAX_IMAGES}개의 이미지만 추가할 수 있습니다.`);
+    } else {
+      setMaxImageMessage(`${MAX_IMAGES - imageUrls.length}개의 이미지를 더 선택할 수 있습니다.`);
+    }
+  }, [imageUrls.length]);
+
+  useEffect(() => {
     window.addEventListener('message', handleAlbumDataFromRN);
 
     return () => {
@@ -119,6 +128,7 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
   return (
     <div className="bg-bg-medium">
       <div className="w-full flex flex-col justify-center items-center gap-4 p-4">
+        {maxImageMessage && <div className="w-full text-center text-text-weak text-xs mb-1">{maxImageMessage}</div>}
         <div
           className="overflow-x-hidden flex items-center gap-4 w-[528px] h-[200px] relative"
           onTouchStart={(e) => {

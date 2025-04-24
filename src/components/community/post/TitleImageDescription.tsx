@@ -11,7 +11,7 @@ import { Complete } from './Complete';
 export const TitleImageDescription = () => {
   const { title, description, images, type, categoryId, draftId, isEditMode, originalType } =
     useCommunityFormStateContext();
-  const { createPost, updatePost } = usePost();
+  const { createPost, updatePost, isLoading } = usePost();
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const { push, pop } = useStackNavigation();
   const { reset } = useCommunityFormActionContext();
@@ -71,7 +71,14 @@ export const TitleImageDescription = () => {
 
   return (
     <div className="font-roboto w-full min-h-screen pt-20">
-      <Topbar title="New Post" type="back" next="Post" isNext={isValid} onBack={onBack} onNext={onSubmit} />
+      <Topbar
+        title="New Post"
+        type="back"
+        next="Post"
+        isNext={isValid && !isLoading}
+        onBack={onBack}
+        onNext={onSubmit}
+      />
       <div>
         <Title />
         <Images imageUrls={imageUrls} setImageUrls={setImageUrls} />
