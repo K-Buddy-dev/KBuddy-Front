@@ -19,7 +19,6 @@ import { ImageSelectorPage } from './pages/ImageSelectorPage.tsx';
 import CommunityPostPage from './pages/CommunityPostPage.tsx';
 import { CommunityPage } from './pages/CommunityPage.tsx';
 import { CommunityFormContextProvider } from './components/contexts/CommunityFormContextProvider.tsx';
-import { StackContextProvider } from './components/contexts/StackContextProvider.tsx';
 
 function App() {
   return (
@@ -44,10 +43,8 @@ function App() {
           <Route path="/oauth/signup/form" element={<OauthSignupFormPage />} />
 
           <Route path="/community" element={<CommunityPage />} />
-          <Route element={<StackContextProvider />}>
-            <Route element={<CommunityFormContextProvider />}>
-              <Route path="/community/post" element={<CommunityPostPage />} />
-            </Route>
+          <Route element={<CommunityFormContextProvider />}>
+            <Route path="/community/post" element={<CommunityPostPage />} />
           </Route>
         </Route>
         <Route path="/image-selector" element={<ImageSelectorPage />} />

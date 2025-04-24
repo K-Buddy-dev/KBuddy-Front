@@ -6,7 +6,7 @@ export const Title = () => {
   const { setTitle } = useCommunityFormActionContext();
 
   return (
-    <div className="flex justify-center items-center mx-4 mt-6">
+    <div className="flex justify-center items-center mx-4">
       <TextField
         id="title"
         type="text"

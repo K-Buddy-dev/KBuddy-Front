@@ -1,16 +1,18 @@
 import { Button, Topbar } from '@/components/shared';
 import { useNavigate } from 'react-router-dom';
 import { DraftPosts } from './DraftPosts';
+import { useStackNavigation } from 'j-react-stack';
+import { TypeCategory } from './TypeCategory';
 
-interface WriteProps {
-  onNext: () => void;
-}
-
-export const Write = ({ onNext }: WriteProps) => {
+export const Write = () => {
+  const { push } = useStackNavigation();
   const navigate = useNavigate();
 
-  const handleNewPost = () => {
-    onNext();
+  const onNext = () => {
+    push({
+      key: 'typeCategory',
+      element: <TypeCategory />,
+    });
   };
 
   const handleClickCancleButton = () => {
@@ -18,10 +20,10 @@ export const Write = ({ onNext }: WriteProps) => {
   };
 
   return (
-    <div className="font-roboto">
+    <div className="font-roboto w-full min-h-screen pt-20">
       <Topbar title="Write a Post" type="cancel" onCancle={handleClickCancleButton} />
-      <div className="mt-[72px] px-4">
-        <Button variant="solid" color="primary" className="mt-6 w-full h-12" onClick={handleNewPost}>
+      <div className="px-4">
+        <Button variant="solid" color="primary" className="mt-6 w-full h-12" onClick={onNext}>
           Create a new post
         </Button>
       </div>
