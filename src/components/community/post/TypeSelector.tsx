@@ -13,7 +13,7 @@ export const TypeSelector = () => {
   };
 
   return (
-    <div className="w-full mt-14 px-4">
+    <div className="w-full px-4">
       <SectionInfo title="Type of a post" description="Please select the correct type of post." />
       <div className="w-full flex flex-col items-start mb-4">
         <div className="w-full grid grid-cols-2 gap-4">
