@@ -3,16 +3,27 @@ import { DraftModal } from './DraftModal';
 import { useEffect, useState } from 'react';
 import { CategorySelector } from './CategorySelector';
 import { TypeSelector } from './TypeSelector';
-import { useCommunityFormStateContext } from '@/hooks';
+import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
+import { useStackNavigation } from 'j-react-stack';
+import { TitleImageDescription } from './TitleImageDescription';
 
-interface PreviewProps {
-  onNext: () => void;
-  onExit: () => void;
-}
-
-export const TypeCategory = ({ onNext, onExit }: PreviewProps) => {
+export const TypeCategory = () => {
+  const { push, pop } = useStackNavigation();
+  const { reset } = useCommunityFormActionContext();
   const { type, categoryId } = useCommunityFormStateContext();
   const [showExitModal, setShowExitModal] = useState(false);
+
+  const onExit = () => {
+    pop();
+    reset();
+  };
+
+  const onNext = () => {
+    push({
+      key: 'description',
+      element: <TitleImageDescription />,
+    });
+  };
 
   const handleClickBackButton = () => {
     if (type && categoryId.length > 0) {
@@ -31,7 +42,7 @@ export const TypeCategory = ({ onNext, onExit }: PreviewProps) => {
   }, []);
 
   return (
-    <div className="font-roboto">
+    <div className="font-roboto w-full min-h-screen pt-20">
       <Topbar title="Post Preview" type="back" isNext={true} onBack={handleClickBackButton} />
       {/* <div className="bg-bg-medium w-full h-[326px] mt-14 px-4">
         <SectionInfo

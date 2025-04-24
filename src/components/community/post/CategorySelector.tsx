@@ -60,7 +60,7 @@ export const CategorySelector = ({ onNext }: CategorySelectorProps) => {
       <div className="grid grid-cols-2 gap-4">
         {POST_CATEGORIES.map((category) => (
           <div
-            key={category.id}
+            key={category.name}
             className="flex items-center justify-start cursor-pointer gap-1 py-2 px-3 rounded-lg border-2 border-border-default"
             onClick={() => handleCategorySelect(category.id)}
           >

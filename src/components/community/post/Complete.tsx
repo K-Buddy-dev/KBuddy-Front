@@ -14,9 +14,9 @@ export const Complete = () => {
   }, []);
 
   return (
-    <div>
+    <div className="w-full min-h-screen pt-20">
       <Topbar title="" type="cancel" onCancle={() => navigate('/community')} />
-      <div className="w-full min-h-screen flex justify-center items-center mt-[72px]">
+      <div className="w-full min-h-screen flex justify-center items-center">
         <div className="w-full min-h-[640px] px-4 m-auto flex flex-col items-center">
           <div className="w-36 h-36 rounded-full bg-bg-brand-weak mb-3">
             <img src={CompleteImage} alt="complete" />

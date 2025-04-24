@@ -2,21 +2,19 @@ import { Topbar } from '@/components/shared';
 import { Description } from './Description';
 import { Title } from './Title';
 import { Images } from './Images';
-import { useCommunityFormStateContext } from '@/hooks';
+import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
 import { usePost } from '@/hooks/usePost';
 import { useEffect, useState } from 'react';
+import { useStackNavigation } from 'j-react-stack';
+import { Complete } from './Complete';
 
-interface PreviewProps {
-  onNext: () => void;
-  onExit: () => void;
-}
-
-export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
+export const TitleImageDescription = () => {
   const { title, description, images, type, categoryId, draftId, isEditMode, originalType } =
     useCommunityFormStateContext();
   const { createPost, updatePost } = usePost();
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-
+  const { push, pop } = useStackNavigation();
+  const { reset } = useCommunityFormActionContext();
   const isValid = title.length > 0 && description.length > 0;
 
   const onSubmit = async () => {
@@ -47,11 +45,20 @@ export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
         }
       });
       setImageUrls([]);
+      localStorage.removeItem('community-current-step');
+      reset();
 
-      onNext();
+      push({
+        key: 'complete',
+        element: <Complete />,
+      });
     } catch (error) {
       console.error('Error submitting form:', error);
     }
+  };
+
+  const onBack = () => {
+    pop();
   };
 
   useEffect(() => {
@@ -63,9 +70,9 @@ export const TitleImageDescription = ({ onNext, onExit }: PreviewProps) => {
   }, []);
 
   return (
-    <div className="font-roboto">
-      <Topbar title="New Post" type="back" next="Post" isNext={isValid} onBack={onExit} onNext={onSubmit} />
-      <div className="mt-[72px]">
+    <div className="font-roboto w-full min-h-screen pt-20">
+      <Topbar title="New Post" type="back" next="Post" isNext={isValid} onBack={onBack} onNext={onSubmit} />
+      <div>
         <Title />
         <Images imageUrls={imageUrls} setImageUrls={setImageUrls} />
         <Description />
