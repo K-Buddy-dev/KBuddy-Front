@@ -2,11 +2,13 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import {
   LoginPage,
-  // CommunityPage,
   KakaoRedirectPage,
   GoogleRedirectPage,
   AppleRedirectPage,
   OauthSignupFormPage,
+  ServicePage,
+  MessagePage,
+  ProfilePage,
 } from './pages';
 import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
 import 'swiper/css';
@@ -46,6 +48,9 @@ function App() {
           <Route element={<CommunityFormContextProvider />}>
             <Route path="/community/post" element={<CommunityPostPage />} />
           </Route>
+          <Route path="/service" element={<ServicePage />} />
+          <Route path="/message" element={<MessagePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
         <Route path="/image-selector" element={<ImageSelectorPage />} />
         {/* </Route> */}
