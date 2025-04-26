@@ -20,7 +20,10 @@ export function CommunityPage() {
         {/* <SwiperList cards={mockData} /> */}
         <Tab />
       </div>
-      <Link to="/community/post" className="absolute right-4 bottom-3 -translate-x-1/2 -translate-y-1/2 cursor-pointer">
+      <Link
+        to="/community/post"
+        className="absolute right-4 bottom-24 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+      >
         <FloatPostAction />
       </Link>
       {currentTab === 'User blog' && <BlogList />}

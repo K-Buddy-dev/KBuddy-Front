@@ -7,6 +7,9 @@ export default {
         xs: '360px',
         sm: '600px',
       },
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+      },
       colors: {
         text: {
           default: '#222222',
