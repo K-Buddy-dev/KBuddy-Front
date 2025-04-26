@@ -24,3 +24,8 @@ export * from './RightArrowTriangle';
 export * from './LeftArrowTriangle';
 export * from './CheckCircleIcon';
 export * from './XIcon';
+export * from './HomeIcon';
+export * from './CommunityIcon';
+export * from './ServiceIcon';
+export * from './MessageIcon';
+export * from './ProfileIcon';
