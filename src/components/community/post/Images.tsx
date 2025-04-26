@@ -11,7 +11,7 @@ interface ImagesProps {
 export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
   const [maxImageMessage, setMaxImageMessage] = useState<string>('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { images, type } = useCommunityFormStateContext();
+  const { type } = useCommunityFormStateContext();
   const { setImages } = useCommunityFormActionContext();
 
   const MAX_IMAGES = type === 'Q&A' ? 5 : 10;
@@ -21,26 +21,30 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
 
     try {
       const data = JSON.parse(event.data);
-      if (data.action === 'albumData') {
-        if (data.album && data.album.length > 0) {
-          const files = data.album.map((base64: string, index: number) =>
-            base64ToFile(base64, `selected-image-${index}.jpg`)
-          );
-          setImages((prev) => {
-            const newFiles = [...prev, ...files];
-            return newFiles.slice(0, MAX_IMAGES);
-          });
-          setImageUrls?.((prev) => {
-            const newUrls = [...prev, ...data.album];
-            return newUrls.slice(0, MAX_IMAGES);
-          });
-        }
-      } else if (data.action === 'swipe') {
-        if (data.direction === 'left' && currentIndex < imageUrls.length - 1) {
-          setCurrentIndex(currentIndex + 1);
-        } else if (data.direction === 'right' && currentIndex > 0) {
-          setCurrentIndex(currentIndex - 1);
-        }
+
+      switch (data.action) {
+        case 'albumData':
+          if (data.album && data.album.length > 0) {
+            const files = data.album.map((base64: string, index: number) =>
+              base64ToFile(base64, `selected-image-${index}.jpg`)
+            );
+            setImages((prev) => {
+              const newFiles = [...prev, ...files];
+              return newFiles.slice(0, MAX_IMAGES);
+            });
+            setImageUrls?.((prev) => {
+              const newUrls = [...prev, ...data.album];
+              return newUrls.slice(0, MAX_IMAGES);
+            });
+          }
+          break;
+        case 'swipe':
+          if (data.direction === 'left' && currentIndex < imageUrls.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+          } else if (data.direction === 'right' && currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+          }
+          break;
       }
     } catch (e) {
       console.error('앨범 데이터 파싱 실패:', e);
@@ -90,24 +94,6 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
       setCurrentIndex(Math.max(0, imageUrls.length - 2));
     }
   };
-
-  useEffect(() => {
-    if (images && !window.ReactNativeWebView && setImageUrls) {
-      const urls = images.map((file) => URL.createObjectURL(file));
-      setImageUrls(urls);
-    }
-
-    return () => {
-      if (setImageUrls) {
-        imageUrls.forEach((url) => {
-          if (url.startsWith('blob:')) {
-            URL.revokeObjectURL(url);
-          }
-        });
-        setImageUrls([]);
-      }
-    };
-  }, [images]);
 
   useEffect(() => {
     if (imageUrls.length >= MAX_IMAGES) {

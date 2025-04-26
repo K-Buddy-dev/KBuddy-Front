@@ -6,7 +6,7 @@ export function LoginPage() {
     <>
       <Topbar title="Log in or sign up" type="cancel" />
       <div className="mt-[72px]">
-        <Accordion defaultSelectedId="login">
+        <Accordion defaultSelectedId="signup">
           <AccordionItem id="login" name="auth" label="Log in">
             <LoginForm />
           </AccordionItem>
