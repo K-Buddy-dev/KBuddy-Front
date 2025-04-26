@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { cn } from '@/utils/utils.ts';
 import { SelectedRadioIcon, UnSelectedRadioIcon } from '../icon';
 
@@ -14,6 +14,17 @@ export interface AccordionItemProps {
 }
 
 export function AccordionItem({ children, id, label, name, checked, onChange, isFirst, isLast }: AccordionItemProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState<number>(0);
+
+  useEffect(() => {
+    if (checked && contentRef.current) {
+      setHeight(contentRef.current.scrollHeight);
+    } else {
+      setHeight(0);
+    }
+  }, [checked]);
+
   return (
     <div className="border-b border-border-brand-default last:border-b-0">
       <div
@@ -34,10 +45,12 @@ export function AccordionItem({ children, id, label, name, checked, onChange, is
       <div
         className="overflow-hidden transition-all duration-300 ease-in-out"
         style={{
-          maxHeight: checked ? 'none' : 0,
+          height: `${height}px`,
         }}
       >
-        <div className="pt-4 pb-6 px-4">{children}</div>
+        <div ref={contentRef} className="pt-4 pb-6 px-4">
+          {children}
+        </div>
       </div>
     </div>
   );
