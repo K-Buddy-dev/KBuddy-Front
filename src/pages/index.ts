@@ -5,6 +5,6 @@ export { GoogleRedirectPage } from './redirect/GoogleRedirectPage';
 export { AppleRedirectPage } from './redirect/AppleRedirectPage';
 export { OauthSignupFormPage } from './OauthSignupFormPage';
 export { CommunityPage } from './CommunityPage';
-export { ServicePage } from './ServicePage';
+export { TempPage } from './TempPage';
 export { MessagePage } from './MessagePage';
 export { ProfilePage } from './ProfilePage';
