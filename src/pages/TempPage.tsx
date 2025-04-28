@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SettingsIcon } from '@/components/shared/icon';
 
-export function ServicePage() {
+export function TempPage() {
   const [dots, setDots] = useState('.');
 
   useEffect(() => {
