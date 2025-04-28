@@ -5,6 +5,7 @@ import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
 import { useSearchParams } from 'react-router-dom';
+import { CategoryFilterSwiper } from './swiper';
 
 export const BlogList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,36 +31,21 @@ export const BlogList: React.FC = () => {
   const removeBookmark = useRemoveBookmark();
 
   const observerRef = useRef<HTMLDivElement | null>(null);
-  const observerInstance = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    if (observerInstance.current) {
-      observerInstance.current.disconnect();
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1, rootMargin: '20px' }
-    );
-
-    observerInstance.current = observer;
-
-    const currentObserverRef = observerRef.current;
-    if (currentObserverRef && !isFetchingNextPage) {
-      observer.observe(currentObserverRef);
-    }
-
-    return () => {
-      if (currentObserverRef) {
-        observer.unobserve(currentObserverRef);
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
+        hasNextPage &&
+        !isFetchingNextPage
+      ) {
+        fetchNextPage();
       }
-      observer.disconnect();
     };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, data?.pages.length]);
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const handleApplyFilters = (filters: { sort: string; categoryIds: number[] }) => {
     const scrollY = window.scrollY;
@@ -89,13 +75,13 @@ export const BlogList: React.FC = () => {
     if (isHearted) {
       removeBlogHeart.mutate(blogId, {
         onError: (error) => {
-          alert(`좋아요 취소 실패: ${error.message}`);
+          alert(`Fail remove Like: ${error.message}`);
         },
       });
     } else {
       addBlogHeart.mutate(blogId, {
         onError: (error) => {
-          alert(`좋아요 추가 실패: ${error.message}`);
+          alert(`Fail add Like: ${error.message}`);
         },
       });
     }
@@ -105,13 +91,13 @@ export const BlogList: React.FC = () => {
     if (isBookmarked) {
       removeBookmark.mutate(blogId, {
         onError: (error) => {
-          alert(`북마크 취소 실패: ${error.message}`);
+          alert(`Fail remove Bookmark: ${error.message}`);
         },
       });
     } else {
       addBookmark.mutate(blogId, {
         onError: (error) => {
-          alert(`북마크 추가 실패: ${error.message}`);
+          alert(`Fail add Bookmark: ${error.message}`);
         },
       });
     }
@@ -124,7 +110,7 @@ export const BlogList: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="font-roboto font-medium text-lg ml-4 mt-6 mb-4">All blogs</h1>
-      <div className="mb-4 ml-4">
+      <div className="mb-4 ml-4 flex items-center gap-2">
         <button
           onClick={() => setIsModalOpen(true)}
           className="w-[30px] h-[30px] p-[4px] border-[1px] border-border-default rounded-lg"
@@ -133,6 +119,7 @@ export const BlogList: React.FC = () => {
             <FilterIcon />
           </div>
         </button>
+        <CategoryFilterSwiper categoryIds={categoryIds} setCategoryIds={setCategoryIds} />
       </div>
 
       <div
@@ -180,19 +167,18 @@ export const BlogList: React.FC = () => {
                       onLike={() => handleLike(blog.id, blog.isHearted)}
                       onBookmark={() => handleBookmark(blog.id, blog.isBookmarked)}
                     />
-                    {isLastItem && isFetchingNextPage && (
-                      <div className="h-10 flex justify-center items-center">
-                        <div>로딩 중...</div>
-                      </div>
-                    )}
                   </div>
                 );
               })}
             </div>
           ))}
-          {hasNextPage && (
-            <div ref={observerRef} className="h-10 flex justify-center items-center">
-              {isFetchingNextPage ? <div>Loading more...</div> : <div>Load more</div>}
+          {hasNextPage ? (
+            <div ref={observerRef} className="h-10 pt-6 flex justify-center items-center">
+              {isFetchingNextPage ? <div>Loading...</div> : <div>Show More</div>}
+            </div>
+          ) : (
+            <div className="h-10 pt-6 flex justify-center items-center">
+              <div>You've reached the end!</div>
             </div>
           )}
         </>

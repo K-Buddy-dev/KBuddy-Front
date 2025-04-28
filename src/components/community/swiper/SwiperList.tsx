@@ -96,7 +96,7 @@ const styles = `
   }
 `;
 
-export function SwiperList({ cards }: SwiperWrapperProps) {
+export const SwiperList = ({ cards }: SwiperWrapperProps) => {
   const [, setSwiperIndex] = useState<number>(0);
   const [swiper, setSwiper] = useState<SwiperClass>();
   const [isBeginning, setIsBeginning] = useState<boolean>(true);
@@ -194,4 +194,4 @@ export function SwiperList({ cards }: SwiperWrapperProps) {
       </div>
     </SwiperListWrapper>
   );
-}
+};

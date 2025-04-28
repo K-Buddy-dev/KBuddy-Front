@@ -1,1 +1,2 @@
-export { SwiperList } from './SwiperList';
+export * from './SwiperList';
+export * from './SwiperCategoryFilter';
