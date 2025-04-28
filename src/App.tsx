@@ -6,9 +6,7 @@ import {
   GoogleRedirectPage,
   AppleRedirectPage,
   OauthSignupFormPage,
-  ServicePage,
-  MessagePage,
-  ProfilePage,
+  TempPage,
 } from './pages';
 import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
 import 'swiper/css';
@@ -17,7 +15,6 @@ import { SignupFormPage } from './pages/SignupFormPage.tsx';
 import { EmailVerifyGuard } from './components/routes/EmailVerifyGuard.tsx';
 import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 // import { AuthGuard } from './components/routes/AuthGuard.tsx';
-import { ImageSelectorPage } from './pages/ImageSelectorPage.tsx';
 import CommunityPostPage from './pages/CommunityPostPage.tsx';
 import { CommunityPage } from './pages/CommunityPage.tsx';
 import { CommunityFormContextProvider } from './components/contexts/CommunityFormContextProvider.tsx';
@@ -48,11 +45,11 @@ function App() {
           <Route element={<CommunityFormContextProvider />}>
             <Route path="/community/post" element={<CommunityPostPage />} />
           </Route>
-          <Route path="/service" element={<ServicePage />} />
-          <Route path="/message" element={<MessagePage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/home" element={<TempPage />} />
+          <Route path="/service" element={<TempPage />} />
+          <Route path="/message" element={<TempPage />} />
+          <Route path="/profile" element={<TempPage />} />
         </Route>
-        <Route path="/image-selector" element={<ImageSelectorPage />} />
         {/* </Route> */}
       </Routes>
     </BrowserRouter>
