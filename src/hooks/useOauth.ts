@@ -130,7 +130,6 @@ export const useOauthLoginHandler = () => {
     try {
       const result = await oauthLogin(data);
       const { accessToken } = result.data;
-      console.log('accessToken: ', accessToken);
       authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       navigate('/community');
     } catch (err: any) {

@@ -13,7 +13,6 @@ export const BlogList: React.FC = () => {
   const [filterCount, setFilterCount] = useState<number>(0);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs();
-  console.log('hasNextPage: ', hasNextPage);
 
   const addBlogHeart = useAddBlogHeart();
   const removeBlogHeart = useRemoveBlogHeart();
