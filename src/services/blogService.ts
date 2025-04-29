@@ -1,5 +1,5 @@
 import { authClient } from '@/api/axiosConfig';
-import { BlogRequest, CommunityListResponse } from '@/types/blog';
+import { BlogRequest, CommunityDetailResponse, CommunityListResponse } from '@/types/blog';
 
 // // blogService 정의
 export const blogService = {
@@ -23,11 +23,11 @@ export const blogService = {
     return response.data;
   },
 
-  //   // 특정 블로그 상세 조회
-  //   getBlogById: async (blogId: number): Promise<Blog> => {
-  //     const response = await authClient.get<Blog>(`/blog/${blogId}`);
-  //     return response.data;
-  //   },
+  // 특정 블로그 상세 조회
+  getBlogById: async (blogId: number): Promise<CommunityDetailResponse> => {
+    const response = await authClient.get<CommunityDetailResponse>(`/blog/${blogId}`);
+    return response.data;
+  },
   // 블로그 생성
   createBlog: async (data: BlogRequest): Promise<boolean> => {
     const formData = new FormData();

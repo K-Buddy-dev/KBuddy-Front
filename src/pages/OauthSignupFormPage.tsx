@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-export function OauthSignupFormPage() {
+export const OauthSignupFormPage = () => {
   const { email, oAuthUid, oAuthCategory, socialStoreReset } = useSocialStore();
 
   const navigate = useNavigate();
@@ -166,4 +166,4 @@ export function OauthSignupFormPage() {
       </div>
     </>
   );
-}
+};

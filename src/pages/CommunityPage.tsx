@@ -7,7 +7,7 @@ import { BlogList, FloatPostAction } from '@/components';
 import { QnaList } from '@/components/community';
 // import { SwiperList } from '@/components/community/swiper';
 
-export function CommunityPage() {
+export const CommunityPage = () => {
   const [searchParams] = useSearchParams();
 
   const currentTab = searchParams.get('tab') || 'Curated blog';
@@ -26,4 +26,4 @@ export function CommunityPage() {
       {currentTab === 'Q&A' && <QnaList />}
     </>
   );
-}
+};

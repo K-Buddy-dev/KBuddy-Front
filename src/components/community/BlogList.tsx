@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+
 import { useAddBlogHeart, useAddBookmark, useBlogs, useRemoveBlogHeart, useRemoveBookmark } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
 import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
-import { useSearchParams } from 'react-router-dom';
 import { CategoryFilterSwiper } from './swiper';
 
 export const BlogList: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterCount, setFilterCount] = useState<number>(0);
@@ -60,6 +63,14 @@ export const BlogList: React.FC = () => {
     };
   }, [isModalOpen]);
 
+  useEffect(() => {
+    const savedScrollY = sessionStorage.getItem('scrollY');
+    if (savedScrollY) {
+      window.scrollTo(0, parseInt(savedScrollY, 10));
+      sessionStorage.removeItem('scrollY');
+    }
+  }, [location.key]);
+
   const handleLike = (blogId: number, isHearted: boolean) => {
     if (isHearted) {
       removeBlogHeart.mutate(blogId, {
@@ -90,6 +101,11 @@ export const BlogList: React.FC = () => {
         },
       });
     }
+  };
+
+  const handleDetail = (blogId: number) => {
+    sessionStorage.setItem('scrollY', String(window.scrollY));
+    navigate(`/community/detail/${blogId}${location.search}`);
   };
 
   if (isError) {
@@ -146,13 +162,15 @@ export const BlogList: React.FC = () => {
                     className={`bg-white border-y-[2px] border-b-0 border-border-weak2`}
                     key={blog.id}
                     ref={isLastItem ? observerRef : null}
+                    onClick={() => handleDetail(blog.id)}
                   >
                     <CommunityCard
                       writerId={`${blog.writerId}`}
                       createdAt={new Date(blog.createdAt).toLocaleDateString()}
                       title={blog.title}
                       categoryId={blog.categoryId}
-                      profileImageUrl="https://via.placeholder.com/40"
+                      // profileImageUrl="https://via.placeholder.com/40"
+                      // imageUrl={blog.imageUrl}
                       heartCount={blog.heartCount}
                       comments={blog.commentCount}
                       isBookmarked={blog.isBookmarked}

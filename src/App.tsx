@@ -7,6 +7,7 @@ import {
   AppleRedirectPage,
   OauthSignupFormPage,
   TempPage,
+  CommunityDetailPage,
 } from './pages';
 import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
 import 'swiper/css';
@@ -45,6 +46,8 @@ function App() {
             <Route element={<CommunityFormContextProvider />}>
               <Route path="/community/post" element={<CommunityPostPage />} />
             </Route>
+            <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
+
             <Route path="/home" element={<TempPage />} />
             <Route path="/service" element={<TempPage />} />
             <Route path="/message" element={<TempPage />} />
