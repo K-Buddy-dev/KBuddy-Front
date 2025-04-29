@@ -50,20 +50,10 @@ interface CommunityPostData {
 export interface BlogFilters {
   size: number;
   id?: number; // 다음 페이지를 위한 커서 (nextId)
-  keyword: string; // 검색어가 없으면 빈 문자열
-  sort?: CommunitySort;
+  keyword?: string; // 검색어가 없으면 빈 문자열
+  sort?: string;
+  categoryCode?: number;
 }
-
-// CommunitySort 타입
-export enum CommunitySort {
-  LATEST = 'latest',
-  POPULAR = 'popular',
-}
-
-// sort 값 검증 함수
-export const isCommunitySort = (value: string | null): value is CommunitySort => {
-  return value === 'latest' || value === 'popular'; // 임시구현
-};
 
 // 커뮤니티 콘텐츠 목록 응답 타입
 export interface CommunityListResponse {

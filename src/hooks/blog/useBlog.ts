@@ -1,4 +1,4 @@
-import { BlogFilters, CommunityListResponse, CommunitySort, isCommunitySort } from '@/types/blog';
+import { BlogFilters, Community, CommunityListResponse } from '@/types/blog';
 import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { blogQueryKeys } from './blogKeys';
@@ -13,16 +13,16 @@ type BlogQueryKey = readonly [string, BlogFilters];
 export const useBlogs = () => {
   const [searchParams] = useSearchParams();
 
-  // 쿼리 파라미터 파싱
-  const rawSort = searchParams.get('sort');
-  const sort: CommunitySort | undefined = isCommunitySort(rawSort) ? rawSort : undefined;
-  const keyword = searchParams.get('keyword') ?? '';
-  const size = Number(searchParams.get('size')) || 5;
+  const sort = searchParams.get('sort') || undefined;
+  const keyword = searchParams.get('keyword') || undefined;
+  const size = Number(searchParams.get('size')) || 10;
+  const categoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
 
   const filters: BlogFilters = {
     size,
     keyword,
     sort,
+    categoryCode,
   };
 
   return useInfiniteQuery<
@@ -34,10 +34,11 @@ export const useBlogs = () => {
   >({
     queryKey: blogQueryKeys.blog.list(filters),
     queryFn: ({ pageParam }) => {
-      return blogService.getBlogs(pageParam, filters.size, filters.keyword, filters.sort);
+      return blogService.getBlogs(pageParam, filters.size, filters.keyword, filters.sort, filters.categoryCode);
     },
     getNextPageParam: (lastPage) => {
-      if (lastPage.data.nextId === -1 || !lastPage.data.nextId) return undefined;
+      if (lastPage.data.nextId === lastPage.data.results[lastPage.data.results.length - 1].id || !lastPage.data.nextId)
+        return undefined;
       return lastPage.data.nextId;
     },
     initialPageParam: undefined,
@@ -213,6 +214,31 @@ export const useAddBookmark = () => {
     onSuccess: (_, blogId) => {
       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
       queryClient.invalidateQueries({ queryKey: blogQueryKeys.bookmarks });
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'blogs';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  results: page.data.results?.map((blog: Community) =>
+                    blog.id === blogId ? { ...blog, isBookmarked: true } : blog
+                  ),
+                },
+              })),
+            };
+          });
+        });
     },
     onError: (error, blogId) => {
       console.error(`Failed to add bookmark blog ${blogId}:`, error.message);
@@ -229,6 +255,31 @@ export const useRemoveBookmark = () => {
     onSuccess: (_, blogId) => {
       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
       queryClient.invalidateQueries({ queryKey: blogQueryKeys.bookmarks });
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'blogs';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  results: page.data.results?.map((blog: Community) =>
+                    blog.id === blogId ? { ...blog, isBookmarked: false } : blog
+                  ),
+                },
+              })),
+            };
+          });
+        });
     },
     onError: (error, blogId) => {
       console.error(`Failed to remove bookmark blog ${blogId}:`, error.message);
@@ -236,15 +287,41 @@ export const useRemoveBookmark = () => {
   });
 };
 
-// 블로그 좋아요 추가
 export const useAddBlogHeart = () => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, number>({
     mutationFn: (blogId) => blogService.addBlogHeart(blogId),
     onSuccess: (_, blogId) => {
+      // 블로그 상세 정보 업데이트
       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-      queryClient.invalidateQueries({ queryKey: blogQueryKeys.all });
+
+      // 블로그 리스트의 캐시된 데이터를 직접 업데이트
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'blogs';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  results: page.data.results?.map((blog: Community) =>
+                    blog.id === blogId ? { ...blog, heartCount: blog.heartCount + 1, isHearted: true } : blog
+                  ),
+                },
+              })),
+            };
+          });
+        });
     },
     onError: (error, blogId) => {
       console.error(`Failed to add heart blog ${blogId}:`, error.message);
@@ -259,8 +336,37 @@ export const useRemoveBlogHeart = () => {
   return useMutation<void, Error, number>({
     mutationFn: (blogId) => blogService.removeBlogHeart(blogId),
     onSuccess: (_, blogId) => {
+      // 블로그 상세 정보 업데이트
       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-      queryClient.invalidateQueries({ queryKey: blogQueryKeys.all });
+
+      // 블로그 리스트의 캐시된 데이터를 직접 업데이트
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'blogs';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  results: page.data.results?.map((blog: Community) =>
+                    blog.id === blogId
+                      ? { ...blog, heartCount: Math.max(0, blog.heartCount - 1), isHearted: false }
+                      : blog
+                  ),
+                },
+              })),
+            };
+          });
+        });
     },
     onError: (error, blogId) => {
       console.error(`Failed to remove heart blog ${blogId}:`, error.message);

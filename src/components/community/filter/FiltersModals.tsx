@@ -1,55 +1,57 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { CATEGORIES } from '@/types/blog';
 import { Topbar } from '@/components/shared';
 
 interface FiltersModalProps {
-  onApply: (filters: { sort: string; categoryIds: number[] }) => void;
+  onApply: (filters: { sort: string; categoryCode: number | undefined }) => void;
   onClose: () => void;
-  initialSort?: string;
-  initialCategoryIds?: number[];
+  setFilterCount: (count: number) => void;
 }
 
-export const FiltersModal: React.FC<FiltersModalProps> = ({
-  onApply,
-  onClose,
-  initialSort = 'popular',
-  initialCategoryIds = [],
-}) => {
+export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose, setFilterCount }) => {
+  const [searchParams] = useSearchParams();
+
+  const initialSort = searchParams.get('sort') || 'latest';
+  const initialCategoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
+
   const [sort, setSort] = useState<string>(initialSort);
-  const [categoryIds, setCategoryIds] = useState<number[]>(initialCategoryIds);
+  const [categoryCode, setCategoryCode] = useState<number | undefined>(initialCategoryCode);
+
+  useEffect(() => {
+    let filterCount = 0;
+    if (sort !== 'latest') filterCount += 1;
+    if (categoryCode !== undefined) filterCount += 1;
+    setFilterCount(filterCount);
+  }, [sort, categoryCode, setFilterCount]);
 
   const handleSortChange = (value: string) => {
     setSort(value);
   };
 
   const handleCategorySelect = (id: number) => {
-    setCategoryIds((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((_id) => _id !== id);
-      }
-      return [...prev, id];
-    });
+    setCategoryCode(categoryCode === id ? undefined : id);
   };
 
   const handleClearAll = () => {
-    setSort('popular');
-    setCategoryIds([]);
+    setSort('latest');
+    setCategoryCode(undefined);
   };
 
   const handleApply = () => {
-    onApply({ sort, categoryIds });
+    onApply({ sort, categoryCode });
     onClose();
   };
 
   return (
-    <div className="flex flex-col h-full bg-white p-4 font-roboto">
-      <Topbar title="Fitlers" type="cancel" onCancle={onClose} />
+    <div className="relative flex flex-col h-full min-w-[280px] w-full sm:w-[600px] bg-white p-4 font-roboto mx-auto">
+      <Topbar title="Filters" type="cancel" onCancle={onClose} />
 
       <div className="flex-1 overflow-y-auto">
         <div className="mt-16 mb-2 border-b-[1px] border-border-weak1">
           <h3 className="font-medium text-text-default">Sort by</h3>
           <div className="space-y-2 mt-2">
-            {['Popular', 'Most recent', 'Oldest'].map((option) => (
+            {['Latest', 'Popular', 'Oldest'].map((option) => (
               <label key={option} className="flex items-center justify-between w-full h-12 cursor-pointer">
                 <div>{option}</div>
                 <input
@@ -75,7 +77,7 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({
               >
                 <input
                   type="checkbox"
-                  checked={categoryIds.includes(category.id)}
+                  checked={categoryCode === category.id}
                   onChange={() => handleCategorySelect(category.id)}
                   className="mr-2"
                 />
@@ -86,8 +88,8 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full h-[80px] border-t border-border-weak1">
-        <div className="h-10 mt-3 px-4 flex items-center justify-between ">
+      <div className="absolute m-auto bottom-0 left-0 min-w-[280px] w-full sm:w-[600px] h-[80px] border-t border-border-weak1">
+        <div className="h-10 mt-3 px-4 flex items-center justify-between">
           <button onClick={handleClearAll} className="font-semibold underline text-text-default">
             Clear all
           </button>
