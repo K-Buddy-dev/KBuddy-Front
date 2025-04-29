@@ -18,9 +18,23 @@ export function AccordionItem({ children, id, label, name, checked, onChange, is
   const [height, setHeight] = useState<number>(0);
 
   useEffect(() => {
-    if (checked && contentRef.current) {
-      setHeight(contentRef.current.scrollHeight);
-    } else {
+    if (!contentRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (checked && entries[0]) {
+        setHeight(entries[0].contentRect.height);
+      }
+    });
+
+    resizeObserver.observe(contentRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [checked]);
+
+  useEffect(() => {
+    if (!checked) {
       setHeight(0);
     }
   }, [checked]);
@@ -45,7 +59,7 @@ export function AccordionItem({ children, id, label, name, checked, onChange, is
       <div
         className="overflow-hidden transition-all duration-300 ease-in-out"
         style={{
-          height: `${height}px`,
+          height: `${height === 0 ? 0 : height + 40}px`,
         }}
       >
         <div ref={contentRef} className="pt-4 pb-6 px-4">
