@@ -16,7 +16,8 @@ const PUBLIC_PATHS = [
 export function AuthGuard() {
   const location = useLocation();
   const { pathname } = location;
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const accessToken = authClient.defaults.headers.common['Authorization'];
@@ -26,18 +27,28 @@ export function AuthGuard() {
   useEffect(() => {
     const refreshToken = async () => {
       try {
-        if (!authClient.defaults.headers.common['Authorization']) {
-          const { accessToken } = await authService.refreshAccessToken();
-          authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        setIsLoading(true);
+        const accessToken = authClient.defaults.headers.common['Authorization'];
+        if (!accessToken) {
+          const { accessToken: newAccessToken } = await authService.refreshAccessToken();
+          authClient.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
           setIsAuthenticated(true);
         }
-      } catch {
+      } catch (error) {
+        console.error('Token refresh failed:', error);
+        delete authClient.defaults.headers.common['Authorization'];
         setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     refreshToken();
   }, []);
+
+  if (isLoading || isAuthenticated === null) {
+    return <div>Loading...</div>;
+  }
 
   if (PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
     return <Navigate to={'/community'} />;
