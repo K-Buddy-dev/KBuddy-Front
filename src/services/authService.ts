@@ -69,7 +69,7 @@ export const authService = {
     return response.data;
   },
   oauthLogin: async (data: OauthRequest) => {
-    const response = await apiClient.post('/auth/oauth/login', data);
+    const response = await authClient.post('/auth/oauth/login', data);
     return response.data;
   },
   refreshAccessToken: async () => {
