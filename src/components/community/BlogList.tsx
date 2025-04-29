@@ -10,20 +10,10 @@ import { CategoryFilterSwiper } from './swiper';
 export const BlogList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filterCount, setFilterCount] = useState<number>(0);
 
-  // URL 쿼리 파라미터에서 초기값 설정
-  const initialSort = searchParams.get('sort') || 'popular';
-  const initialCategoryIds =
-    searchParams
-      .get('categoryIds')
-      ?.split(',')
-      .map(Number)
-      .filter((id) => !isNaN(id)) || [];
-
-  const [sort, setSort] = useState<string>(initialSort);
-  const [categoryIds, setCategoryIds] = useState<number[]>(initialCategoryIds);
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs(); //useBlogs({ sort, categoryIds });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs();
+  console.log('hasNextPage: ', hasNextPage);
 
   const addBlogHeart = useAddBlogHeart();
   const removeBlogHeart = useRemoveBlogHeart();
@@ -47,16 +37,16 @@ export const BlogList: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const handleApplyFilters = (filters: { sort: string; categoryIds: number[] }) => {
+  const handleApplyFilters = (filters: { sort: string; categoryCode: number | undefined }) => {
     const scrollY = window.scrollY;
-    setSort(filters.sort);
-    setCategoryIds(filters.categoryIds);
-
-    setSearchParams({
-      sort: filters.sort,
-      categoryIds: filters.categoryIds.join(','),
-    });
-
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('sort', filters.sort);
+    if (filters.categoryCode !== undefined) {
+      newSearchParams.set('categoryCode', filters.categoryCode.toString());
+    } else {
+      newSearchParams.delete('categoryCode');
+    }
+    setSearchParams(newSearchParams);
     setTimeout(() => window.scrollTo(0, scrollY), 0);
   };
 
@@ -118,8 +108,13 @@ export const BlogList: React.FC = () => {
           <div className="w-5 h-5 flex items-center justify-center">
             <FilterIcon />
           </div>
+          {filterCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-bg-highlight-selected text-bg-brand-default text-xs rounded-full">
+              {filterCount}
+            </span>
+          )}
         </button>
-        <CategoryFilterSwiper categoryIds={categoryIds} setCategoryIds={setCategoryIds} />
+        <CategoryFilterSwiper />
       </div>
 
       <div
@@ -130,8 +125,7 @@ export const BlogList: React.FC = () => {
         <FiltersModal
           onApply={handleApplyFilters}
           onClose={() => setIsModalOpen(false)}
-          initialSort={sort}
-          initialCategoryIds={categoryIds}
+          setFilterCount={setFilterCount}
         />
       </div>
 
@@ -172,13 +166,9 @@ export const BlogList: React.FC = () => {
               })}
             </div>
           ))}
-          {hasNextPage ? (
+          {hasNextPage && (
             <div ref={observerRef} className="h-10 pt-6 flex justify-center items-center">
               {isFetchingNextPage ? <div>Loading...</div> : <div>Show More</div>}
-            </div>
-          ) : (
-            <div className="h-10 pt-6 flex justify-center items-center">
-              <div>You've reached the end!</div>
             </div>
           )}
         </>

@@ -1,4 +1,4 @@
-import { BlogFilters, Community, CommunityListResponse, CommunitySort, isCommunitySort } from '@/types/blog';
+import { BlogFilters, Community, CommunityListResponse } from '@/types/blog';
 import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { blogQueryKeys } from './blogKeys';
@@ -13,16 +13,16 @@ type BlogQueryKey = readonly [string, BlogFilters];
 export const useBlogs = () => {
   const [searchParams] = useSearchParams();
 
-  // 쿼리 파라미터 파싱
-  const rawSort = searchParams.get('sort');
-  const sort: CommunitySort | undefined = isCommunitySort(rawSort) ? rawSort : undefined;
-  const keyword = searchParams.get('keyword') ?? '';
+  const sort = searchParams.get('sort') || undefined;
+  const keyword = searchParams.get('keyword') || undefined;
   const size = Number(searchParams.get('size')) || 10;
+  const categoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
 
   const filters: BlogFilters = {
     size,
     keyword,
     sort,
+    categoryCode,
   };
 
   return useInfiniteQuery<
@@ -34,10 +34,11 @@ export const useBlogs = () => {
   >({
     queryKey: blogQueryKeys.blog.list(filters),
     queryFn: ({ pageParam }) => {
-      return blogService.getBlogs(pageParam, filters.size, filters.keyword, filters.sort);
+      return blogService.getBlogs(pageParam, filters.size, filters.keyword, filters.sort, filters.categoryCode);
     },
     getNextPageParam: (lastPage) => {
-      if (lastPage.data.nextId === -1 || !lastPage.data.nextId) return undefined;
+      if (lastPage.data.nextId === lastPage.data.results[lastPage.data.results.length - 1].id || !lastPage.data.nextId)
+        return undefined;
       return lastPage.data.nextId;
     },
     initialPageParam: undefined,

@@ -1,5 +1,5 @@
 import { authClient } from '@/api/axiosConfig';
-import { BlogRequest, CommunityListResponse, CommunitySort } from '@/types/blog';
+import { BlogRequest, CommunityListResponse } from '@/types/blog';
 
 // // blogService 정의
 export const blogService = {
@@ -8,7 +8,8 @@ export const blogService = {
     id: number | undefined,
     size: number,
     keyword?: string,
-    sort?: CommunitySort
+    sort?: string,
+    categoryCode?: number
   ): Promise<CommunityListResponse> => {
     const response = await authClient.get<CommunityListResponse>('/blog', {
       params: {
@@ -16,6 +17,7 @@ export const blogService = {
         size,
         keyword: keyword ?? '', // keyword가 undefined일 경우 빈 문자열로 처리
         sort,
+        categoryCode,
       },
     });
     return response.data;
