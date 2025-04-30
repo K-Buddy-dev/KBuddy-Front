@@ -6,3 +6,4 @@ export { AppleRedirectPage } from './redirect/AppleRedirectPage';
 export { OauthSignupFormPage } from './OauthSignupFormPage';
 export { CommunityPage } from './CommunityPage';
 export { TempPage } from './TempPage';
+export { ProfilePage } from './ProfilePage';

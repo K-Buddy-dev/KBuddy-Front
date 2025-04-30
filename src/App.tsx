@@ -7,6 +7,7 @@ import {
   AppleRedirectPage,
   OauthSignupFormPage,
   TempPage,
+  ProfilePage,
 } from './pages';
 import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
 import 'swiper/css';
@@ -48,7 +49,7 @@ function App() {
             <Route path="/home" element={<TempPage />} />
             <Route path="/service" element={<TempPage />} />
             <Route path="/message" element={<TempPage />} />
-            <Route path="/profile" element={<TempPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>
       </Routes>
