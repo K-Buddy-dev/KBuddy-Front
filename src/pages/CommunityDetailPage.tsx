@@ -77,6 +77,7 @@ export const CommunityDetailPage = () => {
     isHearted: false,
     status: 'PUBLISHED',
   };
+
   const categoryNames = blog.categoryId
     .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
     .filter(Boolean)
@@ -93,7 +94,11 @@ export const CommunityDetailPage = () => {
           <span>{categoryNames}</span>
         </div>
         <div className="flex items-center gap-2 mb-4">
-          <img src="https://via.placeholder.com/40" alt="Profile" className="w-10 h-10 rounded-full" />
+          <img
+            src="https://images.unsplash.com/photo-1519125323398-675f1f1d1d1f?w=40"
+            alt="Profile"
+            className="w-10 h-10 rounded-full"
+          />
           <div className="flex flex-col items-center gap-1">
             <span className="text-sm font-medium text-text-default">@{blog.writerId}</span>
             <span className="text-sm font-medium text-text-weak">{formatDate(blog.createdAt)}</span>
@@ -110,7 +115,7 @@ export const CommunityDetailPage = () => {
         )}
 
         {/* 본문 내용 */}
-        <p className="text-base text-text-default py--4">{blog.description}</p>
+        <p className="text-base text-text-default py-4">{blog.description}</p>
 
         {/* 좋아요 및 댓글 버튼 */}
         <div className="flex gap-4 mb-4">

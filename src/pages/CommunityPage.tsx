@@ -11,6 +11,7 @@ export const CommunityPage = () => {
   const [searchParams] = useSearchParams();
 
   const currentTab = searchParams.get('tab') || 'Curated blog';
+  console.log('currentTab: ', currentTab);
 
   return (
     <>

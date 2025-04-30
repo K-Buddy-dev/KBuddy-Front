@@ -17,8 +17,13 @@ interface ContentImageProps {
 }
 
 export const ContentImage = ({ images, title, currentSlide, setCurrentSlide }: ContentImageProps) => {
+  const isFirstSlide = currentSlide === 1;
+  const isLastSlide = currentSlide === images.length;
+  const prevArrowColor = isFirstSlide ? 'text-[#0A004B]/10' : 'text-black';
+  const nextArrowColor = isLastSlide ? 'text-[#0A004B]/10' : 'text-black';
+
   return (
-    <div className="relative mb-4">
+    <div className="relative">
       <Swiper
         modules={[Navigation]}
         spaceBetween={10}
@@ -26,6 +31,7 @@ export const ContentImage = ({ images, title, currentSlide, setCurrentSlide }: C
         navigation={{
           nextEl: '.swiper-button-next',
           prevEl: '.swiper-button-prev',
+          disabledClass: 'opacity-50 cursor-not-allowed',
         }}
         onSlideChange={(swiper) => setCurrentSlide(swiper.activeIndex + 1)}
         onSwiper={(swiper) => setCurrentSlide(swiper.activeIndex + 1)}
@@ -40,34 +46,34 @@ export const ContentImage = ({ images, title, currentSlide, setCurrentSlide }: C
             />
           </SwiperSlide>
         ))}
-        <div className="swiper-button-prev absolute left-2 top-1/2 transform -translate-y-1/2 text-white z-10">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </div>
-        <div className="swiper-button-next absolute right-2 top-1/2 transform -translate-y-1/2 text-white z-10">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
-        {images.length > 1 && (
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+      </Swiper>
+      {images.length > 1 && (
+        <div className="flex justify-center items-center mt-2">
+          <div className={`swiper-button-prev ${prevArrowColor} cursor-pointer`}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 12 12" // 더 단순한 뷰박스
+              fill="currentColor" // 꽉 찬 화살표
+              className="w-5 h-5"
+            >
+              <path d="M8 1L4 6L8 11Z" />
+            </svg>
+          </div>
+          <div className="font-roboto text-text-default text-xs font-medium">
             {currentSlide}/{images.length}
           </div>
-        )}
-      </Swiper>
+          <div className={`swiper-button-next ${nextArrowColor} cursor-pointer`}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 12 12" // 더 단순한 뷰박스
+              fill="currentColor" // 꽉 찬 화살표
+              className="w-5 h-5"
+            >
+              <path d="M4 1L8 6L4 11Z" />
+            </svg>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
