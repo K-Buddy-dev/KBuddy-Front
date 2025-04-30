@@ -1,142 +1,214 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import { Topbar } from '@/components/shared';
-import { useBlogDetail } from '@/hooks';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-// import { RecommendedPostsSwiper } from './RecommendedPostsSwiper';
-import { CATEGORIES } from '@/types';
-import { CommentInput, CommentList, ContentImage } from '@/components/community/detail';
-import { formatDate } from '@/utils/utils';
-import { useState } from 'react';
+import { useAddBlogHeart, useAddBookmark, useBlogs, useRemoveBlogHeart, useRemoveBookmark } from '@/hooks';
+import { FilterIcon } from '../shared/icon/FilterIcon';
+import { CommunityCard } from './CommunityCard';
+import { SkeletonCard } from './SkeletonCard';
+import { FiltersModal } from './filter';
+import { CategoryFilterSwiper } from './swiper';
 
-export const CommunityDetailPage = () => {
+export const QnaList: React.FC = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const blogId = Number(id);
-  const [currentSlide, setCurrentSlide] = useState(1);
-  const { data, isLoading, error } = useBlogDetail(blogId);
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filterCount, setFilterCount] = useState<number>(0);
 
-  const handleBack = () => {
-    navigate(-1);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs();
+
+  const addBlogHeart = useAddBlogHeart();
+  const removeBlogHeart = useRemoveBlogHeart();
+  const addBookmark = useAddBookmark();
+  const removeBookmark = useRemoveBookmark();
+
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const sort = searchParams.get('sort') || 'latest';
+    const categoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
+
+    let count = 0;
+    if (sort !== 'latest') count += 1;
+    if (categoryCode !== undefined) count += 1;
+    setFilterCount(count);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
+        hasNextPage &&
+        !isFetchingNextPage
+      ) {
+        fetchNextPage();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const handleApplyFilters = (filters: { sort: string; categoryCode: number | undefined }) => {
+    const scrollY = window.scrollY;
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('sort', filters.sort);
+    if (filters.categoryCode !== undefined) {
+      newSearchParams.set('categoryCode', filters.categoryCode.toString());
+    } else {
+      newSearchParams.delete('categoryCode');
+    }
+    setSearchParams(newSearchParams);
+    setTimeout(() => window.scrollTo(0, scrollY), 0);
   };
 
-  const handleCommentSubmit = (description: string) => {
-    console.log('New comment:', description);
+  const handleCategoryChange = (categoryCode: number | undefined) => {
+    const scrollY = window.scrollY;
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (categoryCode !== undefined) {
+      newSearchParams.set('categoryCode', categoryCode.toString());
+    } else {
+      newSearchParams.delete('categoryCode');
+    }
+    setSearchParams(newSearchParams);
+    setTimeout(() => window.scrollTo(0, scrollY), 0);
   };
 
-  // 추천 게시물 더미 데이터 (실제로는 API 호출로 가져와야 함)
-  //   const recommendedPosts = [
-  //     {
-  //       id: 1,
-  //       title: 'Discovering the flavors of street food...',
-  //       writerId: 2,
-  //       createdAt: '2024-11-03',
-  //       heartCount: 14,
-  //       commentCount: 3,
-  //       imageUrl: 'https://via.placeholder.com/150',
-  //     },
-  //     {
-  //       id: 2,
-  //       title: 'Exploring Seoul at night',
-  //       writerId: 3,
-  //       createdAt: '2024-10-15',
-  //       heartCount: 20,
-  //       commentCount: 5,
-  //       imageUrl: 'https://via.placeholder.com/150',
-  //     },
-  //   ];
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isModalOpen]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-  if (!data?.data) return <div>No data found</div>;
+  useEffect(() => {
+    const savedScrollY = sessionStorage.getItem('scrollY');
+    if (savedScrollY) {
+      window.scrollTo(0, parseInt(savedScrollY, 10));
+      sessionStorage.removeItem('scrollY');
+    }
+  }, [location.key]);
 
-  //   const blog = data.data;
-  const blog = {
-    id: 1,
-    writerId: 123,
-    categoryId: [1], // 예: Daily Life 카테고리
-    title: 'Exploring Bukchon in Seoul while wearing a hanbok',
-    description:
-      'Exploring Bukchon in Seoul while wearing a hanbok was an unforgettable journey into the heart of Korean culture. Strolling through the charming hanok village, the traditional attire made me feel deeply connected to the rich history surrounding me.',
-    viewCount: 135,
-    createdAt: '2024-04-03T00:00:00Z',
-    modifiedAt: '2024-04-03T00:00:00Z',
-    images: [
-      { id: 1, type: 'PNG', name: 'beach', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300' },
-      { id: 2, type: 'PNG', name: 'city', url: 'https://images.unsplash.com/photo-1519125323398-675f1f1d1d1f?w=300' },
-      {
-        id: 3,
-        type: 'PNG',
-        name: 'mountain',
-        url: 'https://images.unsplash.com/photo-1494545261883-21b485e793e5?w=300',
-      },
-    ],
-    comments: [],
-    heartCount: 20,
-    commentCount: 5,
-    isBookmarked: false,
-    isHearted: false,
-    status: 'PUBLISHED',
+  const handleLike = (blogId: number, isHearted: boolean) => {
+    if (isHearted) {
+      removeBlogHeart.mutate(blogId, {
+        onError: (error) => {
+          alert(`Fail remove Like: ${error.message}`);
+        },
+      });
+    } else {
+      addBlogHeart.mutate(blogId, {
+        onError: (error) => {
+          alert(`Fail add Like: ${error.message}`);
+        },
+      });
+    }
   };
 
-  const categoryNames = blog.categoryId
-    .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
-    .filter(Boolean)
-    .join(' | ');
+  const handleBookmark = (blogId: number, isBookmarked: boolean) => {
+    if (isBookmarked) {
+      removeBookmark.mutate(blogId, {
+        onError: (error) => {
+          alert(`Fail remove Bookmark: ${error.message}`);
+        },
+      });
+    } else {
+      addBookmark.mutate(blogId, {
+        onError: (error) => {
+          alert(`Fail add Bookmark: ${error.message}`);
+        },
+      });
+    }
+  };
+
+  const handleDetail = (blogId: number) => {
+    sessionStorage.setItem('scrollY', String(window.scrollY));
+    navigate(`/community/detail/${blogId}${location.search}`);
+  };
+
+  if (isError) {
+    return <div>Error: {error?.message || 'Something went wrong'}</div>;
+  }
 
   return (
-    <main className="relative min-h-screen pb-24">
-      {/* 공유하기 기능 제작해야함 */}
-      <Topbar title="" type="back" onBack={handleBack} />
-
-      <div className="pt-[80px] px-4 font-roboto">
-        <h1 className="font-medium text-text-default text-[22px] leading-7 mb-1">{blog.title}</h1>
-        <div className="flex items-center gap-2 text-sm text-text-weak mb-4">
-          <span>{categoryNames}</span>
-        </div>
-        <div className="flex items-center gap-2 mb-4">
-          <img
-            src="https://images.unsplash.com/photo-1519125323398-675f1f1d1d1f?w=40"
-            alt="Profile"
-            className="w-10 h-10 rounded-full"
-          />
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-sm font-medium text-text-default">@{blog.writerId}</span>
-            <span className="text-sm font-medium text-text-weak">{formatDate(blog.createdAt)}</span>
+    <div className="max-w-2xl mx-auto">
+      <h1 className="font-roboto font-medium text-lg ml-4 mt-6 mb-4">All blogs</h1>
+      <div className="mb-4 ml-4 flex items-center gap-2">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className={`w-[30px] h-[30px] p-[4px] border-[1px] rounded-lg relative cursor-pointer ${
+            filterCount > 0 ? 'bg-bg-highlight-selected border-border-brand-default' : 'bg-none border-border-default'
+          }`}
+        >
+          <div className="w-5 h-5 flex items-center justify-center">
+            <FilterIcon color={filterCount > 0 ? '#6952F9' : '#222222'} />
           </div>
-        </div>
-
-        {blog.images.length > 0 && (
-          <ContentImage
-            images={blog.images}
-            title={blog.title}
-            currentSlide={currentSlide}
-            setCurrentSlide={setCurrentSlide}
-          />
-        )}
-
-        {/* 본문 내용 */}
-        <p className="text-base text-text-default py-4">{blog.description}</p>
-
-        {/* 좋아요 및 댓글 버튼 */}
-        <div className="flex gap-4 mb-4">
-          <button className="flex items-center gap-1 text-sm text-text-default">♥ Like</button>
-          <button className="flex items-center gap-1 text-sm text-text-default">💬 Comment</button>
-        </div>
-
-        {/* 좋아요 및 댓글 수 */}
-        <div className="text-sm text-text-weak mb-4">
-          {blog.heartCount} likes • {blog.commentCount} comments
-        </div>
-
-        {/* 댓글 목록 */}
-        <CommentList comments={blog.comments} />
-
-        {/* 추천 게시물 */}
-        {/* <RecommendedPostsSwiper posts={recommendedPosts} /> */}
+          {filterCount > 0 && (
+            <span className="absolute -bottom-2 -right-[10px] w-5 h-5 flex items-center justify-center bg-bg-brand-default text-text-inverted-default border-[1px] border-solid border-bg-default text-xs rounded-full">
+              {filterCount}
+            </span>
+          )}
+        </button>
+        <CategoryFilterSwiper onCategoryChange={handleCategoryChange} />
       </div>
 
-      {/* 하단 고정 댓글 입력창 */}
-      <CommentInput onCommentSubmit={handleCommentSubmit} />
-    </main>
+      <div
+        className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${
+          isModalOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
+        }`}
+      >
+        <FiltersModal onApply={handleApplyFilters} onClose={() => setIsModalOpen(false)} />
+      </div>
+
+      {isLoading ? (
+        <div>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>
+      ) : (
+        <>
+          {data?.pages.map((page, pageIndex) => (
+            <div key={pageIndex}>
+              {page.data.results.map((blog, index) => {
+                const isLastItem = pageIndex === data.pages.length - 1 && index === page.data.results.length - 1;
+
+                return (
+                  <div
+                    className={`bg-white border-y-[2px] border-b-0 border-border-weak2 cursor-pointer`}
+                    key={blog.id}
+                    ref={isLastItem ? observerRef : null}
+                    onClick={() => handleDetail(blog.id)}
+                  >
+                    <CommunityCard
+                      writerId={`${blog.writerId}`}
+                      createdAt={new Date(blog.createdAt).toLocaleDateString()}
+                      title={blog.title}
+                      categoryId={blog.categoryId}
+                      heartCount={blog.heartCount}
+                      comments={blog.commentCount}
+                      isBookmarked={blog.isBookmarked}
+                      isHearted={blog.isHearted}
+                      onLike={() => handleLike(blog.id, blog.isHearted)}
+                      onBookmark={() => handleBookmark(blog.id, blog.isBookmarked)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+          {hasNextPage && (
+            <div ref={observerRef} className="h-10 pt-6 flex justify-center items-center">
+              {isFetchingNextPage ? <div>Loading...</div> : <div>Show More</div>}
+            </div>
+          )}
+        </>
+      )}
+      <div className="h-[136px]"></div>
+    </div>
   );
 };
