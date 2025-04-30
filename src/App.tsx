@@ -8,6 +8,7 @@ import {
   OauthSignupFormPage,
   TempPage,
   ProfilePage,
+  EditProfilePage,
 } from './pages';
 import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
 import 'swiper/css';
@@ -50,6 +51,7 @@ function App() {
             <Route path="/service" element={<TempPage />} />
             <Route path="/message" element={<TempPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/edit" element={<EditProfilePage />} />
           </Route>
         </Route>
       </Routes>

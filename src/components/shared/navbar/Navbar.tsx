@@ -30,10 +30,12 @@ function NavbarWithSearch() {
 function NavbarWithoutSearch() {
   return (
     <NavWrapper>
-      <div className="flex">
+      <div className="flex justify-between w-full">
         <Logo />
-        <AlarmIcon />
-        <SettingsIcon />
+        <div className="flex">
+          <AlarmIcon />
+          <SettingsIcon primary={false} />
+        </div>
       </div>
     </NavWrapper>
   );

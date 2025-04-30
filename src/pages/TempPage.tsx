@@ -15,7 +15,7 @@ export function TempPage() {
   return (
     <div className="w-full h-[calc(100vh-5rem)] flex flex-col items-center justify-center px-6">
       <div className="w-24 h-24 bg-bg-brand-weak rounded-full flex items-center justify-center mb-8 animate-spin-slow">
-        <SettingsIcon />
+        <SettingsIcon primary={true} />
       </div>
 
       <h1 className="text-2xl font-medium text-text-default mb-3">서비스 준비중입니다{dots}</h1>

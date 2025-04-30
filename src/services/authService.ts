@@ -80,4 +80,8 @@ export const authService = {
     const response = await authClient.get('/user/drafts');
     return response.data;
   },
+  getUserProfile: async () => {
+    const response = await authClient.get('/user');
+    return response.data;
+  },
 };
