@@ -1,5 +1,5 @@
 import { apiClient, authClient } from '@/api/axiosConfig';
-import { OauthRequest } from '@/types';
+import { OauthRequest, ProfileEditFormData } from '@/types';
 
 export interface LoginRequest {
   emailOrUserId: string;
@@ -41,6 +41,11 @@ export const authService = {
     const response = await authClient.post('/auth/login', data);
     return response.data;
   },
+  logout: async () => {
+    const response = await authClient.post('/auth/logout');
+    authClient.defaults.headers.common['Authorization'] = '';
+    return response.data;
+  },
   emailVerify: async (data: EmailVerifyRequest) => {
     const response = await apiClient.post('/auth/email/check', data);
     return response.data;
@@ -78,6 +83,27 @@ export const authService = {
   },
   getUserDrafts: async () => {
     const response = await authClient.get('/user/drafts');
+    return response.data;
+  },
+  getUserProfile: async () => {
+    const response = await authClient.get('/user');
+    return response.data;
+  },
+  editProfile: async (data: ProfileEditFormData) => {
+    const formData = new FormData();
+
+    const { bio, profileImage } = data;
+    if (bio) {
+      formData.append('bio', JSON.stringify({ bio }));
+    }
+    if (profileImage) {
+      formData.append('profileImage', profileImage);
+    }
+    const response = await authClient.patch('/user/profile', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 };
