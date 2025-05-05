@@ -8,3 +8,4 @@ export { CommunityPage } from './CommunityPage';
 export { TempPage } from './TempPage';
 export { ProfilePage } from './ProfilePage';
 export { EditProfilePage } from './EditProfilePage';
+export { SettingPage } from './SettingPage';

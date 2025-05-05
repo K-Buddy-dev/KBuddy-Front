@@ -27,20 +27,35 @@ function NavbarWithSearch() {
   );
 }
 
-function NavbarWithoutSearch() {
+interface NavbarWithoutSearchProps {
+  onClickAlarm?: () => void;
+  onClickSettings?: () => void;
+}
+
+function NavbarWithoutSearch({ onClickAlarm, onClickSettings }: NavbarWithoutSearchProps) {
   return (
     <NavWrapper>
       <div className="flex justify-between w-full">
         <Logo />
         <div className="flex">
-          <AlarmIcon />
-          <SettingsIcon primary={false} />
+          <AlarmIcon className="cursor-pointer" onClick={onClickAlarm} />
+          <SettingsIcon primary={false} className="cursor-pointer" onClick={onClickSettings} />
         </div>
       </div>
     </NavWrapper>
   );
 }
 
-export function Navbar({ withSearch }: { withSearch: boolean }) {
-  return withSearch ? <NavbarWithSearch /> : <NavbarWithoutSearch />;
+interface NavbarProps {
+  withSearch: boolean;
+  onClickAlarm?: () => void;
+  onClickSettings?: () => void;
+}
+
+export function Navbar({ withSearch, onClickAlarm, onClickSettings }: NavbarProps) {
+  return withSearch ? (
+    <NavbarWithSearch />
+  ) : (
+    <NavbarWithoutSearch onClickAlarm={onClickAlarm} onClickSettings={onClickSettings} />
+  );
 }

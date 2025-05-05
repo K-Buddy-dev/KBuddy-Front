@@ -3,13 +3,17 @@ import { authService } from '@/services';
 import { User } from '@/types';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import defaultProfileImage from '@/assets/images/default-profile.png';
 export function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
   const onClickEditProfile = () => {
     navigate('/profile/edit');
+  };
+
+  const onClickSettings = () => {
+    navigate('/settings');
   };
 
   useEffect(() => {
@@ -29,11 +33,11 @@ export function ProfilePage() {
 
   return (
     <>
-      <Navbar withSearch={false} />
-      <div className="flex flex-col px-4 pt-4 pb-5 text-text-default ">
+      <Navbar withSearch={false} onClickSettings={onClickSettings} />
+      <div className="flex flex-col px-4 pt-4 pb-5 text-text-default">
         <div className="flex gap-2 items-center mb-2">
           <img
-            src={user?.profileImageUrl ? user.profileImageUrl : '/images/default-profile.png'}
+            src={user?.profileImageUrl ? user.profileImageUrl : defaultProfileImage}
             alt="profile"
             className="w-12 h-12 rounded-full"
           />

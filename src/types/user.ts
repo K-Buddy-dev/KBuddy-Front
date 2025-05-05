@@ -17,6 +17,12 @@ export interface SignupFormData {
   oAuthCategory?: 'KAKAO' | 'GOOGLE' | 'APPLE' | null;
 }
 
+export interface ProfileEditFormData {
+  userId?: string;
+  profileImage?: File | null;
+  bio?: string | null;
+}
+
 export interface BasicUserData {
   userId: string;
   profileImageUrl: string | null;
