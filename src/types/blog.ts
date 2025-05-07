@@ -36,6 +36,36 @@ export interface Community {
   createdAt: string;
 }
 
+export interface CommunityDetail {
+  id: number;
+  writerId: number;
+  categoryId: number[];
+  title: string;
+  description: string;
+  viewCount: number;
+  createdAt: string;
+  modifiedAt: string;
+  images: {
+    id: number;
+    type: string;
+    name: string;
+    url: string;
+  }[];
+  comments: {
+    id: number;
+    blogId: number;
+    writerId: number;
+    description: string;
+    createdAt: string;
+    modifiedAt: string;
+  }[];
+  heartCount: number;
+  commentCount: number;
+  isBookmarked: boolean;
+  isHearted: boolean;
+  status: string;
+}
+
 interface CommunityListData {
   nextId: number;
   results: Community[];
@@ -62,6 +92,15 @@ export interface CommunityListResponse {
   code: string | null;
   path: string | null;
   data: CommunityListData;
+  details: any[];
+}
+
+export interface CommunityDetailResponse {
+  timestamp: string;
+  status: number;
+  code: string | null;
+  path: string | null;
+  data: CommunityDetail;
   details: any[];
 }
 

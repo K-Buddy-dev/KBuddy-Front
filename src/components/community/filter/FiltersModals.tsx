@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CATEGORIES } from '@/types/blog';
 import { Topbar } from '@/components/shared';
@@ -6,10 +6,9 @@ import { Topbar } from '@/components/shared';
 interface FiltersModalProps {
   onApply: (filters: { sort: string; categoryCode: number | undefined }) => void;
   onClose: () => void;
-  setFilterCount: (count: number) => void;
 }
 
-export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose, setFilterCount }) => {
+export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) => {
   const [searchParams] = useSearchParams();
 
   const initialSort = searchParams.get('sort') || 'latest';
@@ -17,13 +16,6 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose, se
 
   const [sort, setSort] = useState<string>(initialSort);
   const [categoryCode, setCategoryCode] = useState<number | undefined>(initialCategoryCode);
-
-  useEffect(() => {
-    let filterCount = 0;
-    if (sort !== 'latest') filterCount += 1;
-    if (categoryCode !== undefined) filterCount += 1;
-    setFilterCount(filterCount);
-  }, [sort, categoryCode, setFilterCount]);
 
   const handleSortChange = (value: string) => {
     setSort(value);

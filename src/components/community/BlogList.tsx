@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+
 import { useAddBlogHeart, useAddBookmark, useBlogs, useRemoveBlogHeart, useRemoveBookmark } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
 import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
-import { useSearchParams } from 'react-router-dom';
 import { CategoryFilterSwiper } from './swiper';
 
 export const BlogList: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterCount, setFilterCount] = useState<number>(0);
@@ -20,6 +23,16 @@ export const BlogList: React.FC = () => {
   const removeBookmark = useRemoveBookmark();
 
   const observerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const sort = searchParams.get('sort') || 'latest';
+    const categoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
+
+    let count = 0;
+    if (sort !== 'latest') count += 1;
+    if (categoryCode !== undefined) count += 1;
+    setFilterCount(count);
+  }, [searchParams]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,6 +62,18 @@ export const BlogList: React.FC = () => {
     setTimeout(() => window.scrollTo(0, scrollY), 0);
   };
 
+  const handleCategoryChange = (categoryCode: number | undefined) => {
+    const scrollY = window.scrollY;
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (categoryCode !== undefined) {
+      newSearchParams.set('categoryCode', categoryCode.toString());
+    } else {
+      newSearchParams.delete('categoryCode');
+    }
+    setSearchParams(newSearchParams);
+    setTimeout(() => window.scrollTo(0, scrollY), 0);
+  };
+
   useEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -59,6 +84,14 @@ export const BlogList: React.FC = () => {
       document.body.style.overflow = 'auto';
     };
   }, [isModalOpen]);
+
+  useEffect(() => {
+    const savedScrollY = sessionStorage.getItem('scrollY');
+    if (savedScrollY) {
+      window.scrollTo(0, parseInt(savedScrollY, 10));
+      sessionStorage.removeItem('scrollY');
+    }
+  }, [location.key]);
 
   const handleLike = (blogId: number, isHearted: boolean) => {
     if (isHearted) {
@@ -92,6 +125,11 @@ export const BlogList: React.FC = () => {
     }
   };
 
+  const handleDetail = (blogId: number) => {
+    sessionStorage.setItem('scrollY', String(window.scrollY));
+    navigate(`/community/detail/${blogId}${location.search}`);
+  };
+
   if (isError) {
     return <div>Error: {error?.message || 'Something went wrong'}</div>;
   }
@@ -102,18 +140,20 @@ export const BlogList: React.FC = () => {
       <div className="mb-4 ml-4 flex items-center gap-2">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="w-[30px] h-[30px] p-[4px] border-[1px] border-border-default rounded-lg"
+          className={`w-[30px] h-[30px] p-[4px] border-[1px] rounded-lg relative cursor-pointer ${
+            filterCount > 0 ? 'bg-bg-highlight-selected border-border-brand-default' : 'bg-none border-border-default'
+          }`}
         >
           <div className="w-5 h-5 flex items-center justify-center">
-            <FilterIcon />
+            <FilterIcon color={filterCount > 0 ? '#6952F9' : '#222222'} />
           </div>
           {filterCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-bg-highlight-selected text-bg-brand-default text-xs rounded-full">
+            <span className="absolute -bottom-2 -right-[10px] w-5 h-5 flex items-center justify-center bg-bg-brand-default text-text-inverted-default border-[1px] border-solid border-bg-default text-xs rounded-full">
               {filterCount}
             </span>
           )}
         </button>
-        <CategoryFilterSwiper />
+        <CategoryFilterSwiper onCategoryChange={handleCategoryChange} />
       </div>
 
       <div
@@ -121,11 +161,7 @@ export const BlogList: React.FC = () => {
           isModalOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
         }`}
       >
-        <FiltersModal
-          onApply={handleApplyFilters}
-          onClose={() => setIsModalOpen(false)}
-          setFilterCount={setFilterCount}
-        />
+        <FiltersModal onApply={handleApplyFilters} onClose={() => setIsModalOpen(false)} />
       </div>
 
       {isLoading ? (
@@ -143,16 +179,16 @@ export const BlogList: React.FC = () => {
 
                 return (
                   <div
-                    className={`bg-white border-y-[2px] border-b-0 border-border-weak2`}
+                    className={`bg-white border-y-[2px] border-b-0 border-border-weak2 cursor-pointer`}
                     key={blog.id}
                     ref={isLastItem ? observerRef : null}
+                    onClick={() => handleDetail(blog.id)}
                   >
                     <CommunityCard
                       writerId={`${blog.writerId}`}
                       createdAt={new Date(blog.createdAt).toLocaleDateString()}
                       title={blog.title}
                       categoryId={blog.categoryId}
-                      profileImageUrl="https://via.placeholder.com/40"
                       heartCount={blog.heartCount}
                       comments={blog.commentCount}
                       isBookmarked={blog.isBookmarked}

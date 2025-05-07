@@ -1,5 +1,5 @@
-import { BlogFilters, Community, CommunityListResponse } from '@/types/blog';
-import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { BlogFilters, Community, CommunityDetailResponse, CommunityListResponse } from '@/types/blog';
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { blogQueryKeys } from './blogKeys';
 import { blogService } from '@/services/blogService';
@@ -37,8 +37,7 @@ export const useBlogs = () => {
       return blogService.getBlogs(pageParam, filters.size, filters.keyword, filters.sort, filters.categoryCode);
     },
     getNextPageParam: (lastPage) => {
-      if (lastPage.data.nextId === lastPage.data.results[lastPage.data.results.length - 1].id || !lastPage.data.nextId)
-        return undefined;
+      if (lastPage.data.nextId === -1 || !lastPage.data.nextId) return undefined;
       return lastPage.data.nextId;
     },
     initialPageParam: undefined,
@@ -58,13 +57,13 @@ export const useBlogs = () => {
 //   };
 // };
 
-// // 블로그 단건 조회
-// export const useBlogDetail = (blogId: number) => {
-//   return useQuery<Blog, Error>({
-//     queryKey: blogQueryKeys.blog.detail(blogId),
-//     queryFn: () => blogService.getBlogById(blogId),
-//   });
-// };
+// 블로그 단건 조회
+export const useBlogDetail = (blogId: number) => {
+  return useQuery<CommunityDetailResponse, Error>({
+    queryKey: blogQueryKeys.blog.detail(blogId),
+    queryFn: () => blogService.getBlogById(blogId),
+  });
+};
 
 // // 북마크된 블로그 목록 조회
 // export const useBookmarkedBlogs = () => {
