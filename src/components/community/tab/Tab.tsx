@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const menuArr = [
   { name: 'Curated blog', id: 1 },
@@ -19,11 +19,10 @@ function TabList({ children }: { children: React.ReactNode }) {
 }
 
 export function Tab() {
-  const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  // URL에서 현재 탭을 가져오기 (기본값: "Curated blog")
-  const currentTab = decodeURIComponent(location.search.replace('?tab=', '')) || 'Curated blog';
+  const currentTab = searchParams.get('tab') || 'Curated blog';
 
   // 탭 변경 시 URL 업데이트
   const handleTabChange = (tabName: string) => {

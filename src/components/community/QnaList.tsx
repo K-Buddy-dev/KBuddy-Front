@@ -1,91 +1,214 @@
-// import { useBlogs } from '@/hooks';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+
+import { useAddBlogHeart, useAddBookmark, useBlogs, useRemoveBlogHeart, useRemoveBookmark } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
+import { CommunityCard } from './CommunityCard';
+import { SkeletonCard } from './SkeletonCard';
+import { FiltersModal } from './filter';
+import { CategoryFilterSwiper } from './swiper';
 
 export const QnaList: React.FC = () => {
-  // const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useBlogs();
-  // const updateFilters = useUpdateBlogFilters();
-  // const addHeartMutation = useAddBlogHeart();
-  // const removeHeartMutation = useRemoveBlogHeart();
-  // const addBookmarkMutation = useAddBookmark();
-  // const removeBookmarkMutation = useRemoveBookmark();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filterCount, setFilterCount] = useState<number>(0);
 
-  // Intersection Observer를 위한 ref
-  // const observerRef = useRef<HTMLDivElement | null>(null);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs();
 
-  // 무한 스크롤 로직
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-  //         fetchNextPage();
-  //       }
-  //     },
-  //     { threshold: 0.1 }
-  //   );
+  const addBlogHeart = useAddBlogHeart();
+  const removeBlogHeart = useRemoveBlogHeart();
+  const addBookmark = useAddBookmark();
+  const removeBookmark = useRemoveBookmark();
 
-  //   const currentObserverRef = observerRef.current;
-  //   if (currentObserverRef) {
-  //     observer.observe(currentObserverRef);
-  //   }
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
-  //   return () => {
-  //     if (currentObserverRef) {
-  //       observer.unobserve(currentObserverRef);
-  //     }
-  //   };
-  // }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  useEffect(() => {
+    const sort = searchParams.get('sort') || 'latest';
+    const categoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
 
-  // const handleFilterChange = (newFilters: { keyword?: string; sort?: BlogSort }) => {
-  //   updateFilters(newFilters);
-  // };
+    let count = 0;
+    if (sort !== 'latest') count += 1;
+    if (categoryCode !== undefined) count += 1;
+    setFilterCount(count);
+  }, [searchParams]);
 
-  // if (isError) return <div>Error: {error?.message}</div>;
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
+        hasNextPage &&
+        !isFetchingNextPage
+      ) {
+        fetchNextPage();
+      }
+    };
 
-  // 모든 페이지의 블로그 데이터를 평탄화
-  // const blogs = data?.pages.flatMap((page) => page.data.blogs) || [];
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const handleApplyFilters = (filters: { sort: string; categoryCode: number | undefined }) => {
+    const scrollY = window.scrollY;
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('sort', filters.sort);
+    if (filters.categoryCode !== undefined) {
+      newSearchParams.set('categoryCode', filters.categoryCode.toString());
+    } else {
+      newSearchParams.delete('categoryCode');
+    }
+    setSearchParams(newSearchParams);
+    setTimeout(() => window.scrollTo(0, scrollY), 0);
+  };
+
+  const handleCategoryChange = (categoryCode: number | undefined) => {
+    const scrollY = window.scrollY;
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (categoryCode !== undefined) {
+      newSearchParams.set('categoryCode', categoryCode.toString());
+    } else {
+      newSearchParams.delete('categoryCode');
+    }
+    setSearchParams(newSearchParams);
+    setTimeout(() => window.scrollTo(0, scrollY), 0);
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    const savedScrollY = sessionStorage.getItem('scrollY');
+    if (savedScrollY) {
+      window.scrollTo(0, parseInt(savedScrollY, 10));
+      sessionStorage.removeItem('scrollY');
+    }
+  }, [location.key]);
+
+  const handleLike = (blogId: number, isHearted: boolean) => {
+    if (isHearted) {
+      removeBlogHeart.mutate(blogId, {
+        onError: (error) => {
+          alert(`Fail remove Like: ${error.message}`);
+        },
+      });
+    } else {
+      addBlogHeart.mutate(blogId, {
+        onError: (error) => {
+          alert(`Fail add Like: ${error.message}`);
+        },
+      });
+    }
+  };
+
+  const handleBookmark = (blogId: number, isBookmarked: boolean) => {
+    if (isBookmarked) {
+      removeBookmark.mutate(blogId, {
+        onError: (error) => {
+          alert(`Fail remove Bookmark: ${error.message}`);
+        },
+      });
+    } else {
+      addBookmark.mutate(blogId, {
+        onError: (error) => {
+          alert(`Fail add Bookmark: ${error.message}`);
+        },
+      });
+    }
+  };
+
+  const handleDetail = (blogId: number) => {
+    sessionStorage.setItem('scrollY', String(window.scrollY));
+    navigate(`/community/detail/${blogId}${location.search}`);
+  };
+
+  if (isError) {
+    return <div>Error: {error?.message || 'Something went wrong'}</div>;
+  }
 
   return (
     <div className="max-w-2xl mx-auto">
-      <button className="w-[86px] h-[30px] border-[1px] rounded-lg border-border-default bg-bg-default mt-6 mb-4 ml-4 flex items-center justify-center gap-2">
-        <div className="w-5 h-5">
-          <FilterIcon />
-        </div>
-        <p className="font-roboto font-medium text-xs">Filters</p>
-      </button>
-      {/* {isLoading ? ( */}
-      {/* <div> */}
-      {/* {Array.from({ length: 5 }).map((_, index) => (
+      <h1 className="font-roboto font-medium text-lg ml-4 mt-6 mb-4">All blogs</h1>
+      <div className="mb-4 ml-4 flex items-center gap-2">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className={`w-[30px] h-[30px] p-[4px] border-[1px] rounded-lg relative cursor-pointer ${
+            filterCount > 0 ? 'bg-bg-highlight-selected border-border-brand-default' : 'bg-none border-border-default'
+          }`}
+        >
+          <div className="w-5 h-5 flex items-center justify-center">
+            <FilterIcon color={filterCount > 0 ? '#6952F9' : '#222222'} />
+          </div>
+          {filterCount > 0 && (
+            <span className="absolute -bottom-2 -right-[10px] w-5 h-5 flex items-center justify-center bg-bg-brand-default text-text-inverted-default border-[1px] border-solid border-bg-default text-xs rounded-full">
+              {filterCount}
+            </span>
+          )}
+        </button>
+        <CategoryFilterSwiper onCategoryChange={handleCategoryChange} />
+      </div>
+
+      <div
+        className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${
+          isModalOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
+        }`}
+      >
+        <FiltersModal onApply={handleApplyFilters} onClose={() => setIsModalOpen(false)} />
+      </div>
+
+      {isLoading ? (
+        <div>
+          {Array.from({ length: 5 }).map((_, index) => (
             <SkeletonCard key={index} />
-          ))} */}
-      {/* 로딩중- 스켈레톤 ui예정 */}
-      {/* </div> */}
-      {/* ) : ( */}
-      <>
-        {/* {mockData.map((blog: Blog, index: number) => (
-          <div className={`bg-white border-y-[2px] ${index === 0 ? 'border-b-0' : ''} ${index === mockData.length - 1 ? 'border-t-0' : ''} border-border-weak2`} key={blog.id}>
-            <CommunityCard
-              key={blog.id}
-              userId={blog.writer}
-              date={new Date(blog.createdDate).toLocaleDateString()}
-              title={blog.title}
-              category={blog.category}
-              profileImageUrl="https://via.placeholder.com/40"
-              likes={blog.heartCount}
-              comments={blog.commentCount}
-              isBookmarked={true} //수정예상
-              onLike={() =>
-                blog.heartCount > 0 ? removeHeartMutation.mutate(blog.id) : addHeartMutation.mutate(blog.id)
-              }
-              onBookmark={() =>
-                blog.title //임시
-                  ? removeBookmarkMutation.mutate(blog.id)
-                  : addBookmarkMutation.mutate(blog.id)
-              }
-            />
-          </div> */}
-        {/* ))} */}
-      </>
-      {/* )} */}
+          ))}
+        </div>
+      ) : (
+        <>
+          {data?.pages.map((page, pageIndex) => (
+            <div key={pageIndex}>
+              {page.data.results.map((blog, index) => {
+                const isLastItem = pageIndex === data.pages.length - 1 && index === page.data.results.length - 1;
+
+                return (
+                  <div
+                    className={`bg-white border-y-[2px] border-b-0 border-border-weak2 cursor-pointer`}
+                    key={blog.id}
+                    ref={isLastItem ? observerRef : null}
+                    onClick={() => handleDetail(blog.id)}
+                  >
+                    <CommunityCard
+                      writerId={`${blog.writerId}`}
+                      createdAt={new Date(blog.createdAt).toLocaleDateString()}
+                      title={blog.title}
+                      categoryId={blog.categoryId}
+                      heartCount={blog.heartCount}
+                      comments={blog.commentCount}
+                      isBookmarked={blog.isBookmarked}
+                      isHearted={blog.isHearted}
+                      onLike={() => handleLike(blog.id, blog.isHearted)}
+                      onBookmark={() => handleBookmark(blog.id, blog.isBookmarked)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+          {hasNextPage && (
+            <div ref={observerRef} className="h-10 pt-6 flex justify-center items-center">
+              {isFetchingNextPage ? <div>Loading...</div> : <div>Show More</div>}
+            </div>
+          )}
+        </>
+      )}
+      <div className="h-[136px]"></div>
     </div>
   );
 };

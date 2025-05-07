@@ -1,24 +1,18 @@
-import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
-import { useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSearchParams } from 'react-router-dom';
 import { CATEGORIES } from '@/types';
 
-export const CategoryFilterSwiper = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [, setSwiper] = useState<SwiperClass | null>(null);
+interface CategoryFilterSwiperProps {
+  onCategoryChange: (categoryCode: number | undefined) => void;
+}
 
-  const categoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
+export const CategoryFilterSwiper: React.FC<CategoryFilterSwiperProps> = ({ onCategoryChange }) => {
+  const [searchParams] = useSearchParams();
+  const initialCategoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
 
-  const toggleCategory = (id: number) => {
-    const newSearchParams = new URLSearchParams(searchParams);
-
-    if (categoryCode === id) {
-      newSearchParams.delete('categoryCode');
-    } else {
-      newSearchParams.set('categoryCode', id.toString());
-    }
-
-    setSearchParams(newSearchParams);
+  const handleCategorySelect = (id: number) => {
+    const newCategoryCode = initialCategoryCode === id ? undefined : id;
+    onCategoryChange(newCategoryCode);
   };
 
   return (
@@ -36,20 +30,13 @@ export const CategoryFilterSwiper = () => {
           }
         `}
       </style>
-      <Swiper
-        className="swiper-container"
-        spaceBetween={8}
-        slidesPerView="auto"
-        loop={false}
-        allowTouchMove={true}
-        onSwiper={(e) => setSwiper(e)}
-      >
+      <Swiper className="swiper-container" spaceBetween={8} slidesPerView="auto" loop={false} allowTouchMove={true}>
         {CATEGORIES.map((category) => (
           <SwiperSlide key={category.id} style={{ width: 'auto' }}>
             <button
-              onClick={() => toggleCategory(category.id)}
+              onClick={() => handleCategorySelect(category.id)}
               className={`px-4 py-2 text-sm font-medium rounded-lg border border-border-default transition-colors whitespace-nowrap ${
-                categoryCode === category.id
+                initialCategoryCode === category.id
                   ? 'bg-bg-highlight-selected text-bg-brand-default'
                   : 'bg-white text-text-default'
               }`}
