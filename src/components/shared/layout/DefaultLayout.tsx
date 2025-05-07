@@ -3,7 +3,10 @@ import { BottomNavigation } from '../BottomNavigation';
 
 export function DefaultLayout() {
   const location = useLocation();
-  const isPaddingDisabled = location.pathname.includes('/community');
+  const isPaddingDisabled =
+    location.pathname.includes('/community') ||
+    location.pathname.includes('/profile') ||
+    location.pathname.includes('/settings');
   const isLoginPage =
     location.pathname === '/' || location.pathname.includes('/signup') || location.pathname.includes('/oauth');
 

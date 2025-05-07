@@ -61,6 +61,15 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
       const target = e.target as HTMLInputElement;
       if (target.files && target.files.length > 0) {
         const files = Array.from(target.files);
+
+        const validTypes = ['image/jpeg', 'image/png'];
+        const invalidFiles = files.filter((file) => !validTypes.includes(file.type));
+
+        if (invalidFiles.length > 0) {
+          alert('JPEG, PNG 형식의 이미지만 업로드 가능합니다.');
+          return;
+        }
+
         setImages((prev) => {
           const newFiles = [...prev, ...files];
           return newFiles.slice(0, MAX_IMAGES);
@@ -81,7 +90,7 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
       return;
     }
     if (window.ReactNativeWebView) {
-      window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'getAlbum' }));
+      window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'getAlbum', type }));
     } else {
       handleWebFileSelection();
     }
