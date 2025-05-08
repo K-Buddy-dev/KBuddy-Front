@@ -76,7 +76,7 @@ export function AppleRedirectPage() {
   }, [isMember]);
 
   return isLoading ? (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-screen h-screen flex items-center justify-center">
       <Spinner />
     </div>
   ) : null;

@@ -39,37 +39,23 @@ export const ContentImage = ({ images, title, currentSlide, setCurrentSlide }: C
       >
         {images.map((image, index) => (
           <SwiperSlide key={image.id}>
-            <img
-              src={image.url}
-              alt={`${title} - Image ${index + 1}`}
-              className="w-full h-48 object-cover rounded-lg"
-            />
+            <img src={image.url} alt={`${title} - Image ${index + 1}`} className="w-full h-auto object-cover" />
           </SwiperSlide>
         ))}
       </Swiper>
       {images.length > 1 && (
         <div className="flex justify-center items-center mt-2">
           <div className={`swiper-button-prev ${prevArrowColor} cursor-pointer`}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 12 12" // 더 단순한 뷰박스
-              fill="currentColor" // 꽉 찬 화살표
-              className="w-5 h-5"
-            >
-              <path d="M8 1L4 6L8 11Z" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+              <path d="M14.5 7L9.5 12L14.5 17Z" />
             </svg>
           </div>
           <div className="font-roboto text-text-default text-xs font-medium">
             {currentSlide}/{images.length}
           </div>
           <div className={`swiper-button-next ${nextArrowColor} cursor-pointer`}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 12 12" // 더 단순한 뷰박스
-              fill="currentColor" // 꽉 찬 화살표
-              className="w-5 h-5"
-            >
-              <path d="M4 1L8 6L4 11Z" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+              <path d="M9.5 7L14.5 12L9.5 17Z" />
             </svg>
           </div>
         </div>
