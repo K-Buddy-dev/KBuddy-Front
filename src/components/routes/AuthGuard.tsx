@@ -27,8 +27,8 @@ export function AuthGuard() {
     const refreshToken = async () => {
       try {
         if (!authClient.defaults.headers.common['Authorization']) {
-          console.log(authClient.defaults.headers.common['Authorization']);
-          const { accessToken } = await authService.refreshAccessToken();
+          const { data } = await authService.refreshAccessToken();
+          const { accessToken } = data;
           authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
           setIsAuthenticated(true);
         }
