@@ -1,11 +1,6 @@
-interface Comment {
-  id: number;
-  blogId: number;
-  writerId: number;
-  description: string;
-  createdAt: string;
-  modifiedAt: string;
-}
+import { Comment } from '@/types';
+import { formatRelativeDate } from '@/utils/utils';
+import { FaRegHeart } from 'react-icons/fa';
 
 interface CommentListProps {
   comments: Comment[];
@@ -13,19 +8,35 @@ interface CommentListProps {
 
 export const CommentList = ({ comments }: CommentListProps) => {
   return (
-    <div className="my-4">
+    <div>
       {comments.map((comment) => (
-        <div key={comment.id} className="flex items-start gap-2 mb-2">
-          <img src="https://via.placeholder.com/40" alt="Profile" className="w-8 h-8 rounded-full" />
-          <div className="flex-1">
-            <div className="flex justify-between">
-              <span className="text-sm font-medium text-text-default">@{comment.writerId}</span>
-              <span className="text-xs text-text-weak">{new Date(comment.createdAt).toLocaleDateString()}</span>
+        <div key={comment.id} className="flex items-start gap-2 mb-4">
+          <img src="https://via.placeholder.com/40" alt="Profile" className="w-[28px] h-[28px] rounded-full" />
+          <div className="font-roboto flex-1">
+            <div className="bg-bg-default p-3 rounded-xl">
+              <div className="flex justify-start items-center text-text-weak">
+                <span className="text-xs font-medium border-r-[1px] border-solid border-border-default pr-2">
+                  @{comment.writerId}
+                </span>
+                <span className="text-xs pl-2">{formatRelativeDate(comment.createdAt, comment.modifiedAt)}</span>
+              </div>
+              <p className="text-sm text-text-default mt-1">{comment.description}</p>
             </div>
-            <p className="text-sm text-text-default">{comment.description}</p>
-            <div className="flex gap-2 mt-1">
-              <button className="text-xs text-text-weak">♥ 3</button>
-              <button className="text-xs text-text-weak">Reply</button>
+            <div className="flex items-center justify-between mt-1">
+              <div className="flex items-center w-full gap-1 cursor-pointer">
+                <button
+                  // onClick={() => handleLike(blog.data.id, blog.data.isHearted)}
+                  className="transition-colors hover:[&>svg]:text-red-500"
+                >
+                  {/* {blog.data.isHearted ? ( */}
+                  {/* <FaHeart className="w-6 h-6 text-red-500 fill-current" /> */}
+                  {/* // ) : ( */}
+                  <FaRegHeart className="w-5 h-5 text-text-weak stroke-current" />
+                  {/* // )} */}
+                </button>
+                <span>3</span>
+              </div>
+              <button className="text-xs font-medium text-text-default cursor-pointer">Reply</button>
             </div>
           </div>
         </div>

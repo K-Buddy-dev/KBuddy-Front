@@ -4,12 +4,39 @@ import { useAddBlogHeart, useBlogDetail, useRemoveBlogHeart } from '@/hooks';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 // import { RecommendedPostsSwiper } from './RecommendedPostsSwiper';
-import { CATEGORIES } from '@/types';
-import { CommentInput, ContentImage } from '@/components/community/detail';
+import { CATEGORIES, Comment } from '@/types';
+import { CommentInput, CommentList, ContentImage } from '@/components/community/detail';
 import { formatDate } from '@/utils/utils';
 import { useState } from 'react';
 import { Spinner } from '@/components/shared/spinner';
-import { Comment } from '@/components/shared/icon/Icon';
+import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
+
+const mockComments: Comment[] = [
+  {
+    id: 1,
+    blogId: 101,
+    writerId: 1,
+    description: '정말 유익한 포스트네요! 잘 읽었습니다.',
+    createdAt: '2025-05-01T10:00:00Z',
+    modifiedAt: '2025-05-01T10:00:00Z',
+  },
+  {
+    id: 2,
+    blogId: 101,
+    writerId: 2,
+    description: '좋은 정보 감사합니다. 다음 글도 기대할게요!',
+    createdAt: '2025-05-02T14:30:00Z',
+    modifiedAt: '2025-05-02T14:30:00Z',
+  },
+  {
+    id: 3,
+    blogId: 101,
+    writerId: 3,
+    description: '궁금한 점이 있어 댓글 남깁니다. 추가 설명 부탁드릴게요.',
+    createdAt: '2025-05-03T09:15:00Z',
+    modifiedAt: '2025-05-03T09:15:00Z',
+  },
+];
 
 export const CommunityDetailPage = () => {
   const navigate = useNavigate();
@@ -108,21 +135,19 @@ export const CommunityDetailPage = () => {
           </button>
           <span>Like</span>
         </div>
-        <div className="flex items-center justify-center gap-1 w-full cursor-pointer">
-          <Comment width={24} height={24} />
-          <span>Commnet</span>
+        <div className="flex items-center justify-center gap-1 w-full">
+          <CommentIcon width={24} height={24} />
+          <span>Comment</span>
         </div>
       </div>
-      <div className="px-4 bg-bg-medium">
-        {/* 좋아요 및 댓글 수 */}
-        <div className="text-sm text-text-weak mb-4 flex items-center gap-2 py-4">
+      <div className="px-4 bg-bg-medium pb-6">
+        <div className="text-sm text-text-weak flex items-center gap-2 py-4">
           <span>{blog.data.heartCount} likes</span>
           <span>|</span>
           <span>{blog.data.commentCount} comments</span>
         </div>
 
-        {/* 댓글 목록 */}
-        {/* <CommentList comments={blog.data.comments} /> */}
+        <CommentList comments={mockComments} />
       </div>
 
       {/* 추천 게시물 */}
