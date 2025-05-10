@@ -21,6 +21,7 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
 
     try {
       const data = JSON.parse(event.data);
+      console.log('data', data);
 
       switch (data.action) {
         case 'albumData':
