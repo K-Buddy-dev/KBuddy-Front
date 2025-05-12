@@ -30,6 +30,8 @@ export function AuthGuard() {
           const { accessToken } = await authService.refreshAccessToken();
           authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
           setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(true);
         }
       } catch {
         setIsAuthenticated(false);
@@ -37,7 +39,7 @@ export function AuthGuard() {
     };
 
     refreshToken();
-  }, []);
+  }, [pathname]);
 
   if (PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
     return <Navigate to={'/community'} />;

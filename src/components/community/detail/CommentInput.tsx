@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import defaultImg from '@/assets/images/default-profile.png';
+
 interface CommentInputProps {
   onCommentSubmit: (description: string) => void;
 }
@@ -17,7 +19,7 @@ export const CommentInput = ({ onCommentSubmit }: CommentInputProps) => {
   return (
     <div className="fixed bottom-0 left-0 w-full bg-white border-t border-border-weak1 p-4">
       <div className="flex items-center gap-2">
-        <img src="https://via.placeholder.com/40" alt="Profile" className="w-8 h-8 rounded-full" />
+        <img src={defaultImg} alt="Profile" className="w-8 h-8 rounded-full" />
         <input
           type="text"
           value={commentText}

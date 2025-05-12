@@ -4,39 +4,13 @@ import { useAddBlogHeart, useBlogDetail, useRemoveBlogHeart } from '@/hooks';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 // import { RecommendedPostsSwiper } from './RecommendedPostsSwiper';
-import { CATEGORIES, Comment } from '@/types';
+import defaultImg from '@/assets/images/default-profile.png';
+import { CATEGORIES } from '@/types';
 import { CommentInput, CommentList, ContentImage } from '@/components/community/detail';
 import { formatDate } from '@/utils/utils';
 import { useState } from 'react';
 import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
-
-const mockComments: Comment[] = [
-  {
-    id: 1,
-    blogId: 101,
-    writerId: 1,
-    description: '정말 유익한 포스트네요! 잘 읽었습니다.',
-    createdAt: '2025-05-01T10:00:00Z',
-    modifiedAt: '2025-05-01T10:00:00Z',
-  },
-  {
-    id: 2,
-    blogId: 101,
-    writerId: 2,
-    description: '좋은 정보 감사합니다. 다음 글도 기대할게요!',
-    createdAt: '2025-05-02T14:30:00Z',
-    modifiedAt: '2025-05-02T14:30:00Z',
-  },
-  {
-    id: 3,
-    blogId: 101,
-    writerId: 3,
-    description: '궁금한 점이 있어 댓글 남깁니다. 추가 설명 부탁드릴게요.',
-    createdAt: '2025-05-03T09:15:00Z',
-    modifiedAt: '2025-05-03T09:15:00Z',
-  },
-];
 
 export const CommunityDetailPage = () => {
   const navigate = useNavigate();
@@ -98,11 +72,7 @@ export const CommunityDetailPage = () => {
           <span>{categoryNames}</span>
         </div>
         <div className="flex items-center gap-2 mb-4">
-          <img
-            src="https://images.unsplash.com/photo-1519125323398-675f1f1d1d1f?w=40"
-            alt="Profile"
-            className="w-10 h-10 rounded-full"
-          />
+          <img src={defaultImg} alt="Profile" className="w-10 h-10 rounded-full" />
           <div className="flex flex-col items-start gap-1">
             <span className="text-sm font-medium text-text-default">@{blog.data.writerId}</span>
             <span className="text-sm font-medium text-text-weak">{formatDate(blog.data.createdAt)}</span>
@@ -147,7 +117,7 @@ export const CommunityDetailPage = () => {
           <span>{blog.data.commentCount} comments</span>
         </div>
 
-        <CommentList comments={mockComments} />
+        <CommentList comments={blog.data.comments} />
       </div>
 
       {/* 추천 게시물 */}

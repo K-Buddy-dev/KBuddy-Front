@@ -1,6 +1,7 @@
 import { Comment } from '@/types';
 import { formatRelativeDate } from '@/utils/utils';
 import { FaRegHeart } from 'react-icons/fa';
+import defaultImg from '@/assets/images/default-profile.png';
 
 interface CommentListProps {
   comments: Comment[];
@@ -11,7 +12,7 @@ export const CommentList = ({ comments }: CommentListProps) => {
     <div>
       {comments.map((comment) => (
         <div key={comment.id} className="flex items-start gap-2 mb-4">
-          <img src="https://via.placeholder.com/40" alt="Profile" className="w-[28px] h-[28px] rounded-full" />
+          <img src={defaultImg} alt="Profile" className="w-[28px] h-[28px] rounded-full" />
           <div className="font-roboto flex-1">
             <div className="bg-bg-default p-3 rounded-xl">
               <div className="flex justify-start items-center text-text-weak">
