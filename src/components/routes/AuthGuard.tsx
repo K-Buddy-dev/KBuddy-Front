@@ -3,17 +3,10 @@ import { authService } from '@/services';
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-const PUBLIC_PATHS = [
-  '/',
-  '/signup/verify',
-  '/signup/form',
-  '/oauth/callback/kakao',
-  '/oauth2/code/google',
-  '/oauth/callback/apple',
-  '/oauth/signup/form',
-];
+const PUBLIC_PATHS = ['/', '/signup/verify', '/signup/form', '/oauth/signup/form'];
 
 const OAUTH_CALLBACK_PATHS = ['/oauth/callback/kakao', '/oauth2/code/google', '/oauth/callback/apple'];
+const ALL_PUBLIC_PATHS = [...PUBLIC_PATHS, ...OAUTH_CALLBACK_PATHS];
 
 export function AuthGuard() {
   const location = useLocation();
@@ -65,11 +58,11 @@ export function AuthGuard() {
     return <Outlet />;
   }
 
-  if (PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
+  if (ALL_PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
     return <Navigate to="/community" />;
   }
 
-  if (!PUBLIC_PATHS.includes(pathname) && !isAuthenticated) {
+  if (!ALL_PUBLIC_PATHS.includes(pathname) && !isAuthenticated) {
     return <Navigate to="/" />;
   }
 
