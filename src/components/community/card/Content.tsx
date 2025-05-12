@@ -1,3 +1,5 @@
+import defaultImg from '@/assets/images/default-profile.png';
+
 interface ContentProps {
   id: string;
   date: string;
@@ -12,11 +14,7 @@ export const Content: React.FC<ContentProps> = ({ id, date, profileImageUrl, tit
     <div className="flex items-center justify-between">
       <div>
         <div className="flex items-center justify-start gap-2 mb-2">
-          <img
-            src={profileImageUrl || 'https://via.placeholder.com/40'}
-            alt="Profile"
-            className="w-10 h-10 rounded-full"
-          />
+          <img src={profileImageUrl || defaultImg} alt="Profile" className="w-10 h-10 rounded-full" />
           <div className="font-roboto font-medium">
             <p className="text-xs text-text-default">@{id}</p>
             <p className="text-xs text-text-weak">{date}</p>
