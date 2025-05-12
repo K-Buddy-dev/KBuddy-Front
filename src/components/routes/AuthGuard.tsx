@@ -3,56 +3,67 @@ import { authService } from '@/services';
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-const PUBLIC_PATHS = [
-  '/',
-  '/signup/verify',
-  '/signup/form',
-  '/oauth/callback/kakao',
-  '/oauth2/code/google',
-  '/oauth/callback/apple',
-  '/oauth/signup/form',
-];
+const PUBLIC_PATHS = ['/', '/signup/verify', '/signup/form', '/oauth/signup/form'];
+
+const OAUTH_CALLBACK_PATHS = ['/oauth/callback/kakao', '/oauth2/code/google', '/oauth/callback/apple'];
+const ALL_PUBLIC_PATHS = [...PUBLIC_PATHS, ...OAUTH_CALLBACK_PATHS];
 
 export function AuthGuard() {
   const location = useLocation();
   const { pathname } = location;
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [authChecked, setAuthChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const isOAuthCallback = OAUTH_CALLBACK_PATHS.some((path) => pathname.startsWith(path));
   useEffect(() => {
-    const accessToken = authClient.defaults.headers.common['Authorization'];
-    setIsAuthenticated(!!accessToken);
-  }, [pathname]);
+    const checkAuthentication = async () => {
+      setIsLoading(true);
 
-  useEffect(() => {
-    const refreshToken = async () => {
       try {
-        if (!authClient.defaults.headers.common['Authorization']) {
-          const { data } = await authService.refreshAccessToken();
-          const { accessToken } = data;
-          authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-          setIsAuthenticated(true);
+        const accessToken = authClient.defaults.headers.common['Authorization'];
+
+        if (!accessToken) {
+          try {
+            const { accessToken } = await authService.refreshAccessToken();
+            if (accessToken) {
+              authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+              setIsAuthenticated(true);
+            } else {
+              setIsAuthenticated(false);
+            }
+          } catch (error) {
+            console.error('Failed to refresh token:', error);
+            setIsAuthenticated(false);
+          }
         } else {
           setIsAuthenticated(true);
         }
-      } catch {
-        setIsAuthenticated(false);
       } finally {
-        setAuthChecked(true);
+        setIsLoading(false);
       }
     };
 
-    refreshToken();
-  }, [pathname]);
+    if (!isOAuthCallback) {
+      checkAuthentication();
+    } else {
+      setIsLoading(false);
+    }
+  }, [pathname, isOAuthCallback]);
 
-  if (!authChecked) return null;
-
-  if (PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
-    return <Navigate to={'/community'} />;
+  if (isLoading) {
+    return null;
   }
 
-  if (!PUBLIC_PATHS.includes(pathname) && !isAuthenticated) {
-    return <Navigate to={'/'} />;
+  if (isOAuthCallback) {
+    return <Outlet />;
+  }
+
+  if (ALL_PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
+    return <Navigate to="/community" />;
+  }
+
+  if (!ALL_PUBLIC_PATHS.includes(pathname) && !isAuthenticated) {
+    return <Navigate to="/" />;
   }
 
   return <Outlet />;
