@@ -17,6 +17,7 @@ export function AuthGuard() {
   const location = useLocation();
   const { pathname } = location;
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     const accessToken = authClient.defaults.headers.common['Authorization'];
@@ -35,11 +36,15 @@ export function AuthGuard() {
         }
       } catch {
         setIsAuthenticated(false);
+      } finally {
+        setAuthChecked(true);
       }
     };
 
     refreshToken();
   }, [pathname]);
+
+  if (!authChecked) return null;
 
   if (PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
     return <Navigate to={'/community'} />;
