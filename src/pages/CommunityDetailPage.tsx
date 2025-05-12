@@ -4,12 +4,13 @@ import { useAddBlogHeart, useBlogDetail, useRemoveBlogHeart } from '@/hooks';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 // import { RecommendedPostsSwiper } from './RecommendedPostsSwiper';
+import defaultImg from '@/assets/images/default-profile.png';
 import { CATEGORIES } from '@/types';
-import { CommentInput, ContentImage } from '@/components/community/detail';
+import { CommentInput, CommentList, ContentImage } from '@/components/community/detail';
 import { formatDate } from '@/utils/utils';
 import { useState } from 'react';
 import { Spinner } from '@/components/shared/spinner';
-import { Comment } from '@/components/shared/icon/Icon';
+import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 
 export const CommunityDetailPage = () => {
   const navigate = useNavigate();
@@ -71,11 +72,7 @@ export const CommunityDetailPage = () => {
           <span>{categoryNames}</span>
         </div>
         <div className="flex items-center gap-2 mb-4">
-          <img
-            src="https://images.unsplash.com/photo-1519125323398-675f1f1d1d1f?w=40"
-            alt="Profile"
-            className="w-10 h-10 rounded-full"
-          />
+          <img src={defaultImg} alt="Profile" className="w-10 h-10 rounded-full" />
           <div className="flex flex-col items-start gap-1">
             <span className="text-sm font-medium text-text-default">@{blog.data.writerId}</span>
             <span className="text-sm font-medium text-text-weak">{formatDate(blog.data.createdAt)}</span>
@@ -108,21 +105,19 @@ export const CommunityDetailPage = () => {
           </button>
           <span>Like</span>
         </div>
-        <div className="flex items-center justify-center gap-1 w-full cursor-pointer">
-          <Comment width={24} height={24} />
-          <span>Commnet</span>
+        <div className="flex items-center justify-center gap-1 w-full">
+          <CommentIcon width={24} height={24} />
+          <span>Comment</span>
         </div>
       </div>
-      <div className="px-4 bg-bg-medium">
-        {/* 좋아요 및 댓글 수 */}
-        <div className="text-sm text-text-weak mb-4 flex items-center gap-2 py-4">
+      <div className="px-4 bg-bg-medium pb-6">
+        <div className="text-sm text-text-weak flex items-center gap-2 py-4">
           <span>{blog.data.heartCount} likes</span>
           <span>|</span>
           <span>{blog.data.commentCount} comments</span>
         </div>
 
-        {/* 댓글 목록 */}
-        {/* <CommentList comments={blog.data.comments} /> */}
+        <CommentList comments={blog.data.comments} />
       </div>
 
       {/* 추천 게시물 */}

@@ -36,6 +36,15 @@ export interface Community {
   createdAt: string;
 }
 
+export interface Comment {
+  id: number;
+  blogId: number;
+  writerId: number;
+  description: string;
+  createdAt: string;
+  modifiedAt: string;
+}
+
 export interface CommunityDetail {
   id: number;
   writerId: number;
@@ -51,14 +60,7 @@ export interface CommunityDetail {
     name: string;
     url: string;
   }[];
-  comments: {
-    id: number;
-    blogId: number;
-    writerId: number;
-    description: string;
-    createdAt: string;
-    modifiedAt: string;
-  }[];
+  comments: Comment[];
   heartCount: number;
   commentCount: number;
   isBookmarked: boolean;
