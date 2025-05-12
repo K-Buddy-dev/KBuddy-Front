@@ -13,45 +13,64 @@ const PUBLIC_PATHS = [
   '/oauth/signup/form',
 ];
 
+const OAUTH_CALLBACK_PATHS = ['/oauth/callback/kakao', '/oauth2/code/google', '/oauth/callback/apple'];
+
 export function AuthGuard() {
   const location = useLocation();
   const { pathname } = location;
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [authChecked, setAuthChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const isOAuthCallback = OAUTH_CALLBACK_PATHS.some((path) => pathname.startsWith(path));
   useEffect(() => {
-    const accessToken = authClient.defaults.headers.common['Authorization'];
-    setIsAuthenticated(!!accessToken);
-  }, [pathname]);
+    const checkAuthentication = async () => {
+      setIsLoading(true);
 
-  useEffect(() => {
-    const refreshToken = async () => {
       try {
-        if (!authClient.defaults.headers.common['Authorization']) {
-          const { accessToken } = await authService.refreshAccessToken();
-          authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-          setIsAuthenticated(true);
+        const accessToken = authClient.defaults.headers.common['Authorization'];
+
+        if (!accessToken) {
+          try {
+            const { accessToken } = await authService.refreshAccessToken();
+            if (accessToken) {
+              authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+              setIsAuthenticated(true);
+            } else {
+              setIsAuthenticated(false);
+            }
+          } catch (error) {
+            console.error('Failed to refresh token:', error);
+            setIsAuthenticated(false);
+          }
         } else {
           setIsAuthenticated(true);
         }
-      } catch {
-        setIsAuthenticated(false);
       } finally {
-        setAuthChecked(true);
+        setIsLoading(false);
       }
     };
 
-    refreshToken();
-  }, [pathname]);
+    if (!isOAuthCallback) {
+      checkAuthentication();
+    } else {
+      setIsLoading(false);
+    }
+  }, [pathname, isOAuthCallback]);
 
-  if (!authChecked) return null;
+  if (isLoading) {
+    return null;
+  }
+
+  if (isOAuthCallback) {
+    return <Outlet />;
+  }
 
   if (PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
-    return <Navigate to={'/community'} />;
+    return <Navigate to="/community" />;
   }
 
   if (!PUBLIC_PATHS.includes(pathname) && !isAuthenticated) {
-    return <Navigate to={'/'} />;
+    return <Navigate to="/" />;
   }
 
   return <Outlet />;
