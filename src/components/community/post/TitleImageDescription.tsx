@@ -70,7 +70,7 @@ export const TitleImageDescription = () => {
   }, []);
 
   return (
-    <div className="font-roboto w-full min-h-[calc(100vh-64px)] pt-20">
+    <div className="font-roboto w-full min-h-screen pt-20">
       <Topbar
         title="New Post"
         type="back"
