@@ -12,7 +12,7 @@ export function EditProfilePage() {
     JSON.parse(localStorage.getItem('basicUserData') || '{}')
   );
   const profileImageInputRef = useRef<HTMLInputElement>(null);
-  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(basicUserData?.profileImageUrl);
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(basicUserData?.profileImageUrl || null);
 
   const onChangeBio = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 30) {
