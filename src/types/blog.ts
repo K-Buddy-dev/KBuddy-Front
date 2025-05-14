@@ -133,3 +133,8 @@ export interface CommentRequest {
 export interface ReportRequest {
   reason: string; // 신고 사유 (예시로 추가, 실제 API 스펙에 따라 수정 필요)
 }
+
+export interface UseRecommendedBlogsProps {
+  size?: number;
+  categoryCode?: number;
+}

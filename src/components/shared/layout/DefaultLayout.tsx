@@ -11,7 +11,8 @@ export function DefaultLayout() {
     location.pathname === '/' ||
     location.pathname.includes('/signup') ||
     location.pathname.includes('/oauth') ||
-    location.pathname.includes('/community/post');
+    location.pathname.includes('/community/post') ||
+    location.pathname.includes('/community/detail');
 
   return (
     <div className="w-full h-full min-h-screen flex items-start justify-center bg-slate-200">

@@ -1,4 +1,10 @@
-import { BlogFilters, Community, CommunityDetailResponse, CommunityListResponse } from '@/types/blog';
+import {
+  BlogFilters,
+  Community,
+  CommunityDetailResponse,
+  CommunityListResponse,
+  UseRecommendedBlogsProps,
+} from '@/types/blog';
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { blogQueryKeys } from './blogKeys';
@@ -44,18 +50,19 @@ export const useBlogs = () => {
   });
 };
 
-// // 필터 업데이트 훅
-// export const useUpdateBlogFilters = () => {
-//   const [searchParams, setSearchParams] = useSearchParams();
+export const useRecommendedBlogs = ({ size = 5, categoryCode }: UseRecommendedBlogsProps = {}) => {
+  const filters: BlogFilters = {
+    size,
+    categoryCode,
+  };
 
-//   return (newFilters: { size?: number; keyword?: string; sort?: CommunitySort }) => {
-//     const updatedParams = new URLSearchParams(searchParams);
-//     if (newFilters.size !== undefined) updatedParams.set('size', String(newFilters.size));
-//     if (newFilters.keyword !== undefined) updatedParams.set('keyword', newFilters.keyword);
-//     if (newFilters.sort !== undefined) updatedParams.set('sort', newFilters.sort);
-//     setSearchParams(updatedParams);
-//   };
-// };
+  return useQuery<CommunityListResponse, Error>({
+    queryKey: blogQueryKeys.blog.list(filters),
+    queryFn: () => {
+      return blogService.getBlogs(undefined, filters.size, undefined, undefined, filters.categoryCode);
+    },
+  });
+};
 
 // 블로그 단건 조회
 export const useBlogDetail = (blogId: number) => {
