@@ -7,14 +7,13 @@ import defaultImg from '@/assets/images/default-profile.png';
 import { CATEGORIES } from '@/types';
 import { CommentInput, CommentList, ContentImage } from '@/components/community/detail';
 import { formatDate } from '@/utils/utils';
-import { useState } from 'react';
 import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 
 export const BlogDetail = () => {
   const { id } = useParams();
   const blogId = Number(id);
-  const [currentSlide, setCurrentSlide] = useState(1);
+
   const addBlogHeart = useAddBlogHeart();
   const removeBlogHeart = useRemoveBlogHeart();
   const { data: blog, isLoading, error } = useBlogDetail(blogId);
@@ -58,7 +57,7 @@ export const BlogDetail = () => {
     .join(' | ');
 
   return (
-    <main className="relative pb-20 font-roboto">
+    <main className=" pb-20 font-roboto">
       <div className="pt-[80px] px-4">
         <h1 className="font-medium text-text-default text-[22px] leading-7 mb-1">{blog.data.title}</h1>
         <div className="flex items-center gap-2 text-sm text-text-weak mb-4">
@@ -72,14 +71,7 @@ export const BlogDetail = () => {
           </div>
         </div>
       </div>
-      {blog.data.images.length > 0 && (
-        <ContentImage
-          images={blog.data.images}
-          title={blog.data.title}
-          currentSlide={currentSlide}
-          setCurrentSlide={setCurrentSlide}
-        />
-      )}
+      {blog.data.images.length > 0 && <ContentImage images={blog.data.images} title={blog.data.title} />}
       <div className="px-4">
         <p className="text-base text-text-default pt-4 pb-6">{blog.data.description}</p>
       </div>
