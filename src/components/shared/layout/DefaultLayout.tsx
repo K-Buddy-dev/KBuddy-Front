@@ -20,7 +20,7 @@ export function DefaultLayout() {
       >
         <Outlet />
         {!isBottomNavigationDisabled && (
-          <div className="absolute bottom-0 left-0 w-full">
+          <div className="fixed bottom-0 left-0 w-full">
             <BottomNavigation />
           </div>
         )}
