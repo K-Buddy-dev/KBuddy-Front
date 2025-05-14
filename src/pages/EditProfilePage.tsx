@@ -1,9 +1,10 @@
 import { Button, Label, TextField, Topbar } from '@/components';
 import { BasicUserData } from '@/types';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import defaultProfileImage from '@/assets/images/default-profile.png';
 import { authService } from '@/services';
+import { base64ToFile } from '@/utils/utils';
 
 export function EditProfilePage() {
   const navigate = useNavigate();
@@ -11,13 +12,37 @@ export function EditProfilePage() {
     JSON.parse(localStorage.getItem('basicUserData') || '{}')
   );
   const profileImageInputRef = useRef<HTMLInputElement>(null);
-  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(basicUserData?.profileImageUrl);
 
   const onChangeBio = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 30) {
       return;
     }
     setBasicUserData({ ...basicUserData, bio: e.target.value });
+  };
+
+  const handleAlbumDataFromRN = (event: MessageEvent) => {
+    if (typeof event.data !== 'string') return;
+
+    try {
+      const data = JSON.parse(event.data);
+
+      switch (data.action) {
+        case 'albumData':
+          if (data.album && data.album.length > 0) {
+            const file = base64ToFile(data.album[0], 'selected-image-0.jpg');
+            if (profileImageInputRef.current) {
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(file);
+              profileImageInputRef.current.files = dataTransfer.files;
+            }
+            setProfileImageUrl(data.album[0]);
+          }
+          break;
+      }
+    } catch (e) {
+      console.error('앨범 데이터 파싱 실패:', e);
+    }
   };
 
   const onChangeProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,6 +91,14 @@ export function EditProfilePage() {
       navigate('/profile');
     }
   };
+
+  useEffect(() => {
+    window.addEventListener('message', handleAlbumDataFromRN);
+
+    return () => {
+      window.removeEventListener('message', handleAlbumDataFromRN);
+    };
+  }, []);
 
   return (
     <form className="relative h-[calc(100vh-80px)]" onSubmit={onSubmit}>
