@@ -9,6 +9,7 @@ export function DefaultLayout() {
     location.pathname.includes('/settings');
   const isLoginPage =
     location.pathname === '/' || location.pathname.includes('/signup') || location.pathname.includes('/oauth');
+  const isBottomNavigationDisabled = location.pathname.includes('/community/post');
 
   return (
     <div className="w-full h-full min-h-screen flex items-start justify-center bg-slate-200">
@@ -18,7 +19,7 @@ export function DefaultLayout() {
         <div className={`${isLoginPage ? '' : 'pb-16'}`}>
           <Outlet />
         </div>
-        {!isLoginPage && (
+        {!isLoginPage && !isBottomNavigationDisabled && (
           <div className="absolute bottom-0 left-0 w-full">
             <BottomNavigation />
           </div>

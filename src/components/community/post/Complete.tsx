@@ -14,10 +14,10 @@ export const Complete = () => {
   }, []);
 
   return (
-    <div className="w-full min-h-screen pt-20">
+    <div className="w-full min-h-[calc(100vh-64px)] pt-20">
       <Topbar title="" type="cancel" onCancle={() => navigate('/community')} />
-      <div className="w-full min-h-screen flex justify-center items-center">
-        <div className="w-full min-h-[640px] px-4 m-auto flex flex-col items-center">
+      <div className="w-full min-h-[calc(100vh-80px-64px)] flex justify-center items-center">
+        <div className="w-full min-h-[640px] px-4 flex flex-col items-center">
           <div className="w-36 h-36 rounded-full bg-bg-brand-weak mb-3">
             <img src={CompleteImage} alt="complete" />
           </div>
