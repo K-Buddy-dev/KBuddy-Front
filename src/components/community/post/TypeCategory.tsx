@@ -42,7 +42,7 @@ export const TypeCategory = () => {
   }, []);
 
   return (
-    <div className="font-roboto w-full min-h-screen pt-20">
+    <div className="font-roboto w-full min-h-[calc(100vh-64px)] pt-20">
       <Topbar title="Post Preview" type="back" isNext={true} onBack={handleClickBackButton} />
       {/* <div className="bg-bg-medium w-full h-[326px] mt-14 px-4">
         <SectionInfo
