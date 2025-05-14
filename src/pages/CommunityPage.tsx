@@ -20,10 +20,7 @@ export const CommunityPage = () => {
         {/* <SwiperList cards={mockData} /> */}
         <Tab />
       </div>
-      <Link
-        to="/community/post"
-        className="fixed right-4 bottom-[92px] -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-      >
+      <Link to="/community/post" className="fixed right-4 bottom-[92px] cursor-pointer sm:right-[calc(50%-260px-16px)]">
         <FloatPostAction />
       </Link>
       {currentTab === 'User blog' && <BlogList />}
