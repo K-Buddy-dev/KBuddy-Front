@@ -1,7 +1,7 @@
 import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FloatLeft, FloatRight } from '@/components/shared';
 import { SwiperCard, SwiperWrapperProps } from './SwiperList';
 
@@ -21,6 +21,14 @@ const styles = `
       display: none !important;
     }
   }
+  .swiper-slide-view-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding-right: 16px;
+  }
 `;
 
 export const RecommendSwiper = ({ cards, onLike, onBookmark }: SwiperWrapperProps) => {
@@ -29,14 +37,18 @@ export const RecommendSwiper = ({ cards, onLike, onBookmark }: SwiperWrapperProp
   const [isBeginning, setIsBeginning] = useState<boolean>(true);
   const [isEnd, setIsEnd] = useState<boolean>(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isBlog = location.pathname.includes('blog');
+  console.log('isBlog: ', isBlog);
+  console.log('location: ', location);
   const viewAllPath = isBlog ? '/community/blog' : '/community/qna';
+
+  const handleViewAllClick = () => {
+    navigate(viewAllPath);
+  };
 
   const handlePrev = () => swiper?.slidePrev();
   const handleNext = () => swiper?.slideNext();
-
-  // 스와이프가 끝났을 때만 "전체 게시물 보기" 링크를 보이도록 설정
-  const showViewAll = isEnd || cards.length <= 1; // 카드가 1개 이하일 때도 보이도록
 
   return (
     <div className="w-full">
@@ -85,14 +97,15 @@ export const RecommendSwiper = ({ cards, onLike, onBookmark }: SwiperWrapperProp
               />
             </SwiperSlide>
           ))}
+          <SwiperSlide key="view-all" className="swiper-slide-view-all">
+            <div className="flex items-center justify-start w-full h-[162px] px-4">
+              <button onClick={handleViewAllClick} className="text-sm leading-[24px] text-text-default underline">
+                View All Posts →
+              </button>
+            </div>
+          </SwiperSlide>
         </Swiper>
-        {showViewAll && (
-          <div className="mt-4">
-            <a href={viewAllPath} className="text-lg leading-[24px] text-text-default underline">
-              전체 게시물 보기
-            </a>
-          </div>
-        )}
+
         <div>
           <div
             onClick={handlePrev}
