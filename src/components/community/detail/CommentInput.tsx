@@ -17,7 +17,7 @@ export const CommentInput = ({ onCommentSubmit }: CommentInputProps) => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-border-weak1 px-4 pt-3 pb-7">
+    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-border-weak1 px-4 pt-3 pb-7 z-20">
       <div className="flex items-center h-10 gap-2">
         <img src={defaultImg} alt="Profile" className="w-7 h-7 rounded-full" />
         <input

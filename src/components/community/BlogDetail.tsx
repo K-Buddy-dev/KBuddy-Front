@@ -1,14 +1,21 @@
 import { useParams } from 'react-router-dom';
-import { useAddBlogHeart, useBlogDetail, useRecommendedBlogs, useRemoveBlogHeart } from '@/hooks';
+import {
+  useAddBlogHeart,
+  useAddBookmark,
+  useBlogDetail,
+  useRecommendedBlogs,
+  useRemoveBlogHeart,
+  useRemoveBookmark,
+} from '@/hooks';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
-// import { RecommendedPostsSwiper } from './RecommendedPostsSwiper';
 import defaultImg from '@/assets/images/default-profile.png';
 import { CATEGORIES } from '@/types';
 import { CommentInput, CommentList, ContentImage } from '@/components/community/detail';
 import { formatDate } from '@/utils/utils';
 import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
+import { RecommendSwiper } from './swiper';
 
 export const BlogDetail = () => {
   const { id } = useParams();
@@ -16,9 +23,13 @@ export const BlogDetail = () => {
 
   const addBlogHeart = useAddBlogHeart();
   const removeBlogHeart = useRemoveBlogHeart();
+  const addBookmark = useAddBookmark();
+  const removeBookmark = useRemoveBookmark();
   const { data: blog, isLoading, error } = useBlogDetail(blogId);
-  const { data: recommendBlog } = useRecommendedBlogs({ size: 5, categoryCode: blog?.data.categoryId[0] });
-  console.log('recommendBlog: ', recommendBlog);
+  const { data: recommendBlog, refetch: refetchRecommended } = useRecommendedBlogs({
+    size: 5,
+    categoryCode: blog?.data.categoryId[0],
+  });
 
   const handleCommentSubmit = (description: string) => {
     console.log('New comment:', description);
@@ -27,14 +38,34 @@ export const BlogDetail = () => {
   const handleLike = (blogId: number, isHearted: boolean) => {
     if (isHearted) {
       removeBlogHeart.mutate(blogId, {
+        onSuccess: () => refetchRecommended(),
         onError: (error) => {
           alert(`Fail remove Like: ${error.message}`);
         },
       });
     } else {
       addBlogHeart.mutate(blogId, {
+        onSuccess: () => refetchRecommended(),
         onError: (error) => {
           alert(`Fail add Like: ${error.message}`);
+        },
+      });
+    }
+  };
+
+  const handleBookmark = (blogId: number, isBookmarked: boolean) => {
+    if (isBookmarked) {
+      removeBookmark.mutate(blogId, {
+        onSuccess: () => refetchRecommended(),
+        onError: (error) => {
+          alert(`Fail remove Bookmark: ${error.message}`);
+        },
+      });
+    } else {
+      addBookmark.mutate(blogId, {
+        onSuccess: () => refetchRecommended(),
+        onError: (error) => {
+          alert(`Fail add Bookmark: ${error.message}`);
         },
       });
     }
@@ -106,7 +137,9 @@ export const BlogDetail = () => {
       </div>
 
       {/* 추천 게시물 */}
-      {/* <RecommendedPostsSwiper posts={recommendedPosts} /> */}
+      {recommendBlog?.data && (
+        <RecommendSwiper cards={recommendBlog?.data.results} onLike={handleLike} onBookmark={handleBookmark} />
+      )}
 
       {/* 하단 고정 댓글 입력창 */}
       <CommentInput onCommentSubmit={handleCommentSubmit} />
