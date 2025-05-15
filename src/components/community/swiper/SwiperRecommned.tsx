@@ -8,7 +8,7 @@ import { SwiperCard, SwiperWrapperProps } from './SwiperList';
 function SwiperListWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative min-w-[280px] w-full sm:w-[600px] h-[250px] pb-6 pl-4 font-roboto font-medium">
-      <h1 className="pt-6 pb-4 text-[18px] leading-[24px] text-text-default">You might also like this</h1>
+      <h1 className="pt-6 pb-4 text-lg leading-[24px] text-text-default">You might also like this</h1>
       {children}
     </div>
   );
@@ -87,8 +87,8 @@ export const RecommendSwiper = ({ cards, onLike, onBookmark }: SwiperWrapperProp
           ))}
         </Swiper>
         {showViewAll && (
-          <div className="mt-4 text-white">
-            <a href={viewAllPath} className="text-sm underline">
+          <div className="mt-4">
+            <a href={viewAllPath} className="text-lg leading-[24px] text-text-default underline">
               전체 게시물 보기
             </a>
           </div>

@@ -27,9 +27,10 @@ export const BlogDetail = () => {
   const removeBookmark = useRemoveBookmark();
   const { data: blog, isLoading, error } = useBlogDetail(blogId);
   const { data: recommendBlog, refetch: refetchRecommended } = useRecommendedBlogs({
-    size: 5,
+    size: 6,
     categoryCode: blog?.data.categoryId[0],
   });
+  console.log('recommendBlog: ', recommendBlog);
 
   const handleCommentSubmit = (description: string) => {
     console.log('New comment:', description);
@@ -138,7 +139,11 @@ export const BlogDetail = () => {
 
       {/* 추천 게시물 */}
       {recommendBlog?.data && (
-        <RecommendSwiper cards={recommendBlog?.data.results} onLike={handleLike} onBookmark={handleBookmark} />
+        <RecommendSwiper
+          cards={recommendBlog?.data.results.filter((data) => data.id !== blogId)}
+          onLike={handleLike}
+          onBookmark={handleBookmark}
+        />
       )}
 
       {/* 하단 고정 댓글 입력창 */}
