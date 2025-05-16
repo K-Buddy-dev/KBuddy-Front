@@ -1,17 +1,18 @@
-export const blogQueryKeys = {
-  one: ['blog'] as const,
-  all: ['blogs'] as const,
-  bookmarks: ['blogBookmarks'] as const,
+import { BlogFilters } from '@/types';
 
-  blog: {
-    // 블로그 단건
-    detail: (blogId: number) => [...blogQueryKeys.one, blogId] as const,
+export const qnaQueryKeys = {
+  one: ['qna'] as const,
+  all: ['qnas'] as const,
+  bookmarks: ['qnaBookmarks'] as const,
 
-    // 블로그 목록 조회 (필터링 조건 포함)
-    list: (filters: { cursor?: number; size?: number; keyword?: string; sort?: string }) =>
-      [...blogQueryKeys.all, filters] as const,
+  qna: {
+    // QnA 단건
+    detail: (qnaId: number) => [...qnaQueryKeys.one, qnaId] as const,
 
-    // 북마크된 블로그 목록 조회
-    bookmarked: (filters: { cursor?: number; size?: number }) => [...blogQueryKeys.bookmarks, filters] as const,
+    // QnA 목록 조회 (필터링 조건 포함)
+    list: (filters: BlogFilters) => [...qnaQueryKeys.all, filters] as const,
+
+    // 북마크된 QnA 목록 조회
+    bookmarked: (filters: { cursor?: number; size?: number }) => [...qnaQueryKeys.bookmarks, filters] as const,
   },
 };

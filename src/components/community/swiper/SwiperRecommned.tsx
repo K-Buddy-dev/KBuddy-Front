@@ -39,8 +39,7 @@ export const RecommendSwiper = ({ cards, onLike, onBookmark }: SwiperWrapperProp
   const location = useLocation();
   const navigate = useNavigate();
   const isBlog = location.pathname.includes('blog');
-  console.log('isBlog: ', isBlog);
-  console.log('location: ', location);
+
   const viewAllPath = isBlog ? '/community/blog' : '/community/qna';
 
   const handleViewAllClick = () => {

@@ -4,7 +4,7 @@ import {
   CommunityDetailResponse,
   CommunityListResponse,
   UseRecommendedBlogsProps,
-} from '@/types/blog';
+} from '@/types/community';
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { blogQueryKeys } from './blogKeys';
@@ -212,7 +212,7 @@ export const useBlogDetail = (blogId: number) => {
 // };
 
 // 블로그 북마크 추가
-export const useAddBookmark = () => {
+export const useAddBlogBookmark = () => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, number>({
@@ -253,7 +253,7 @@ export const useAddBookmark = () => {
 };
 
 // 블로그 북마크 삭제
-export const useRemoveBookmark = () => {
+export const useRemoveBlogBookmark = () => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, number>({

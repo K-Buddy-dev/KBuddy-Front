@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { Topbar } from '@/components/shared';
-import { BlogDetail } from '@/components/community/BlogDetail';
+import { BlogDetail, QnaDetail } from '@/components/community';
 
 export const CommunityDetailPage = () => {
   const [searchParams] = useSearchParams();
@@ -12,6 +12,7 @@ export const CommunityDetailPage = () => {
   };
 
   const currentTab = searchParams.get('tab') || 'Curated blog';
+  console.log('currentTab: ', currentTab);
 
   return (
     <main className="relative min-h-screen pb-24 font-roboto">
@@ -19,7 +20,7 @@ export const CommunityDetailPage = () => {
       <Topbar title="" type="back" onBack={handleBack} />
 
       {currentTab === 'User blog' && <BlogDetail />}
-      {/* {currentTab === 'Q&A' && <QnaList />} */}
+      {currentTab === 'Q&A' && <QnaDetail />}
     </main>
   );
 };

@@ -1,11 +1,11 @@
 import { useParams } from 'react-router-dom';
 import {
   useAddBlogHeart,
-  useAddBookmark,
+  useAddBlogBookmark,
   useBlogDetail,
   useRecommendedBlogs,
   useRemoveBlogHeart,
-  useRemoveBookmark,
+  useRemoveBlogBookmark,
 } from '@/hooks';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
@@ -23,14 +23,13 @@ export const BlogDetail = () => {
 
   const addBlogHeart = useAddBlogHeart();
   const removeBlogHeart = useRemoveBlogHeart();
-  const addBookmark = useAddBookmark();
-  const removeBookmark = useRemoveBookmark();
+  const addBlogBookmark = useAddBlogBookmark();
+  const removeBlogBookmark = useRemoveBlogBookmark();
   const { data: blog, isLoading, error } = useBlogDetail(blogId);
   const { data: recommendBlog, refetch: refetchRecommended } = useRecommendedBlogs({
     size: 6,
-    categoryCode: blog?.data.categoryId[0],
+    categoryCode: Array.isArray(blog?.data.categoryId) ? blog?.data.categoryId[0] : blog?.data.categoryId,
   });
-  console.log('recommendBlog: ', recommendBlog);
 
   const handleCommentSubmit = (description: string) => {
     console.log('New comment:', description);
@@ -56,14 +55,14 @@ export const BlogDetail = () => {
 
   const handleBookmark = (blogId: number, isBookmarked: boolean) => {
     if (isBookmarked) {
-      removeBookmark.mutate(blogId, {
+      removeBlogBookmark.mutate(blogId, {
         onSuccess: () => refetchRecommended(),
         onError: (error) => {
           alert(`Fail remove Bookmark: ${error.message}`);
         },
       });
     } else {
-      addBookmark.mutate(blogId, {
+      addBlogBookmark.mutate(blogId, {
         onSuccess: () => refetchRecommended(),
         onError: (error) => {
           alert(`Fail add Bookmark: ${error.message}`);
@@ -81,12 +80,12 @@ export const BlogDetail = () => {
   if (error) return <div className="w-screen h-screen flex items-center justify-center">Error: {error.message}</div>;
   if (!blog?.data) return <div className="w-screen h-screen flex items-center justify-center">No data found</div>;
 
-  //   const blog = data.data;
-
-  const categoryNames = blog.data.categoryId
-    .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
-    .filter(Boolean)
-    .join(' | ');
+  const categoryNames = Array.isArray(blog?.data.categoryId)
+    ? blog?.data.categoryId
+        .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
+        .filter(Boolean)
+        .join(' | ')
+    : CATEGORIES.find((cat) => cat.id === blog?.data.categoryId)?.name || '';
 
   return (
     <main className=" pb-20 font-roboto">

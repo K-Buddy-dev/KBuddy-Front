@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { useAddBlogHeart, useAddBookmark, useBlogs, useRemoveBlogHeart, useRemoveBookmark } from '@/hooks';
+import { useAddBlogHeart, useAddQnaBookmark, useRemoveBlogHeart, useRemoveQnaBookmark } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
 import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
-import { CategoryFilterSwiper } from './swiper';
+import { useQnas } from '@/hooks/qna/useQna';
 
 export const QnaList: React.FC = () => {
   const navigate = useNavigate();
@@ -15,12 +15,12 @@ export const QnaList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterCount, setFilterCount] = useState<number>(0);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useQnas();
 
   const addBlogHeart = useAddBlogHeart();
   const removeBlogHeart = useRemoveBlogHeart();
-  const addBookmark = useAddBookmark();
-  const removeBookmark = useRemoveBookmark();
+  const addBookmark = useAddQnaBookmark();
+  const removeBookmark = useRemoveQnaBookmark();
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -62,18 +62,6 @@ export const QnaList: React.FC = () => {
     setTimeout(() => window.scrollTo(0, scrollY), 0);
   };
 
-  const handleCategoryChange = (categoryCode: number | undefined) => {
-    const scrollY = window.scrollY;
-    const newSearchParams = new URLSearchParams(searchParams);
-    if (categoryCode !== undefined) {
-      newSearchParams.set('categoryCode', categoryCode.toString());
-    } else {
-      newSearchParams.delete('categoryCode');
-    }
-    setSearchParams(newSearchParams);
-    setTimeout(() => window.scrollTo(0, scrollY), 0);
-  };
-
   useEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -93,15 +81,15 @@ export const QnaList: React.FC = () => {
     }
   }, [location.key]);
 
-  const handleLike = (blogId: number, isHearted: boolean) => {
+  const handleLike = (qnaId: number, isHearted: boolean) => {
     if (isHearted) {
-      removeBlogHeart.mutate(blogId, {
+      removeBlogHeart.mutate(qnaId, {
         onError: (error) => {
           alert(`Fail remove Like: ${error.message}`);
         },
       });
     } else {
-      addBlogHeart.mutate(blogId, {
+      addBlogHeart.mutate(qnaId, {
         onError: (error) => {
           alert(`Fail add Like: ${error.message}`);
         },
@@ -109,15 +97,15 @@ export const QnaList: React.FC = () => {
     }
   };
 
-  const handleBookmark = (blogId: number, isBookmarked: boolean) => {
+  const handleBookmark = (qnaId: number, isBookmarked: boolean) => {
     if (isBookmarked) {
-      removeBookmark.mutate(blogId, {
+      removeBookmark.mutate(qnaId, {
         onError: (error) => {
           alert(`Fail remove Bookmark: ${error.message}`);
         },
       });
     } else {
-      addBookmark.mutate(blogId, {
+      addBookmark.mutate(qnaId, {
         onError: (error) => {
           alert(`Fail add Bookmark: ${error.message}`);
         },
@@ -125,9 +113,9 @@ export const QnaList: React.FC = () => {
     }
   };
 
-  const handleDetail = (blogId: number) => {
+  const handleDetail = (qnaId: number) => {
     sessionStorage.setItem('scrollY', String(window.scrollY));
-    navigate(`/community/detail/${blogId}${location.search}`);
+    navigate(`/community/detail/${qnaId}${location.search}`);
   };
 
   if (isError) {
@@ -136,14 +124,13 @@ export const QnaList: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="font-roboto font-medium text-lg ml-4 mt-6 mb-4">All blogs</h1>
-      <div className="mb-4 ml-4 flex items-center gap-2">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className={`w-[30px] h-[30px] p-[4px] border-[1px] rounded-lg relative cursor-pointer ${
-            filterCount > 0 ? 'bg-bg-highlight-selected border-border-brand-default' : 'bg-none border-border-default'
-          }`}
-        >
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className={`w-[86px] h-[30px] mt-6 mb-4 ml-4 flex items-center justify-center gap-2 border-[1px] p-[4px] rounded-lg cursor-pointer ${
+          filterCount > 0 ? 'bg-bg-highlight-selected border-border-brand-default' : 'bg-none border-border-default'
+        }`}
+      >
+        <div className="relative">
           <div className="w-5 h-5 flex items-center justify-center">
             <FilterIcon color={filterCount > 0 ? '#6952F9' : '#222222'} />
           </div>
@@ -152,9 +139,9 @@ export const QnaList: React.FC = () => {
               {filterCount}
             </span>
           )}
-        </button>
-        <CategoryFilterSwiper onCategoryChange={handleCategoryChange} />
-      </div>
+        </div>
+        <span className="font-roboto text-xs text-text-default font-medium">Filters</span>
+      </button>
 
       <div
         className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${
@@ -174,27 +161,27 @@ export const QnaList: React.FC = () => {
         <>
           {data?.pages.map((page, pageIndex) => (
             <div key={pageIndex}>
-              {page.data.results.map((blog, index) => {
+              {page.data.results.map((qna, index) => {
                 const isLastItem = pageIndex === data.pages.length - 1 && index === page.data.results.length - 1;
 
                 return (
                   <div
                     className={`bg-white border-y-[2px] border-b-0 border-border-weak2 cursor-pointer`}
-                    key={blog.id}
+                    key={qna.id}
                     ref={isLastItem ? observerRef : null}
-                    onClick={() => handleDetail(blog.id)}
+                    onClick={() => handleDetail(qna.id)}
                   >
                     <CommunityCard
-                      writerId={`${blog.writerId}`}
-                      createdAt={new Date(blog.createdAt).toLocaleDateString()}
-                      title={blog.title}
-                      categoryId={blog.categoryId}
-                      heartCount={blog.heartCount}
-                      comments={blog.commentCount}
-                      isBookmarked={blog.isBookmarked}
-                      isHearted={blog.isHearted}
-                      onLike={() => handleLike(blog.id, blog.isHearted)}
-                      onBookmark={() => handleBookmark(blog.id, blog.isBookmarked)}
+                      writerId={`${qna.writerId}`}
+                      createdAt={new Date(qna.createdAt).toLocaleDateString()}
+                      title={qna.title}
+                      categoryId={qna.categoryId}
+                      heartCount={qna.heartCount}
+                      comments={qna.commentCount}
+                      isBookmarked={qna.isBookmarked}
+                      isHearted={qna.isHearted}
+                      onLike={() => handleLike(qna.id, qna.isHearted)}
+                      onBookmark={() => handleBookmark(qna.id, qna.isBookmarked)}
                     />
                   </div>
                 );

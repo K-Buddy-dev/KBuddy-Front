@@ -25,7 +25,7 @@ export interface Blog {
 export interface Community {
   id: number;
   writerId: number;
-  categoryId: number[];
+  categoryId: number[] | number;
   title: string;
   description: string;
   viewCount: number;
@@ -48,7 +48,7 @@ export interface Comment {
 export interface CommunityDetail {
   id: number;
   writerId: number;
-  categoryId: number[];
+  categoryId: number[] | number;
   title: string;
   description: string;
   viewCount: number;

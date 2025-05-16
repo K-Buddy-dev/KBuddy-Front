@@ -44,10 +44,12 @@ export function SwiperCard({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const categoryNames = categoryId
-    .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
-    .filter(Boolean)
-    .join(' | ');
+  const categoryNames = Array.isArray(categoryId)
+    ? categoryId
+        .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
+        .filter(Boolean)
+        .join(' | ')
+    : CATEGORIES.find((cat) => cat.id === categoryId)?.name || '';
 
   const handleNavigate = () => {
     const newPath = `/community/detail/${id}${location.search}`;
