@@ -1,7 +1,8 @@
-import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
-import { useEffect, useState } from 'react';
-import { useQuill } from 'react-quilljs';
 import 'quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill';
+
+import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
+import { useEffect, useRef, useState } from 'react';
 
 import { BoldTextIcon, ItalicTextIcon, CancelLineTextIcon, ListTextIcon } from '@/components/shared';
 import { cn } from '@/utils/utils';
@@ -11,16 +12,10 @@ export const Description = () => {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const { description } = useCommunityFormStateContext();
   const { setDescription } = useCommunityFormActionContext();
+  const quillRef = useRef(null);
 
   const placeholder = 'Start writing a blog or question';
   const formats = ['bold', 'italic', 'strike', 'list'];
-  const { quill, quillRef } = useQuill({
-    modules: {
-      toolbar: '#toolbar',
-    },
-    formats,
-    placeholder,
-  });
 
   const handleKeyboardHeight = (event: MessageEvent) => {
     try {
@@ -32,18 +27,6 @@ export const Description = () => {
       console.error('Error parsing message:', error);
     }
   };
-
-  useEffect(() => {
-    if (quill && description) {
-      quill.clipboard.dangerouslyPasteHTML(description);
-    }
-
-    if (quill) {
-      quill.on('text-change', () => {
-        setDescription(quill.root.innerHTML);
-      });
-    }
-  }, [quill]);
 
   useEffect(() => {
     if (window.ReactNativeWebView) {
@@ -85,9 +68,17 @@ export const Description = () => {
           </button>
         </div>
       </div>
-      <div
+      <ReactQuill
         ref={quillRef}
-        className="!outline-none !border-0 !font-roboto !text-text-default !text-base !font-normal !leading-[14px]"
+        value={description}
+        onChange={setDescription}
+        placeholder={placeholder}
+        modules={{
+          toolbar: {
+            container: '#toolbar',
+          },
+        }}
+        formats={formats}
       />
     </>
   );
