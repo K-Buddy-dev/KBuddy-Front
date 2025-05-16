@@ -21,7 +21,6 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
 
     try {
       const data = JSON.parse(event.data);
-      console.log('data', data);
 
       switch (data.action) {
         case 'albumData':
@@ -114,7 +113,6 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
   }, [imageUrls.length]);
 
   useEffect(() => {
-    console.log('메세지 수신 시작');
     window.addEventListener('message', handleAlbumDataFromRN);
 
     return () => {
