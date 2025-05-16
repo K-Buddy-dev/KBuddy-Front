@@ -11,7 +11,8 @@ export function DefaultLayout() {
     location.pathname === '/' ||
     location.pathname.includes('/signup') ||
     location.pathname.includes('/oauth') ||
-    location.pathname.includes('/community/post');
+    location.pathname.includes('/community/post') ||
+    location.pathname.includes('/community/detail');
 
   return (
     <div className="w-full h-full min-h-screen flex items-start justify-center bg-slate-200">
@@ -20,7 +21,7 @@ export function DefaultLayout() {
       >
         <Outlet />
         {!isBottomNavigationDisabled && (
-          <div className="absolute bottom-0 left-0 w-full">
+          <div className="fixed bottom-0 left-0 w-full">
             <BottomNavigation />
           </div>
         )}

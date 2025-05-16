@@ -1,6 +1,7 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css';
+import { useState } from 'react';
 
 interface Image {
   id: number;
@@ -12,11 +13,10 @@ interface Image {
 interface ContentImageProps {
   images: Image[];
   title: string;
-  currentSlide: number;
-  setCurrentSlide: (slide: number) => void;
 }
 
-export const ContentImage = ({ images, title, currentSlide, setCurrentSlide }: ContentImageProps) => {
+export const ContentImage = ({ images, title }: ContentImageProps) => {
+  const [currentSlide, setCurrentSlide] = useState(1);
   const isFirstSlide = currentSlide === 1;
   const isLastSlide = currentSlide === images.length;
   const prevArrowColor = isFirstSlide ? 'text-[#0A004B]/10' : 'text-black';

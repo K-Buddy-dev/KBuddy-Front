@@ -1,9 +1,8 @@
 import { authClient } from '@/api/axiosConfig';
-import { BlogRequest, CommunityDetailResponse, CommunityListResponse } from '@/types/blog';
+import { BlogRequest, CommunityDetailResponse, CommunityListResponse } from '@/types/community';
 
-// // blogService 정의
+// blogService 정의
 export const blogService = {
-  //   // 블로그 목록 조회
   getBlogs: async (
     id: number | undefined,
     size: number,
@@ -69,10 +68,6 @@ export const blogService = {
     const response = await authClient.delete(`/blog/${blogId}`);
     return response.status === 204;
   },
-  //   // 블로그 삭제
-  //   deleteBlog: async (blogId: number): Promise<void> => {
-  //     await authClient.delete(`/blog/${blogId}`);
-  //   },
   //   // 북마크된 블로그 목록 조회
   //   getBookmarkedBlogs: async (id: number | undefined, size: number = 10): Promise<BlogListResponse> => {
   //     const response = await authClient.get<BlogListResponse>('/blog/bookmarks', {

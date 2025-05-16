@@ -17,15 +17,15 @@ export const CommentInput = ({ onCommentSubmit }: CommentInputProps) => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-border-weak1 p-4">
-      <div className="flex items-center gap-2">
-        <img src={defaultImg} alt="Profile" className="w-8 h-8 rounded-full" />
+    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-border-weak1 px-4 pt-3 pb-7 z-20">
+      <div className="flex items-center h-10 gap-2">
+        <img src={defaultImg} alt="Profile" className="w-7 h-7 rounded-full" />
         <input
           type="text"
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
           placeholder="Type comment"
-          className="flex-1 p-2 border border-border-default rounded-lg text-sm"
+          className="indent-3 flex-1 flex items-center bg-bg-medium rounded-[50px] h-[35px] font-roboto font-normal text-sm"
         />
         <button onClick={handleSubmit} className="px-4 py-2 bg-bg-brand-default text-white rounded-lg text-sm">
           Send

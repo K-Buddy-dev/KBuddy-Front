@@ -5,7 +5,7 @@ interface CommunityCardProps {
   writerId: string;
   createdAt: string;
   title: string;
-  categoryId: number[];
+  categoryId: number[] | number;
   imageUrl?: string;
   profileImageUrl?: string;
   heartCount: number;

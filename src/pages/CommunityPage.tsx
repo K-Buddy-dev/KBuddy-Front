@@ -11,7 +11,6 @@ export const CommunityPage = () => {
   const [searchParams] = useSearchParams();
 
   const currentTab = searchParams.get('tab') || 'Curated blog';
-  console.log('currentTab: ', currentTab);
 
   return (
     <>
@@ -20,7 +19,7 @@ export const CommunityPage = () => {
         {/* <SwiperList cards={mockData} /> */}
         <Tab />
       </div>
-      <Link to="/community/post" className="fixed right-8 bottom-24 -translate-x-1/2 -translate-y-1/2 cursor-pointer">
+      <Link to="/community/post" className="fixed right-4 bottom-[92px] cursor-pointer sm:right-[calc(50%-260px-16px)]">
         <FloatPostAction />
       </Link>
       {currentTab === 'User blog' && <BlogList />}

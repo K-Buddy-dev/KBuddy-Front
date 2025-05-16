@@ -8,14 +8,14 @@ const menuArr = [
 
 function TabWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-end min-w-[280px] w-full sm:w-[600px] h-[50px] bg-gradient-to-r from-bg-brand-light to-bg-brand-default">
+    <div className="mx-auto flex items-start min-w-[280px] w-full  h-[50px] bg-gradient-to-r from-bg-brand-light to-bg-brand-default">
       {children}
     </div>
   );
 }
 
 function TabList({ children }: { children: React.ReactNode }) {
-  return <div className="w-full h-full flex items-end justify-center px-4">{children}</div>;
+  return <div className="flex-1 h-full flex items-center">{children}</div>;
 }
 
 export function Tab() {
@@ -37,7 +37,7 @@ export function Tab() {
             key={menu.id}
             onClick={() => handleTabChange(menu.name)}
             className={`
-              w-full h-full px-[7.5px] pb-2 rounded-t-md transition-colors duration-300 font-medium leading-[24px]
+              w-full h-full pb-2 rounded-t-md transition-colors duration-300 font-medium leading-[24px]
               ${
                 currentTab === menu.name
                   ? 'text-white border-b-[3px] border-white'

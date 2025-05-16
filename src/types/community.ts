@@ -25,7 +25,7 @@ export interface Blog {
 export interface Community {
   id: number;
   writerId: number;
-  categoryId: number[];
+  categoryId: number[] | number;
   title: string;
   description: string;
   viewCount: number;
@@ -48,7 +48,7 @@ export interface Comment {
 export interface CommunityDetail {
   id: number;
   writerId: number;
-  categoryId: number[];
+  categoryId: number[] | number;
   title: string;
   description: string;
   viewCount: number;
@@ -132,4 +132,9 @@ export interface CommentRequest {
 // 신고 요청 타입
 export interface ReportRequest {
   reason: string; // 신고 사유 (예시로 추가, 실제 API 스펙에 따라 수정 필요)
+}
+
+export interface UseRecommendedBlogsProps {
+  size?: number;
+  categoryCode?: number;
 }
