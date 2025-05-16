@@ -11,7 +11,7 @@ interface ImagesProps {
 export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
   const [maxImageMessage, setMaxImageMessage] = useState<string>('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { type } = useCommunityFormStateContext();
+  const { type, images } = useCommunityFormStateContext();
   const { setImages } = useCommunityFormActionContext();
 
   const MAX_IMAGES = type === 'Q&A' ? 5 : 10;
@@ -113,6 +113,11 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
   }, [imageUrls.length]);
 
   useEffect(() => {
+    if (images.length > 0) {
+      const urls = images.map((file) => URL.createObjectURL(file));
+      setImageUrls?.(urls);
+    }
+
     window.addEventListener('message', handleAlbumDataFromRN);
 
     return () => {
