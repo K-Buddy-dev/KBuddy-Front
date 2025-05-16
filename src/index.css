@@ -79,3 +79,12 @@
     font-family: 'Roboto', sans-serif;
   }
 }
+
+.ql-editor ol {
+  list-style-type: disc !important;
+}
+
+.ql-editor li {
+  list-style-type: disc !important;
+  padding-left: 0 !important;
+}

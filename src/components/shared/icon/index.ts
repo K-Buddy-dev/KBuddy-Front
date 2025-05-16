@@ -1,3 +1,4 @@
+export * from './AddAPhotoIcon';
 export * from './AlarmIcon';
 export * from './CancleIcon';
 export * from './ClearIcon';
@@ -29,3 +30,7 @@ export * from './CommunityIcon';
 export * from './ServiceIcon';
 export * from './MessageIcon';
 export * from './ProfileIcon';
+export * from './BoldTextIcon';
+export * from './ItalicTextIcon';
+export * from './CancelLineTextIcon';
+export * from './ListTextIcon';
