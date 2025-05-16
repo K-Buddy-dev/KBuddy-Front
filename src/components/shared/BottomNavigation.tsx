@@ -52,8 +52,8 @@ export const BottomNavigation = () => {
   };
 
   return (
-    <div className="w-full bg-white border-t border-border-weak2 shadow-sm h-20">
-      <div className="flex justify-between items-center px-4 py-2 h-full">
+    <div className="min-w-[280px] w-full sm:w-[600px] bg-white border-t border-border-weak2 shadow-sm h-20 mx-auto">
+      <div className="flex justify-evenly items-center h-full">
         {navItems.map((item) => {
           const isActive = currentPath === item.path || (item.path !== '/' && currentPath.startsWith(item.path));
 
@@ -61,12 +61,12 @@ export const BottomNavigation = () => {
             <div
               key={item.path}
               onClick={() => handleNavigation(item.path)}
-              className="flex flex-col items-center justify-center py-1 cursor-pointer gap-1"
+              className="flex flex-col items-center justify-center px-4 py-1 cursor-pointer gap-1"
             >
               <div className="w-full flex items-center justify-center">{isActive ? item.activeIcon : item.icon}</div>
               <span
                 className={cn(
-                  'text-xs mt-1',
+                  'text-xs mt-1 text-center',
                   isActive ? 'text-text-brand-default font-medium' : 'text-text-weak font-normal'
                 )}
               >

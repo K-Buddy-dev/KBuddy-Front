@@ -1,84 +1,121 @@
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
-import { CommentIcon, LikeIcon } from '@/components/shared/icon/Icon';
+import { CommentIcon } from '@/components/shared/icon/Icon';
 import { Navigation } from 'swiper/modules';
 import { useState } from 'react';
 import { FloatLeft, FloatRight } from '@/components/shared/icon';
+import { CATEGORIES, Community } from '@/types';
+import { formatDate } from '@/utils/utils';
+import { FaBookmark, FaHeart, FaRegBookmark, FaRegHeart } from 'react-icons/fa';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-interface SwiperCardProps {
-  userImg: string;
-  userName: string;
-  createdAt: string;
-  title: string;
-  content: string;
-  postImg: string;
-  postHeart: number;
-  postComment: number;
-  postBookmark: boolean;
+export interface SwiperWrapperProps {
+  cards: Community[];
+  onLike: (id: number, isHearted: boolean) => void;
+  onBookmark: (id: number, isBookmarked: boolean) => void;
 }
 
-interface SwiperWrapperProps {
-  cards: SwiperCardProps[];
-}
-
-function SwiperCardWrapper({ children }: { children: React.ReactNode }) {
+function SwiperCardWrapper({ children, onclick }: { children: React.ReactNode; onclick: () => void }) {
   return (
-    <div className="flex items-center gap-4 w-full min-w-[242px] xs:min-w-none xs:w-[312px] h-[162px] py-[11px] px-[12px] xs:py-[14px] xs:px-4 bg-bg-default border-[1px] border-border-weak2 rounded-lg">
+    <div
+      onClick={onclick}
+      className="z-10 flex items-center justify-between w-full min-w-[242px] xs:min-w-none xs:w-[312px] h-[162px] py-[11px] px-[12px] xs:py-[14px] xs:px-4 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.04),_0px_4px_8px_0px_rgba(0,0,0,0.06)] bg-bg-default border-[1px] border-border-weak2 cursor-pointer rounded-lg"
+    >
       {children}
     </div>
   );
 }
 
-function SwiperCard({
-  // userImg,
-  userName,
-  createdAt,
+export function SwiperCard({
+  id,
   title,
-  content,
-  // postImg,
-  postHeart,
-  postComment,
-  // postBookmark,
-}: SwiperCardProps) {
+  writerId,
+  categoryId,
+  heartCount,
+  commentCount,
+  createdAt,
+  isHearted,
+  isBookmarked,
+  onLike,
+  onBookmark,
+}: Community & {
+  onLike: (id: number, isHearted: boolean) => void;
+  onBookmark: (id: number, isBookmarked: boolean) => void;
+}) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const categoryNames = Array.isArray(categoryId)
+    ? categoryId
+        .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
+        .filter(Boolean)
+        .join(' | ')
+    : CATEGORIES.find((cat) => cat.id === categoryId)?.name || '';
+
+  const handleNavigate = () => {
+    const newPath = `/community/detail/${id}${location.search}`;
+    navigate(newPath);
+  };
+
   return (
-    <SwiperCardWrapper>
-      <div className="flex flex-col gap-1 py-[13px]">
-        <div className="flex items-center justify-start gap-2">
-          {/* user 이미지 */}
+    <SwiperCardWrapper onclick={handleNavigate}>
+      <div className="flex flex-col gap-1 py-[13px] font-roboto">
+        <div className="flex items-center gap-2 font-medium">
           <div className="w-7 h-7 bg-red-300 rounded-full"></div>
-          <div className="flex flex-col items-start justify-start gap-1 text-[12px] font-light">
-            <h4 className="text-text-default">{userName}</h4>
-            <p className="text-text-weak">{createdAt}</p>
+          <div className="flex flex-col text-[12px] font-light">
+            <h4 className="text-text-default">@{writerId}</h4>
+            <p className="text-text-weak">{formatDate(createdAt)}</p>
           </div>
         </div>
-        <div className="flex flex-col items-start justify-start gap-1">
+        <div className="flex flex-col gap-1">
           <h3 className="text-[16px] font-medium text-text-default line-clamp-2 leading-[24px]">{title}</h3>
-          <p className="text-[14px] font-normal text-text-weak">{content}</p>
+          <p className="text-[14px] font-normal text-text-weak">{categoryNames}</p>
         </div>
       </div>
       <div className="flex flex-col gap-1 py-[3px]">
-        {/* post 이미지 */}
         <div className="w-[100px] h-[100px] bg-lime-400 rounded-base-unit-2"></div>
-        <div className="flex items-center justify-start gap-4">
-          <div className="flex items-center gap-1 h-full text-[14px] font-normal text-text-weak">
-            <div className="flex items-center">
-              <LikeIcon />
-              <span className="flex items-center py-[3px]">{postHeart}</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onLike?.(id, isHearted);
+                }}
+                className="transition-colors hover:[&>svg]:text-red-500"
+              >
+                {isHearted ? (
+                  <FaHeart className="w-4 h-4 text-red-500 fill-current" />
+                ) : (
+                  <FaRegHeart className="w-4 h-4 text-text-weak stroke-current" />
+                )}
+              </button>
+              <span className="text-sm">{heartCount}</span>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-1 text-[14px] text-text-weak">
               <CommentIcon />
-              <span className="flex items-center py-[3px]">{postComment}</span>
+              <span>{commentCount}</span>
             </div>
           </div>
-          {/* <div>
-            <BookmarkIcon />
-          </div> */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onBookmark?.(id, isBookmarked);
+            }}
+            className="flex items-center transition-colors hover:[&>svg]:text-[#6952F9]"
+          >
+            {isBookmarked ? (
+              <FaBookmark className="w-4 h-4 text-[#6952F9] fill-current" />
+            ) : (
+              <FaRegBookmark className="w-4 h-4 text-text-weak stroke-current" />
+            )}
+          </button>
         </div>
       </div>
     </SwiperCardWrapper>
   );
 }
 
-function SwiperListWrapper({ children }: { children: React.ReactNode }) {
+export function SwiperListWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative min-w-[280px] w-full sm:w-[600px] h-[250px] bg-gradient-to-r from-bg-brand-light to-bg-brand-default pb-6 pl-4">
       <h1 className="pt-6 pb-4 text-[18px] leading-[24px] text-white">Featured posts</h1>
@@ -96,7 +133,7 @@ const styles = `
   }
 `;
 
-export const SwiperList = ({ cards }: SwiperWrapperProps) => {
+export const SwiperList = ({ cards, onLike, onBookmark }: SwiperWrapperProps) => {
   const [, setSwiperIndex] = useState<number>(0);
   const [swiper, setSwiper] = useState<SwiperClass>();
   const [isBeginning, setIsBeginning] = useState<boolean>(true);
@@ -165,15 +202,19 @@ export const SwiperList = ({ cards }: SwiperWrapperProps) => {
         {cards.map((card, index) => (
           <SwiperSlide key={index}>
             <SwiperCard
-              userImg={card.userImg}
-              userName={card.userName}
-              createdAt={card.createdAt}
+              id={card.id}
+              writerId={card.writerId}
+              categoryId={card.categoryId}
               title={card.title}
-              content={card.content}
-              postImg={card.postImg}
-              postHeart={card.postHeart}
-              postComment={card.postComment}
-              postBookmark={card.postBookmark}
+              description={card.description}
+              viewCount={card.viewCount}
+              heartCount={card.heartCount}
+              isHearted={card.isHearted}
+              isBookmarked={card.isBookmarked}
+              commentCount={card.commentCount}
+              createdAt={card.createdAt}
+              onLike={onLike}
+              onBookmark={onBookmark}
             />
           </SwiperSlide>
         ))}

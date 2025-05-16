@@ -1,4 +1,4 @@
-import { BlogFilters } from '@/types/blog';
+import { BlogFilters } from '@/types/community';
 
 export const blogQueryKeys = {
   one: ['blog'] as const,

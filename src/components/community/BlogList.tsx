@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { useAddBlogHeart, useAddBookmark, useBlogs, useRemoveBlogHeart, useRemoveBookmark } from '@/hooks';
+import { useAddBlogHeart, useAddBlogBookmark, useBlogs, useRemoveBlogHeart, useRemoveBlogBookmark } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
 import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
@@ -19,8 +19,8 @@ export const BlogList: React.FC = () => {
 
   const addBlogHeart = useAddBlogHeart();
   const removeBlogHeart = useRemoveBlogHeart();
-  const addBookmark = useAddBookmark();
-  const removeBookmark = useRemoveBookmark();
+  const addBookmark = useAddBlogBookmark();
+  const removeBookmark = useRemoveBlogBookmark();
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 

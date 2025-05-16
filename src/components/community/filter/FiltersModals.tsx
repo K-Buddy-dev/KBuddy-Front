@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CATEGORIES } from '@/types/blog';
+import { CATEGORIES } from '@/types/community';
 import { Topbar } from '@/components/shared';
 
 interface FiltersModalProps {

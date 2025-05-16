@@ -5,7 +5,7 @@ interface ContentProps {
   date: string;
   profileImageUrl?: string;
   title: string;
-  categoryId: number[];
+  categoryId: number[] | number;
   imageUrl?: string;
 }
 
