@@ -34,7 +34,7 @@ export const usePost = () => {
       } else if (type === 'Q&A') {
         const qnaRequest = {
           ...request,
-          categoryId: request.categoryId[0],
+          categoryId: Array.isArray(request.categoryId) ? request.categoryId[0] : request.categoryId,
         };
         await qnaService.createQna(qnaRequest);
       }
@@ -62,7 +62,7 @@ export const usePost = () => {
         } else if (data.type === 'Q&A') {
           const qnaRequest = {
             ...request,
-            categoryId: request.categoryId[0],
+            categoryId: Array.isArray(request.categoryId) ? request.categoryId[0] : request.categoryId,
           };
           await qnaService.createQna(qnaRequest);
         }
@@ -74,7 +74,7 @@ export const usePost = () => {
         } else if (data.type === 'Q&A') {
           const qnaRequest = {
             ...request,
-            categoryId: request.categoryId[0],
+            categoryId: Array.isArray(request.categoryId) ? request.categoryId[0] : request.categoryId,
           };
           await qnaService.updateQna(postId, qnaRequest);
         }
