@@ -119,7 +119,7 @@ export interface CommunityPostResponse {
 export interface BlogRequest {
   title: string;
   description: string;
-  categoryId: number[];
+  categoryId: number[] | number;
   images: File[];
   status: PostStatus;
 }
