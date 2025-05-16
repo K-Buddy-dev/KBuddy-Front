@@ -80,8 +80,17 @@
   }
 }
 
-.ql-editor ol {
+.ql-container {
+  border: none !important;
+  font-size: 1rem !important;
+  line-height: 14px !important;
+  color: #222222 !important;
+  font-weight: 400 !important;
+}
+
+.ql-editor ul {
   list-style-type: disc !important;
+  padding-left: 1.5rem !important;
 }
 
 .ql-editor li {
