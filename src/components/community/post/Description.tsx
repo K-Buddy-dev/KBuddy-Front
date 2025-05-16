@@ -73,6 +73,7 @@ export const Description = () => {
         value={description}
         onChange={setDescription}
         placeholder={placeholder}
+        className={cn(isMobile && 'pt-10')}
         modules={{
           toolbar: {
             container: '#toolbar',
