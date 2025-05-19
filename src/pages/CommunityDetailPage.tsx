@@ -161,7 +161,7 @@ export const CommunityDetailPage = () => {
   return (
     <main className="relative min-h-screen pb-24 font-roboto">
       <DetailTopbar
-        title=""
+        title={currentData.title}
         type="back"
         onBack={handleBack}
         isBookmarked={isBookmarked}

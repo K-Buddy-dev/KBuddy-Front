@@ -1,4 +1,4 @@
-import { CancelIcon, PreviewBackIcon, ShareIcon } from '@/components/shared/icon';
+import { CancelIcon, HanburgerMenu, PreviewBackIcon, ShareIcon } from '@/components/shared/icon';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 
 interface DetailTopbarProps {
@@ -40,9 +40,12 @@ export function DetailTopbar({ title, type, isBookmarked, onBack, onCancle, onBo
         )}
         <PageTitle>{title}</PageTitle>
       </div>
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center gap-2">
         {/* 북마크 */}
-        <button onClick={onBookmark} className="flex items-center transition-colors hover:[&>svg]:text-[#6952F9]">
+        <button
+          onClick={onBookmark}
+          className="w-12 h-12 flex items-center justify-center transition-colors hover:[&>svg]:text-[#6952F9]"
+        >
           <span className="sr-only">bookmark</span>
           {isBookmarked ? (
             <FaBookmark className="w-6 h-6 text-[#6952F9] fill-current" />
@@ -51,11 +54,15 @@ export function DetailTopbar({ title, type, isBookmarked, onBack, onCancle, onBo
           )}
         </button>
         {/* 공유하기 */}
-        <button className="w-12 h-12">
+        <button className="w-12 h-12 flex items-center justify-center">
           <span className="sr-only">share icon</span>
           <ShareIcon />
         </button>
         {/* 메뉴 */}
+        <button className="w-12 h-12 flex items-center justify-center">
+          <span className="sr-only">menu</span>
+          <HanburgerMenu />
+        </button>
       </div>
     </DetailTopbarWrapper>
   );
