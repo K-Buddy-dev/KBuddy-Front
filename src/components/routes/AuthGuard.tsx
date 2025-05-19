@@ -11,15 +11,10 @@ const ALL_PUBLIC_PATHS = [...PUBLIC_PATHS, ...OAUTH_CALLBACK_PATHS];
 export function AuthGuard() {
   const location = useLocation();
   const { pathname } = location;
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const isOAuthCallback = OAUTH_CALLBACK_PATHS.some((path) => pathname.startsWith(path));
-
-  useEffect(() => {
-    const accessToken = authClient.defaults.headers.common['Authorization'];
-    setIsAuthenticated(!!accessToken);
-  }, [pathname]);
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -30,9 +25,9 @@ export function AuthGuard() {
 
         if (!accessToken) {
           try {
-            const { accessToken } = await authService.refreshAccessToken();
-            if (accessToken) {
-              authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            const { accessToken: newAccessToken } = await authService.refreshAccessToken();
+            if (newAccessToken) {
+              authClient.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
               setIsAuthenticated(true);
             } else {
               setIsAuthenticated(false);
@@ -54,9 +49,9 @@ export function AuthGuard() {
     } else {
       setIsLoading(false);
     }
-  }, []);
+  }, [pathname, isOAuthCallback]);
 
-  if (isLoading) {
+  if (isLoading || isAuthenticated === null) {
     return null;
   }
 
