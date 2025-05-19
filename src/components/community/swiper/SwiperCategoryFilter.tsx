@@ -16,7 +16,7 @@ export const CategoryFilterSwiper: React.FC<CategoryFilterSwiperProps> = ({ onCa
   };
 
   return (
-    <div className="relative flex items-center w-full max-w-[calc(100%-60px)]">
+    <div className="relative flex items-center justify-center w-full max-w-[calc(100%-38px)]">
       <style>
         {`
           .swiper-container {
