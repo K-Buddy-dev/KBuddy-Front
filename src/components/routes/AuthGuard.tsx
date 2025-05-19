@@ -15,6 +15,12 @@ export function AuthGuard() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const isOAuthCallback = OAUTH_CALLBACK_PATHS.some((path) => pathname.startsWith(path));
+
+  useEffect(() => {
+    const accessToken = authClient.defaults.headers.common['Authorization'];
+    setIsAuthenticated(!!accessToken);
+  }, [pathname]);
+
   useEffect(() => {
     const checkAuthentication = async () => {
       setIsLoading(true);
@@ -48,7 +54,7 @@ export function AuthGuard() {
     } else {
       setIsLoading(false);
     }
-  }, [isOAuthCallback]);
+  }, []);
 
   if (isLoading) {
     return null;
