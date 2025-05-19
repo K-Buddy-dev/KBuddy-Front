@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAddBlogHeart, useAddBlogBookmark, useBlogs, useRemoveBlogHeart, useRemoveBlogBookmark } from '@/hooks';
@@ -19,8 +19,8 @@ export const BlogList: React.FC = () => {
 
   const addBlogHeart = useAddBlogHeart();
   const removeBlogHeart = useRemoveBlogHeart();
-  const addBookmark = useAddBlogBookmark();
-  const removeBookmark = useRemoveBlogBookmark();
+  const addBlogBookmark = useAddBlogBookmark();
+  const removeBlogBookmark = useRemoveBlogBookmark();
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -93,37 +93,45 @@ export const BlogList: React.FC = () => {
     }
   }, [location.key]);
 
-  const handleLike = (blogId: number, isHearted: boolean) => {
-    if (isHearted) {
-      removeBlogHeart.mutate(blogId, {
-        onError: (error) => {
-          alert(`Fail remove Like: ${error.message}`);
-        },
-      });
-    } else {
-      addBlogHeart.mutate(blogId, {
-        onError: (error) => {
-          alert(`Fail add Like: ${error.message}`);
-        },
-      });
-    }
-  };
+  const handleLike = useCallback(
+    (blogId: number, isHearted: boolean, event: React.MouseEvent) => {
+      event.stopPropagation();
+      if (isHearted) {
+        removeBlogHeart.mutate(blogId, {
+          onError: (error) => {
+            alert(`Fail remove Like: ${error.message}`);
+          },
+        });
+      } else {
+        addBlogHeart.mutate(blogId, {
+          onError: (error) => {
+            alert(`Fail add Like: ${error.message}`);
+          },
+        });
+      }
+    },
+    [addBlogHeart, removeBlogHeart]
+  );
 
-  const handleBookmark = (blogId: number, isBookmarked: boolean) => {
-    if (isBookmarked) {
-      removeBookmark.mutate(blogId, {
-        onError: (error) => {
-          alert(`Fail remove Bookmark: ${error.message}`);
-        },
-      });
-    } else {
-      addBookmark.mutate(blogId, {
-        onError: (error) => {
-          alert(`Fail add Bookmark: ${error.message}`);
-        },
-      });
-    }
-  };
+  const handleBookmark = useCallback(
+    (blogId: number, isBookmarked: boolean, event: React.MouseEvent) => {
+      event.stopPropagation();
+      if (isBookmarked) {
+        removeBlogBookmark.mutate(blogId, {
+          onError: (error) => {
+            alert(`Fail remove Bookmark: ${error.message}`);
+          },
+        });
+      } else {
+        addBlogBookmark.mutate(blogId, {
+          onError: (error) => {
+            alert(`Fail add Bookmark: ${error.message}`);
+          },
+        });
+      }
+    },
+    [addBlogBookmark, removeBlogBookmark]
+  );
 
   const handleDetail = (blogId: number) => {
     sessionStorage.setItem('scrollY', String(window.scrollY));
@@ -193,8 +201,8 @@ export const BlogList: React.FC = () => {
                       comments={blog.commentCount}
                       isBookmarked={blog.isBookmarked}
                       isHearted={blog.isHearted}
-                      onLike={() => handleLike(blog.id, blog.isHearted)}
-                      onBookmark={() => handleBookmark(blog.id, blog.isBookmarked)}
+                      onLike={(event) => handleLike(blog.id, blog.isHearted, event)}
+                      onBookmark={(event) => handleBookmark(blog.id, blog.isBookmarked, event)}
                     />
                   </div>
                 );

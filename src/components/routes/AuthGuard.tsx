@@ -48,7 +48,7 @@ export function AuthGuard() {
     } else {
       setIsLoading(false);
     }
-  }, [pathname, isOAuthCallback]);
+  }, [isOAuthCallback]);
 
   if (isLoading) {
     return null;

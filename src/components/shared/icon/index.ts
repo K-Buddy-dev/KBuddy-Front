@@ -34,3 +34,5 @@ export * from './BoldTextIcon';
 export * from './ItalicTextIcon';
 export * from './CancelLineTextIcon';
 export * from './ListTextIcon';
+export * from './ShareIcon';
+export * from './HamburgerMenu';

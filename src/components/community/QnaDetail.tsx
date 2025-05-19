@@ -1,75 +1,34 @@
-import { useParams } from 'react-router-dom';
-import {
-  useAddQnaHeart,
-  useAddQnaBookmark,
-  useQnaDetail,
-  useRecommendedQnas,
-  useRemoveQnaHeart,
-  useRemoveQnaBookmark,
-} from '@/hooks';
+import { useQnaDetail } from '@/hooks';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 import defaultImg from '@/assets/images/default-profile.png';
-import { CATEGORIES } from '@/types';
+import { CATEGORIES, Community } from '@/types';
 import { CommentInput, CommentList, ContentImage } from '@/components/community/detail';
 import { formatDate } from '@/utils/utils';
 import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 import { RecommendSwiper } from './swiper';
 
-export const QnaDetail = () => {
-  const { id } = useParams();
-  const qnaId = Number(id);
+interface QnaDetailProps {
+  contentId: number;
+  onLike: (id: number, isHearted: boolean) => void;
+  onBookmark: (id: number, isBookmarked: boolean) => void;
+  recommendedData?: Community[];
+}
 
-  const addQnaHeart = useAddQnaHeart();
-  const removeQnaHeart = useRemoveQnaHeart();
-  const addQnaBookmark = useAddQnaBookmark();
-  const removeQnaBookmark = useRemoveQnaBookmark();
-  const { data: qna, isLoading, error } = useQnaDetail(qnaId);
-  const { data: recommendQna, refetch: refetchRecommended } = useRecommendedQnas({
-    size: 6,
-    categoryCode: Array.isArray(qna?.data.categoryId) ? qna?.data.categoryId[0] : qna?.data.categoryId,
-  });
+export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData }: QnaDetailProps) => {
+  const { data: qna, isLoading, error } = useQnaDetail(contentId);
 
   const handleCommentSubmit = (description: string) => {
     console.log('New comment:', description);
   };
 
-  const handleLike = (qnaId: number, isHearted: boolean) => {
-    if (isHearted) {
-      removeQnaHeart.mutate(qnaId, {
-        onSuccess: () => refetchRecommended(),
-        onError: (error) => {
-          alert(`Fail remove Like: ${error.message}`);
-        },
-      });
-    } else {
-      addQnaHeart.mutate(qnaId, {
-        onSuccess: () => refetchRecommended(),
-        onError: (error) => {
-          alert(`Fail add Like: ${error.message}`);
-        },
-      });
-    }
-  };
-
-  const handleBookmark = (qnaId: number, isBookmarked: boolean) => {
-    if (isBookmarked) {
-      removeQnaBookmark.mutate(qnaId, {
-        onSuccess: () => refetchRecommended(),
-        onError: (error) => {
-          alert(`Fail remove Bookmark: ${error.message}`);
-        },
-      });
-    } else {
-      addQnaBookmark.mutate(qnaId, {
-        onSuccess: () => refetchRecommended(),
-        onError: (error) => {
-          alert(`Fail add Bookmark: ${error.message}`);
-        },
-      });
-    }
-  };
+  const categoryNames = Array.isArray(qna?.data.categoryId)
+    ? qna?.data.categoryId
+        .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
+        .filter(Boolean)
+        .join(' | ')
+    : CATEGORIES.find((cat) => cat.id === qna?.data.categoryId)?.name || '';
 
   if (isLoading)
     return (
@@ -79,13 +38,6 @@ export const QnaDetail = () => {
     );
   if (error) return <div className="w-screen h-screen flex items-center justify-center">Error: {error.message}</div>;
   if (!qna?.data) return <div className="w-screen h-screen flex items-center justify-center">No data found</div>;
-
-  const categoryNames = Array.isArray(qna?.data.categoryId)
-    ? qna?.data.categoryId
-        .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
-        .filter(Boolean)
-        .join(' | ')
-    : CATEGORIES.find((cat) => cat.id === qna?.data.categoryId)?.name || '';
 
   return (
     <main className=" pb-20 font-roboto">
@@ -108,19 +60,19 @@ export const QnaDetail = () => {
       </div>
 
       <div className="flex items-center justify-between h-10 text-text-weak border-b-[1px] border-solid border-border-default bg-bg-medium">
-        <div className="flex items-center justify-center w-full gap-1 cursor-pointer">
-          <button
-            onClick={() => handleLike(qna.data.id, qna.data.isHearted)}
-            className="transition-colors hover:[&>svg]:text-red-500"
-          >
+        <button
+          className="flex items-center justify-center w-full gap-1 cursor-pointer group"
+          onClick={() => onLike(qna.data.id, qna.data.isHearted)}
+        >
+          <div className="transition-colors group-hover:[&>svg]:text-red-500">
             {qna.data.isHearted ? (
               <FaHeart className="w-6 h-6 text-red-500 fill-current" />
             ) : (
               <FaRegHeart className="w-6 h-6 text-text-weak stroke-current" />
             )}
-          </button>
-          <span>Like</span>
-        </div>
+          </div>
+          <span className="group-hover:[&>svg]:text-red-500">Like</span>
+        </button>
         <div className="flex items-center justify-center gap-1 w-full">
           <CommentIcon width={24} height={24} />
           <span>Comment</span>
@@ -137,13 +89,7 @@ export const QnaDetail = () => {
       </div>
 
       {/* 추천 게시물 */}
-      {recommendQna?.data && (
-        <RecommendSwiper
-          cards={recommendQna?.data.results.filter((data) => data.id !== qnaId)}
-          onLike={handleLike}
-          onBookmark={handleBookmark}
-        />
-      )}
+      {recommendedData && <RecommendSwiper cards={recommendedData} onLike={onLike} onBookmark={onBookmark} />}
 
       {/* 하단 고정 댓글 입력창 */}
       <CommentInput onCommentSubmit={handleCommentSubmit} />

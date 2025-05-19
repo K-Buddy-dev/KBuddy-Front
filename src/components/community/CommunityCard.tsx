@@ -12,8 +12,8 @@ interface CommunityCardProps {
   comments: number;
   isBookmarked: boolean;
   isHearted: boolean;
-  onLike: () => void;
-  onBookmark: () => void;
+  onLike: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onBookmark: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const CommunityCard: React.FC<CommunityCardProps> = ({
@@ -30,8 +30,6 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({
   onLike,
   onBookmark,
 }) => {
-  // const categoryNames = category.map((id) => CategoryMap[id] || 'Unknown');
-
   return (
     <div className="w-full px-4 py-[18px] bg-bg-default rounded-lg">
       <Content

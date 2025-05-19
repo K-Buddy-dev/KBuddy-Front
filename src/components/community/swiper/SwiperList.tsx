@@ -75,22 +75,22 @@ export function SwiperCard({
         <div className="w-[100px] h-[100px] bg-lime-400 rounded-base-unit-2"></div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
-            <div className="flex items-center gap-1">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onLike?.(id, isHearted);
-                }}
-                className="transition-colors hover:[&>svg]:text-red-500"
-              >
+            <button
+              className="flex items-center gap-1 group"
+              onClick={(e) => {
+                e.stopPropagation();
+                onLike?.(id, isHearted);
+              }}
+            >
+              <div className="transition-colors group-hover:[&>svg]:text-red-500">
                 {isHearted ? (
                   <FaHeart className="w-4 h-4 text-red-500 fill-current" />
                 ) : (
                   <FaRegHeart className="w-4 h-4 text-text-weak stroke-current" />
                 )}
-              </button>
-              <span className="text-sm">{heartCount}</span>
-            </div>
+              </div>
+              <span className="text-sm group-hover:text-red-500 text-text-weak">{heartCount}</span>
+            </button>
             <div className="flex items-center gap-1 text-[14px] text-text-weak">
               <CommentIcon />
               <span>{commentCount}</span>
