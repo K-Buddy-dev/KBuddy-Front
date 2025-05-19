@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { useAddBlogHeart, useAddQnaBookmark, useRemoveBlogHeart, useRemoveQnaBookmark } from '@/hooks';
+import { useAddQnaBookmark, useRemoveQnaBookmark } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
 import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
-import { useQnas } from '@/hooks/qna/useQna';
+import { useAddQnaHeart, useQnas, useRemoveQnaHeart } from '@/hooks/qna/useQna';
 
 export const QnaList: React.FC = () => {
   const navigate = useNavigate();
@@ -17,10 +17,10 @@ export const QnaList: React.FC = () => {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useQnas();
 
-  const addBlogHeart = useAddBlogHeart();
-  const removeBlogHeart = useRemoveBlogHeart();
-  const addBookmark = useAddQnaBookmark();
-  const removeBookmark = useRemoveQnaBookmark();
+  const addQnaHeart = useAddQnaHeart();
+  const removeQnaHeart = useRemoveQnaHeart();
+  const addQnaBookmark = useAddQnaBookmark();
+  const removeQnaBookmark = useRemoveQnaBookmark();
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -81,37 +81,45 @@ export const QnaList: React.FC = () => {
     }
   }, [location.key]);
 
-  const handleLike = (qnaId: number, isHearted: boolean) => {
-    if (isHearted) {
-      removeBlogHeart.mutate(qnaId, {
-        onError: (error) => {
-          alert(`Fail remove Like: ${error.message}`);
-        },
-      });
-    } else {
-      addBlogHeart.mutate(qnaId, {
-        onError: (error) => {
-          alert(`Fail add Like: ${error.message}`);
-        },
-      });
-    }
-  };
+  const handleLike = useCallback(
+    (qnaId: number, isHearted: boolean, event: React.MouseEvent) => {
+      event.stopPropagation();
+      if (isHearted) {
+        removeQnaHeart.mutate(qnaId, {
+          onError: (error) => {
+            alert(`Fail remove Like: ${error.message}`);
+          },
+        });
+      } else {
+        addQnaHeart.mutate(qnaId, {
+          onError: (error) => {
+            alert(`Fail add Like: ${error.message}`);
+          },
+        });
+      }
+    },
+    [addQnaHeart, removeQnaHeart]
+  );
 
-  const handleBookmark = (qnaId: number, isBookmarked: boolean) => {
-    if (isBookmarked) {
-      removeBookmark.mutate(qnaId, {
-        onError: (error) => {
-          alert(`Fail remove Bookmark: ${error.message}`);
-        },
-      });
-    } else {
-      addBookmark.mutate(qnaId, {
-        onError: (error) => {
-          alert(`Fail add Bookmark: ${error.message}`);
-        },
-      });
-    }
-  };
+  const handleBookmark = useCallback(
+    (qnaId: number, isBookmarked: boolean, event: React.MouseEvent) => {
+      event.stopPropagation();
+      if (isBookmarked) {
+        removeQnaBookmark.mutate(qnaId, {
+          onError: (error) => {
+            alert(`Fail remove Bookmark: ${error.message}`);
+          },
+        });
+      } else {
+        addQnaBookmark.mutate(qnaId, {
+          onError: (error) => {
+            alert(`Fail add Bookmark: ${error.message}`);
+          },
+        });
+      }
+    },
+    [addQnaBookmark, removeQnaBookmark]
+  );
 
   const handleDetail = (qnaId: number) => {
     sessionStorage.setItem('scrollY', String(window.scrollY));
@@ -180,8 +188,8 @@ export const QnaList: React.FC = () => {
                       comments={qna.commentCount}
                       isBookmarked={qna.isBookmarked}
                       isHearted={qna.isHearted}
-                      onLike={() => handleLike(qna.id, qna.isHearted)}
-                      onBookmark={() => handleBookmark(qna.id, qna.isBookmarked)}
+                      onLike={(event) => handleLike(qna.id, qna.isHearted, event)}
+                      onBookmark={(event) => handleBookmark(qna.id, qna.isBookmarked, event)}
                     />
                   </div>
                 );
