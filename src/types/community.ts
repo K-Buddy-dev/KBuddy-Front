@@ -34,6 +34,8 @@ export interface Community {
   isBookmarked: boolean;
   commentCount: number;
   createdAt: string;
+  profileImageUrl?: string;
+  imageUrl?: string;
 }
 
 export interface Comment {
