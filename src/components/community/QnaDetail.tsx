@@ -11,8 +11,10 @@ import { RecommendSwiper } from './swiper';
 
 interface QnaDetailProps {
   contentId: number;
-  onLike: (id: number, isHearted: boolean) => void;
-  onBookmark: (id: number, isBookmarked: boolean) => void;
+  onLike: ((event: React.MouseEvent, id: number, isHearted: boolean) => void) | ((event: React.MouseEvent) => void);
+  onBookmark:
+    | ((event: React.MouseEvent, id: number, isBookmarked: boolean) => void)
+    | ((event: React.MouseEvent) => void);
   recommendedData?: Community[];
 }
 
@@ -62,7 +64,7 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData }: Qn
       <div className="flex items-center justify-between h-10 text-text-weak border-b-[1px] border-solid border-border-default bg-bg-medium">
         <button
           className="flex items-center justify-center w-full gap-1 cursor-pointer group"
-          onClick={() => onLike(qna.data.id, qna.data.isHearted)}
+          onClick={(e: React.MouseEvent) => onLike(e, qna.data.id, qna.data.isHearted)}
         >
           <div className="transition-colors group-hover:[&>svg]:text-red-500">
             {qna.data.isHearted ? (

@@ -16,7 +16,7 @@ export const BottomNavigation = () => {
 
   const navItems: NavItem[] = [
     {
-      path: '/',
+      path: '/home',
       label: 'Home',
       icon: <HomeIcon isActive={false} />,
       activeIcon: <HomeIcon isActive={true} />,

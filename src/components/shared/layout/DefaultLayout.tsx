@@ -5,6 +5,7 @@ export function DefaultLayout() {
   const location = useLocation();
   const isPaddingDisabled =
     location.pathname.includes('/community') ||
+    location.pathname.includes('/home') ||
     location.pathname.includes('/profile') ||
     location.pathname.includes('/settings');
   const isBottomNavigationDisabled =

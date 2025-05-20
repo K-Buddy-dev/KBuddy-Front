@@ -1,7 +1,7 @@
 import { StackNavigation } from 'j-react-stack';
 import { Write } from '@/components/community/post';
 
-const CommunityPostPage = () => {
+export const CommunityPostPage = () => {
   return (
     <StackNavigation
       className="h-[calc(100vh-64px)] overflow-y-hidden"
@@ -14,5 +14,3 @@ const CommunityPostPage = () => {
     />
   );
 };
-
-export default CommunityPostPage;

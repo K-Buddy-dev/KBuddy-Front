@@ -10,8 +10,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 export interface SwiperWrapperProps {
   cards: Community[];
-  onLike: (id: number, isHearted: boolean) => void;
-  onBookmark: (id: number, isBookmarked: boolean) => void;
+  onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
+  onBookmark: (event: React.MouseEvent, id: number, isBookmarked: boolean) => void;
 }
 
 function SwiperCardWrapper({ children, onclick }: { children: React.ReactNode; onclick: () => void }) {
@@ -38,8 +38,8 @@ export function SwiperCard({
   onLike,
   onBookmark,
 }: Community & {
-  onLike: (id: number, isHearted: boolean) => void;
-  onBookmark: (id: number, isBookmarked: boolean) => void;
+  onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
+  onBookmark: (event: React.MouseEvent, id: number, isBookmarked: boolean) => void;
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -78,8 +78,7 @@ export function SwiperCard({
             <button
               className="flex items-center gap-1 group"
               onClick={(e) => {
-                e.stopPropagation();
-                onLike?.(id, isHearted);
+                onLike?.(e, id, isHearted);
               }}
             >
               <div className="transition-colors group-hover:[&>svg]:text-red-500">
@@ -98,8 +97,7 @@ export function SwiperCard({
           </div>
           <button
             onClick={(e) => {
-              e.stopPropagation();
-              onBookmark?.(id, isBookmarked);
+              onBookmark?.(e, id, isBookmarked);
             }}
             className="flex items-center transition-colors hover:[&>svg]:text-[#6952F9]"
           >
