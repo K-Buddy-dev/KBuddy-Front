@@ -7,6 +7,7 @@ import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
 import { CategoryFilterSwiper } from './swiper';
+import { formatDate } from '@/utils/utils';
 
 interface BlogProps {
   onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
@@ -154,7 +155,7 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
                   >
                     <CommunityCard
                       writerId={`${blog.writerId}`}
-                      createdAt={new Date(blog.createdAt).toLocaleDateString()}
+                      createdAt={formatDate(blog.createdAt)}
                       title={blog.title}
                       categoryId={blog.categoryId}
                       heartCount={blog.heartCount}

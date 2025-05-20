@@ -1,12 +1,17 @@
-import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
-import { CommentIcon } from '@/components/shared/icon/Icon';
-import { Navigation } from 'swiper/modules';
+import { FaBookmark, FaHeart, FaRegBookmark, FaRegHeart } from 'react-icons/fa';
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+
+import { CommentIcon } from '@/components/shared/icon/Icon';
+
 import { FloatLeft, FloatRight } from '@/components/shared/icon';
 import { CATEGORIES, Community } from '@/types';
 import { formatDate } from '@/utils/utils';
-import { FaBookmark, FaHeart, FaRegBookmark, FaRegHeart } from 'react-icons/fa';
-import { useLocation, useNavigate } from 'react-router-dom';
+
+import defaultImg from '@/assets/images/default-profile.png';
 
 export interface SwiperWrapperProps {
   cards: Community[];
@@ -37,6 +42,8 @@ export function SwiperCard({
   isBookmarked,
   onLike,
   onBookmark,
+  profileImageUrl,
+  imageUrl,
 }: Community & {
   onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
   onBookmark: (event: React.MouseEvent, id: number, isBookmarked: boolean) => void;
@@ -60,10 +67,10 @@ export function SwiperCard({
     <SwiperCardWrapper onclick={handleNavigate}>
       <div className="flex flex-col gap-1 py-[13px] font-roboto">
         <div className="flex items-center gap-2 font-medium">
-          <div className="w-7 h-7 bg-red-300 rounded-full"></div>
-          <div className="flex flex-col text-[12px] font-light">
-            <h4 className="text-text-default">@{writerId}</h4>
-            <p className="text-text-weak">{formatDate(createdAt)}</p>
+          <img src={profileImageUrl || defaultImg} alt="Profile" className="w-10 h-10 rounded-full" />
+          <div className="font-roboto font-medium">
+            <p className="text-xs text-text-default">@{writerId}</p>
+            <p className="text-xs text-text-weak">{formatDate(createdAt)}</p>
           </div>
         </div>
         <div className="flex flex-col gap-1">
@@ -72,7 +79,7 @@ export function SwiperCard({
         </div>
       </div>
       <div className="flex flex-col gap-1 py-[3px]">
-        <div className="w-[100px] h-[100px] bg-lime-400 rounded-base-unit-2"></div>
+        <div>{<img src={imageUrl} alt={`${title}_image`} className="w-[100px] h-[100px] object-cover rounded" />}</div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
             <button
