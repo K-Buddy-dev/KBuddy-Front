@@ -1,14 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { useAddBlogHeart, useAddBlogBookmark, useBlogs, useRemoveBlogHeart, useRemoveBlogBookmark } from '@/hooks';
+import { useBlogs } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
 import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
 import { CategoryFilterSwiper } from './swiper';
 
-export const BlogList: React.FC = () => {
+interface BlogProps {
+  onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
+  onBookmark: (event: React.MouseEvent, id: number, isBookmarked: boolean) => void;
+}
+
+export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,19 +22,14 @@ export const BlogList: React.FC = () => {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs();
 
-  const addBlogHeart = useAddBlogHeart();
-  const removeBlogHeart = useRemoveBlogHeart();
-  const addBlogBookmark = useAddBlogBookmark();
-  const removeBlogBookmark = useRemoveBlogBookmark();
-
   const observerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const sort = searchParams.get('sort') || 'latest';
+    const sort = searchParams.get('sort') || 'LATEST';
     const categoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
 
     let count = 0;
-    if (sort !== 'latest') count += 1;
+    if (sort !== 'LATEST') count += 1;
     if (categoryCode !== undefined) count += 1;
     setFilterCount(count);
   }, [searchParams]);
@@ -92,46 +92,6 @@ export const BlogList: React.FC = () => {
       sessionStorage.removeItem('scrollY');
     }
   }, [location.key]);
-
-  const handleLike = useCallback(
-    (blogId: number, isHearted: boolean, event: React.MouseEvent) => {
-      event.stopPropagation();
-      if (isHearted) {
-        removeBlogHeart.mutate(blogId, {
-          onError: (error) => {
-            alert(`Fail remove Like: ${error.message}`);
-          },
-        });
-      } else {
-        addBlogHeart.mutate(blogId, {
-          onError: (error) => {
-            alert(`Fail add Like: ${error.message}`);
-          },
-        });
-      }
-    },
-    [addBlogHeart, removeBlogHeart]
-  );
-
-  const handleBookmark = useCallback(
-    (blogId: number, isBookmarked: boolean, event: React.MouseEvent) => {
-      event.stopPropagation();
-      if (isBookmarked) {
-        removeBlogBookmark.mutate(blogId, {
-          onError: (error) => {
-            alert(`Fail remove Bookmark: ${error.message}`);
-          },
-        });
-      } else {
-        addBlogBookmark.mutate(blogId, {
-          onError: (error) => {
-            alert(`Fail add Bookmark: ${error.message}`);
-          },
-        });
-      }
-    },
-    [addBlogBookmark, removeBlogBookmark]
-  );
 
   const handleDetail = (blogId: number) => {
     sessionStorage.setItem('scrollY', String(window.scrollY));
@@ -201,8 +161,8 @@ export const BlogList: React.FC = () => {
                       comments={blog.commentCount}
                       isBookmarked={blog.isBookmarked}
                       isHearted={blog.isHearted}
-                      onLike={(event) => handleLike(blog.id, blog.isHearted, event)}
-                      onBookmark={(event) => handleBookmark(blog.id, blog.isBookmarked, event)}
+                      onLike={(e) => onLike(e, blog.id, blog.isHearted)}
+                      onBookmark={(e) => onBookmark(e, blog.id, blog.isBookmarked)}
                     />
                   </div>
                 );

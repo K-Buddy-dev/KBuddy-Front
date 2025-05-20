@@ -65,10 +65,11 @@ export const useRecommendedQnas = ({ size = 5, categoryCode }: UseRecommendedBlo
 };
 
 // QnA 단건 조회
-export const useQnaDetail = (qnaId: number) => {
+export const useQnaDetail = (qnaId: number | null) => {
   return useQuery<CommunityDetailResponse, Error>({
-    queryKey: qnaQueryKeys.qna.detail(qnaId),
-    queryFn: () => qnaService.getQnaById(qnaId),
+    queryKey: qnaQueryKeys.qna.detail(qnaId ?? 0),
+    queryFn: () => qnaService.getQnaById(qnaId!),
+    enabled: !!qnaId,
   });
 };
 

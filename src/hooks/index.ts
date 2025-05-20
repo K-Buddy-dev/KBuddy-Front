@@ -15,3 +15,4 @@ export * from './blog/useBlog';
 export * from './useToast';
 export * from './qna/qnaKeys';
 export * from './qna/useQna';
+export * from './useContentActions';

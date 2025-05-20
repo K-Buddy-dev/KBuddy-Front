@@ -11,7 +11,7 @@ interface FiltersModalProps {
 export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) => {
   const [searchParams] = useSearchParams();
 
-  const initialSort = searchParams.get('sort') || 'latest';
+  const initialSort = searchParams.get('sort') || 'LATEST';
   const initialCategoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
 
   const [sort, setSort] = useState<string>(initialSort);
@@ -26,7 +26,7 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) 
   };
 
   const handleClearAll = () => {
-    setSort('latest');
+    setSort('LATEST');
     setCategoryCode(undefined);
   };
 
@@ -43,15 +43,15 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) 
         <div className="mt-16 mb-2 border-b-[1px] border-border-weak1">
           <h3 className="font-medium text-text-default">Sort by</h3>
           <div className="space-y-2 mt-2">
-            {['Latest', 'Popular', 'Oldest'].map((option) => (
+            {['Latest', 'View_count', 'Oldest', 'Heart_count', 'Comment_count'].map((option) => (
               <label key={option} className="flex items-center justify-between w-full h-12 cursor-pointer">
                 <div>{option}</div>
                 <input
                   type="radio"
                   name="sort"
-                  value={option.toLowerCase()}
-                  checked={sort === option.toLowerCase()}
-                  onChange={() => handleSortChange(option.toLowerCase())}
+                  value={option.toUpperCase()}
+                  checked={sort === option.toUpperCase()}
+                  onChange={() => handleSortChange(option.toUpperCase())}
                   className="w-5 h-5 accent-bg-brand-default"
                 />
               </label>
@@ -80,7 +80,7 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) 
         </div>
       </div>
 
-      <div className="absolute m-auto bottom-0 left-0 min-w-[280px] w-full sm:w-[600px] h-[80px] border-t border-border-weak1">
+      <div className="absolute m-auto bottom-0 left-0 min-w-[280px] w-full sm:w-[600px] h-[80px] border-t border-border-weak1 bg-bg-default">
         <div className="h-10 mt-3 px-4 flex items-center justify-between">
           <button onClick={handleClearAll} className="font-semibold underline text-text-default">
             Clear all

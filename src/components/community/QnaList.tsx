@@ -1,14 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { useAddQnaBookmark, useRemoveQnaBookmark } from '@/hooks';
 import { FilterIcon } from '../shared/icon/FilterIcon';
 import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
-import { useAddQnaHeart, useQnas, useRemoveQnaHeart } from '@/hooks/qna/useQna';
+import { useQnas } from '@/hooks/qna/useQna';
 
-export const QnaList: React.FC = () => {
+interface QnaProps {
+  onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
+  onBookmark: (event: React.MouseEvent, id: number, isBookmarked: boolean) => void;
+}
+
+export const QnaList = ({ onLike, onBookmark }: QnaProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,19 +21,14 @@ export const QnaList: React.FC = () => {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useQnas();
 
-  const addQnaHeart = useAddQnaHeart();
-  const removeQnaHeart = useRemoveQnaHeart();
-  const addQnaBookmark = useAddQnaBookmark();
-  const removeQnaBookmark = useRemoveQnaBookmark();
-
   const observerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const sort = searchParams.get('sort') || 'latest';
+    const sort = searchParams.get('sort') || 'LATEST';
     const categoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
 
     let count = 0;
-    if (sort !== 'latest') count += 1;
+    if (sort !== 'LATEST') count += 1;
     if (categoryCode !== undefined) count += 1;
     setFilterCount(count);
   }, [searchParams]);
@@ -80,46 +79,6 @@ export const QnaList: React.FC = () => {
       sessionStorage.removeItem('scrollY');
     }
   }, [location.key]);
-
-  const handleLike = useCallback(
-    (qnaId: number, isHearted: boolean, event: React.MouseEvent) => {
-      event.stopPropagation();
-      if (isHearted) {
-        removeQnaHeart.mutate(qnaId, {
-          onError: (error) => {
-            alert(`Fail remove Like: ${error.message}`);
-          },
-        });
-      } else {
-        addQnaHeart.mutate(qnaId, {
-          onError: (error) => {
-            alert(`Fail add Like: ${error.message}`);
-          },
-        });
-      }
-    },
-    [addQnaHeart, removeQnaHeart]
-  );
-
-  const handleBookmark = useCallback(
-    (qnaId: number, isBookmarked: boolean, event: React.MouseEvent) => {
-      event.stopPropagation();
-      if (isBookmarked) {
-        removeQnaBookmark.mutate(qnaId, {
-          onError: (error) => {
-            alert(`Fail remove Bookmark: ${error.message}`);
-          },
-        });
-      } else {
-        addQnaBookmark.mutate(qnaId, {
-          onError: (error) => {
-            alert(`Fail add Bookmark: ${error.message}`);
-          },
-        });
-      }
-    },
-    [addQnaBookmark, removeQnaBookmark]
-  );
 
   const handleDetail = (qnaId: number) => {
     sessionStorage.setItem('scrollY', String(window.scrollY));
@@ -188,8 +147,8 @@ export const QnaList: React.FC = () => {
                       comments={qna.commentCount}
                       isBookmarked={qna.isBookmarked}
                       isHearted={qna.isHearted}
-                      onLike={(event) => handleLike(qna.id, qna.isHearted, event)}
-                      onBookmark={(event) => handleBookmark(qna.id, qna.isBookmarked, event)}
+                      onLike={(e) => onLike(e, qna.id, qna.isHearted)}
+                      onBookmark={(e) => onBookmark(e, qna.id, qna.isBookmarked)}
                     />
                   </div>
                 );

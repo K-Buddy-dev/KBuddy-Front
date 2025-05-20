@@ -11,18 +11,19 @@ import {
   ProfilePage,
   EditProfilePage,
   SettingPage,
+  HomePage,
+  CommunityPage,
+  CommunityPostPage,
+  SignupVerifyPage,
+  SignupFormPage,
 } from './pages';
 
 import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
 import 'swiper/css';
-import { SignupVerifyPage } from './pages/SignupVerifyPage.tsx';
-import { SignupFormPage } from './pages/SignupFormPage.tsx';
 import { EmailVerifyGuard } from './components/routes/EmailVerifyGuard.tsx';
-import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 import { AuthGuard } from './components/routes/AuthGuard.tsx';
-import CommunityPostPage from './pages/CommunityPostPage.tsx';
-import { CommunityPage } from './pages/CommunityPage.tsx';
 import { CommunityFormContextProvider } from './components/contexts/CommunityFormContextProvider.tsx';
+import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 
 function App() {
   return (
@@ -52,7 +53,7 @@ function App() {
             </Route>
             <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
 
-            <Route path="/home" element={<TempPage />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/service" element={<TempPage />} />
             <Route path="/message" element={<TempPage />} />
             <Route path="/profile" element={<ProfilePage />} />
