@@ -5,12 +5,13 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { FORMAT_TEXT_COMMAND, $getSelection, $isRangeSelection } from 'lexical';
 import { INSERT_UNORDERED_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, $isListNode } from '@lexical/list';
 
-interface ToolbarPluginProps {
-  isMobile?: boolean;
-  keyboardHeight?: number;
+export interface ToolbarPluginProps {
+  isMobile: boolean;
+  keyboardHeight: number;
+  isFocused: boolean;
 }
 
-export const ToolbarPlugin = ({ isMobile, keyboardHeight }: ToolbarPluginProps) => {
+export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPluginProps) => {
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -60,7 +61,10 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight }: ToolbarPluginProps) 
   return (
     <div
       id="toolbar"
-      className={cn('w-full h-auto !border-0', isMobile ? ` absolute p-0 bottom-${keyboardHeight}px` : 'relative pb-4')}
+      className={cn(
+        'w-full h-auto !border-0',
+        isMobile ? (isFocused ? `fixed p-0 bottom-${keyboardHeight}px` : 'hidden') : 'relative pb-4'
+      )}
     >
       <div className="flex items-center gap-4">
         <button

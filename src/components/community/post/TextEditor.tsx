@@ -8,7 +8,7 @@ import { ToolbarPlugin } from './ToolbarPlugin';
 import { cn } from '@/utils/utils';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { EditorState } from 'lexical';
 
 export const TextEditor = ({ isMobile, keyboardHeight }: { isMobile: boolean; keyboardHeight: number }) => {
@@ -16,6 +16,8 @@ export const TextEditor = ({ isMobile, keyboardHeight }: { isMobile: boolean; ke
   const { setDescription } = useCommunityFormActionContext();
   const [editor] = useLexicalComposerContext();
   const isInitialMount = useRef(true);
+  const [isFocused, setIsFocused] = useState(false);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   const onChange = useCallback(
     (editorState: EditorState) => {
@@ -26,6 +28,22 @@ export const TextEditor = ({ isMobile, keyboardHeight }: { isMobile: boolean; ke
     },
     [setDescription]
   );
+
+  useEffect(() => {
+    const editorElement = editorRef.current;
+    if (!editorElement) return;
+
+    const handleFocus = () => setIsFocused(true);
+    const handleBlur = () => setIsFocused(false);
+
+    editorElement.addEventListener('focus', handleFocus, true);
+    editorElement.addEventListener('blur', handleBlur, true);
+
+    return () => {
+      editorElement.removeEventListener('focus', handleFocus, true);
+      editorElement.removeEventListener('blur', handleBlur, true);
+    };
+  }, []);
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -43,21 +61,23 @@ export const TextEditor = ({ isMobile, keyboardHeight }: { isMobile: boolean; ke
 
   return (
     <>
-      <ToolbarPlugin isMobile={isMobile} keyboardHeight={keyboardHeight} />
-      <RichTextPlugin
-        contentEditable={<ContentEditable className="outline-none" />}
-        placeholder={
-          <div
-            className={cn(
-              'absolute text-gray-400 left-4 pointer-events-none select-none',
-              isMobile ? 'top-4' : 'top-14'
-            )}
-          >
-            Start writing a blog or question
-          </div>
-        }
-        ErrorBoundary={LexicalErrorBoundary}
-      />
+      <ToolbarPlugin isMobile={isMobile} keyboardHeight={keyboardHeight} isFocused={isFocused} />
+      <div ref={editorRef}>
+        <RichTextPlugin
+          contentEditable={<ContentEditable className="outline-none" />}
+          placeholder={
+            <div
+              className={cn(
+                'absolute text-gray-400 left-4 pointer-events-none select-none',
+                isMobile ? 'top-4' : 'top-14'
+              )}
+            >
+              Start writing a blog or question
+            </div>
+          }
+          ErrorBoundary={LexicalErrorBoundary}
+        />
+      </div>
       <OnChangePlugin onChange={onChange} />
       <ListPlugin />
       <HistoryPlugin />
