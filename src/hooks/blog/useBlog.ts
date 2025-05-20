@@ -64,11 +64,26 @@ export const useRecommendedBlogs = ({ size = 5, categoryCode }: UseRecommendedBl
   });
 };
 
+export const useFeaturedBlogs = ({ size = 5, sort = 'VIEW_COUNT' }: UseRecommendedBlogsProps = {}) => {
+  const filters: BlogFilters = {
+    size,
+    sort,
+  };
+
+  return useQuery<CommunityListResponse, Error>({
+    queryKey: blogQueryKeys.blog.list(filters),
+    queryFn: () => {
+      return blogService.getBlogs(undefined, filters.size, undefined, filters.sort, undefined);
+    },
+  });
+};
+
 // 블로그 단건 조회
-export const useBlogDetail = (blogId: number) => {
+export const useBlogDetail = (blogId: number | null) => {
   return useQuery<CommunityDetailResponse, Error>({
-    queryKey: blogQueryKeys.blog.detail(blogId),
-    queryFn: () => blogService.getBlogById(blogId),
+    queryKey: blogQueryKeys.blog.detail(blogId ?? 0),
+    queryFn: () => blogService.getBlogById(blogId!),
+    enabled: !!blogId,
   });
 };
 

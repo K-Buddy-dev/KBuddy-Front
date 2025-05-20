@@ -11,8 +11,10 @@ import { RecommendSwiper } from './swiper';
 
 interface BlogDetailProps {
   contentId: number;
-  onLike: (id: number, isHearted: boolean) => void;
-  onBookmark: (id: number, isBookmarked: boolean) => void;
+  onLike: ((event: React.MouseEvent, id: number, isHearted: boolean) => void) | ((event: React.MouseEvent) => void);
+  onBookmark:
+    | ((event: React.MouseEvent, id: number, isBookmarked: boolean) => void)
+    | ((event: React.MouseEvent) => void);
   recommendedData?: Community[];
 }
 
@@ -62,7 +64,7 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
       <div className="flex items-center justify-between h-10 text-text-weak border-b-[1px] border-solid border-border-default bg-bg-medium">
         <button
           className="flex items-center justify-center w-full gap-1 cursor-pointer group"
-          onClick={() => onLike(blog.data.id, blog.data.isHearted)}
+          onClick={(event) => onLike(event, blog.data.id, blog.data.isHearted)}
         >
           <div className="transition-colors group-hover:[&>svg]:text-red-500">
             {blog.data.isHearted ? (

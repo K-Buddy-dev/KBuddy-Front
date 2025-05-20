@@ -7,7 +7,7 @@ interface DetailTopbarProps {
   isBookmarked?: boolean;
   onBack?: () => void;
   onCancle?: () => void;
-  onBookmark?: () => void;
+  onBookmark?: (event: React.MouseEvent) => void;
 }
 
 function DetailTopbarWrapper({ children }: { children: React.ReactNode }) {

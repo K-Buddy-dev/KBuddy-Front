@@ -137,4 +137,5 @@ export interface ReportRequest {
 export interface UseRecommendedBlogsProps {
   size?: number;
   categoryCode?: number;
+  sort?: string;
 }
