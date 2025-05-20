@@ -34,6 +34,7 @@ export const Description = () => {
     try {
       const { data } = JSON.parse(event.data);
       if (data.action === 'keyboardHeightData') {
+        console.log('keyboardHeight', data.height);
         setKeyboardHeight(data.height);
       }
     } catch (error) {
