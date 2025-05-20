@@ -11,9 +11,13 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { EditorState } from 'lexical';
 
-export const TextEditor = ({ isMobile, keyboardHeight }: { isMobile: boolean; keyboardHeight: number }) => {
+export const TextEditor = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
   const { description } = useCommunityFormStateContext();
   const { setDescription } = useCommunityFormActionContext();
+
   const [editor] = useLexicalComposerContext();
   const isInitialMount = useRef(true);
   const [isFocused, setIsFocused] = useState(false);
@@ -29,17 +33,44 @@ export const TextEditor = ({ isMobile, keyboardHeight }: { isMobile: boolean; ke
     [setDescription]
   );
 
+  const handleKeyboardHeight = (event: MessageEvent) => {
+    try {
+      const { data } = JSON.parse(event.data);
+      if (data.action === 'keyboardHeightData') {
+        console.log('keyboardHeight', data.height);
+        setKeyboardHeight(data.height);
+      }
+    } catch (error) {
+      console.error('Error parsing message:', error);
+    }
+  };
+
   useEffect(() => {
+    if (window.ReactNativeWebView) {
+      setIsMobile(true);
+      window.addEventListener('message', handleKeyboardHeight);
+    }
+
     const editorElement = editorRef.current;
     if (!editorElement) return;
 
-    const handleFocus = () => setIsFocused(true);
+    const handleFocus = () => {
+      if (window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(
+          JSON.stringify({
+            action: 'getKeyboardHeight',
+          })
+        );
+        setIsFocused(true);
+      }
+    };
     const handleBlur = () => setIsFocused(false);
 
     editorElement.addEventListener('focus', handleFocus, true);
     editorElement.addEventListener('blur', handleBlur, true);
 
     return () => {
+      window.removeEventListener('message', handleKeyboardHeight);
       editorElement.removeEventListener('focus', handleFocus, true);
       editorElement.removeEventListener('blur', handleBlur, true);
     };
