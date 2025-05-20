@@ -1,4 +1,4 @@
-import { ComponentProps, useEffect, useState } from 'react';
+import { ComponentProps } from 'react';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { Klass, LexicalNode } from 'lexical';
 import { ListNode, ListItemNode } from '@lexical/list';
@@ -27,41 +27,10 @@ const initialConfig: ComponentProps<typeof LexicalComposer>['initialConfig'] = {
 };
 
 export const Description = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-
-  const handleKeyboardHeight = (event: MessageEvent) => {
-    try {
-      const { data } = JSON.parse(event.data);
-      if (data.action === 'keyboardHeightData') {
-        console.log('keyboardHeight', data.height);
-        setKeyboardHeight(data.height);
-      }
-    } catch (error) {
-      console.error('Error parsing message:', error);
-    }
-  };
-
-  useEffect(() => {
-    if (window.ReactNativeWebView) {
-      setIsMobile(true);
-      window.ReactNativeWebView.postMessage(
-        JSON.stringify({
-          action: 'getKeyboardHeight',
-        })
-      );
-      window.addEventListener('message', handleKeyboardHeight);
-    }
-
-    return () => {
-      window.removeEventListener('message', handleKeyboardHeight);
-    };
-  }, []);
-
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <div className="relative w-full h-auto p-4 !border-0">
-        <TextEditor isMobile={isMobile} keyboardHeight={keyboardHeight} />
+        <TextEditor />
       </div>
     </LexicalComposer>
   );
