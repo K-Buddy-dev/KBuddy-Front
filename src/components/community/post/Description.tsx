@@ -20,7 +20,7 @@ export const Description = () => {
   const handleKeyboardHeight = (event: MessageEvent) => {
     try {
       const { data } = JSON.parse(event.data);
-      if (data.action === 'keyboardHeight') {
+      if (data.action === 'keyboardHeightData') {
         setKeyboardHeight(data.height);
       }
     } catch (error) {
@@ -33,7 +33,7 @@ export const Description = () => {
       setIsMobile(true);
       window.ReactNativeWebView.postMessage(
         JSON.stringify({
-          action: 'keyboardHeight',
+          action: 'getKeyboardHeight',
         })
       );
       window.addEventListener('message', handleKeyboardHeight);
