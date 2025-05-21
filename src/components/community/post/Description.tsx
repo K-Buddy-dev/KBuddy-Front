@@ -1,86 +1,37 @@
-import 'quill/dist/quill.snow.css';
-import ReactQuill from 'react-quill';
+import { ComponentProps } from 'react';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { Klass, LexicalNode } from 'lexical';
+import { ListNode, ListItemNode } from '@lexical/list';
+import { TextNode } from 'lexical';
+import { TextEditor } from './TextEditor';
 
-import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
-import { useEffect, useRef, useState } from 'react';
+export const nodes: Klass<LexicalNode>[] = [TextNode, ListNode, ListItemNode];
 
-import { BoldTextIcon, ItalicTextIcon, CancelLineTextIcon, ListTextIcon } from '@/components/shared';
-import { cn } from '@/utils/utils';
+const initialConfig: ComponentProps<typeof LexicalComposer>['initialConfig'] = {
+  namespace: 'MyEditor',
+  onError: (error) => console.error(error),
+  nodes: nodes,
+  theme: {
+    text: {
+      bold: 'font-bold',
+      italic: 'italic',
+      underline: 'underline',
+      strikethrough: 'line-through',
+    },
+    list: {
+      ul: 'list-disc pl-4',
+      ol: 'list-decimal pl-4',
+      listitem: 'ml-4',
+    },
+  },
+};
 
 export const Description = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const { description } = useCommunityFormStateContext();
-  const { setDescription } = useCommunityFormActionContext();
-  const quillRef = useRef(null);
-
-  const placeholder = 'Start writing a blog or question';
-  const formats = ['bold', 'italic', 'strike', 'list'];
-
-  const handleKeyboardHeight = (event: MessageEvent) => {
-    try {
-      const { data } = JSON.parse(event.data);
-      if (data.action === 'keyboardHeight') {
-        setKeyboardHeight(data.height);
-      }
-    } catch (error) {
-      console.error('Error parsing message:', error);
-    }
-  };
-
-  useEffect(() => {
-    if (window.ReactNativeWebView) {
-      setIsMobile(true);
-      window.ReactNativeWebView.postMessage(
-        JSON.stringify({
-          action: 'keyboardHeight',
-        })
-      );
-      window.addEventListener('message', handleKeyboardHeight);
-    }
-
-    return () => {
-      window.removeEventListener('message', handleKeyboardHeight);
-    };
-  }, []);
-
   return (
-    <>
-      <div
-        id="toolbar"
-        className={cn(
-          'w-full h-auto p-4 !border-0',
-          isMobile ? `absolute bottom-[calc(100%+${keyboardHeight}px)] left-0` : 'relative'
-        )}
-      >
-        <div className="flex items-center gap-4">
-          <button className="ql-bold !w-6 !h-6 !p-0">
-            <BoldTextIcon />
-          </button>
-          <button className="ql-italic !w-6 !h-6 !p-0">
-            <ItalicTextIcon />
-          </button>
-          <button className="ql-strike !w-6 !h-6 !p-0">
-            <CancelLineTextIcon />
-          </button>
-          <button className="ql-list !w-6 !h-6 !p-0">
-            <ListTextIcon />
-          </button>
-        </div>
+    <LexicalComposer initialConfig={initialConfig}>
+      <div className="relative w-full h-auto p-4 !border-0">
+        <TextEditor />
       </div>
-      <ReactQuill
-        ref={quillRef}
-        value={description}
-        onChange={setDescription}
-        placeholder={placeholder}
-        className={cn(isMobile && 'pt-10')}
-        modules={{
-          toolbar: {
-            container: '#toolbar',
-          },
-        }}
-        formats={formats}
-      />
-    </>
+    </LexicalComposer>
   );
 };

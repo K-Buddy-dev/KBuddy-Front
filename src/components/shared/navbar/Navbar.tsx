@@ -47,7 +47,7 @@ function NavSearch({ setSearchKeyword }: NavbarWithSearchProps) {
 
 function NavWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <nav className="flex items-center justify-between xs:justify-center w-full h-14 bg-gradient-to-r from-bg-brand-light to-bg-brand-default py-2 pr-1">
+    <nav className="flex items-center justify-between xs:justify-center w-full h-14 py-2 pl-2 pr-4 bg-gradient-to-r from-bg-brand-light to-bg-brand-default">
       {children}
     </nav>
   );
