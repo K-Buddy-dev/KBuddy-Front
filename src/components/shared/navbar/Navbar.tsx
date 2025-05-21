@@ -1,10 +1,46 @@
 import { AlarmIcon, Logo, SearchIcon, SettingsIcon } from '@/components/shared/icon';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
-function NavSearch() {
+interface NavbarWithSearchProps {
+  setSearchKeyword?: Dispatch<SetStateAction<string>>;
+}
+
+function NavSearch({ setSearchKeyword }: NavbarWithSearchProps) {
+  const [searchParams] = useSearchParams();
+  const [inputValue, setInputValue] = useState(() => {
+    return searchParams.get('keyword') || '';
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleSearch = () => {
+    if (setSearchKeyword) {
+      setSearchKeyword(inputValue);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <div className="flex items-center gap-2 w-full sm:w-[496px] h-9 py-1.5 pl-2 rounded-full bg-white">
-      <SearchIcon />
-      <input type="text" placeholder="Search KBuddy" className="block h-full outline-none rounded-full" />
+      <button type="button" onClick={handleSearch} aria-label="Search" className="flex items-center justify-center">
+        <SearchIcon />
+      </button>
+      <input
+        type="text"
+        value={inputValue}
+        placeholder="Search KBuddy"
+        className="block h-full outline-none rounded-full flex-1"
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+      />
     </div>
   );
 }
@@ -17,11 +53,11 @@ function NavWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-function NavbarWithSearch() {
+function NavbarWithSearch({ setSearchKeyword }: NavbarWithSearchProps) {
   return (
     <NavWrapper>
       <Logo />
-      <NavSearch />
+      <NavSearch setSearchKeyword={setSearchKeyword} />
       <AlarmIcon />
     </NavWrapper>
   );
@@ -48,13 +84,14 @@ function NavbarWithoutSearch({ onClickAlarm, onClickSettings }: NavbarWithoutSea
 
 interface NavbarProps {
   withSearch: boolean;
+  setSearchKeyword?: Dispatch<SetStateAction<string>>;
   onClickAlarm?: () => void;
   onClickSettings?: () => void;
 }
 
-export function Navbar({ withSearch, onClickAlarm, onClickSettings }: NavbarProps) {
+export function Navbar({ withSearch, setSearchKeyword, onClickAlarm, onClickSettings }: NavbarProps) {
   return withSearch ? (
-    <NavbarWithSearch />
+    <NavbarWithSearch setSearchKeyword={setSearchKeyword} />
   ) : (
     <NavbarWithoutSearch onClickAlarm={onClickAlarm} onClickSettings={onClickSettings} />
   );
