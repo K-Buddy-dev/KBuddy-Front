@@ -8,6 +8,7 @@ import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
 import { CategoryFilterSwiper } from './swiper';
 import { formatDate } from '@/utils/utils';
+import { NoContent } from './detail/NoContent';
 
 interface BlogProps {
   onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
@@ -99,9 +100,10 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
     navigate(`/community/detail/${blogId}${location.search}`);
   };
 
-  if (isError) {
-    return <div>Error: {error?.message || 'Something went wrong'}</div>;
-  }
+  if (data?.pages[0].data.results.length === 0)
+    if (isError) {
+      return <div>Error: {error?.message || 'Something went wrong'}</div>;
+    }
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -139,9 +141,9 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
             <SkeletonCard key={index} />
           ))}
         </div>
-      ) : (
+      ) : data && data.pages[0].data.results.length > 0 ? (
         <>
-          {data?.pages.map((page, pageIndex) => (
+          {data.pages.map((page, pageIndex) => (
             <div key={pageIndex}>
               {page.data.results.map((blog, index) => {
                 const isLastItem = pageIndex === data.pages.length - 1 && index === page.data.results.length - 1;
@@ -176,6 +178,8 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
             </div>
           )}
         </>
+      ) : (
+        <NoContent type="blog" />
       )}
       <div className="h-[136px]"></div>
     </div>

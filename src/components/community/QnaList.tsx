@@ -6,6 +6,7 @@ import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
 import { useQnas } from '@/hooks/qna/useQna';
+import { NoContent } from './detail/NoContent';
 
 interface QnaProps {
   onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
@@ -124,7 +125,7 @@ export const QnaList = ({ onLike, onBookmark }: QnaProps) => {
             <SkeletonCard key={index} />
           ))}
         </div>
-      ) : (
+      ) : data && data.pages[0].data.results.length > 0 ? (
         <>
           {data?.pages.map((page, pageIndex) => (
             <div key={pageIndex}>
@@ -161,6 +162,8 @@ export const QnaList = ({ onLike, onBookmark }: QnaProps) => {
             </div>
           )}
         </>
+      ) : (
+        <NoContent type="Q&A" />
       )}
       <div className="h-[136px]"></div>
     </div>
