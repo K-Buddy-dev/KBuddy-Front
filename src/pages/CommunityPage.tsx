@@ -7,26 +7,56 @@ import { BlogList, FloatPostAction } from '@/components';
 import { QnaList } from '@/components/community';
 import { SwiperList } from '@/components/community/swiper';
 import { useContentActions, useFeaturedBlogs } from '@/hooks';
+import { useEffect, useRef, useState } from 'react';
 
 export const CommunityPage = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchKeyword, setSearchKeyword] = useState<string>(() => {
+    return searchParams.get('keyword') || '';
+  });
 
   const currentTab = searchParams.get('tab') || 'Curated blog';
+  const prevTabRef = useRef<string>(currentTab);
+
+  useEffect(() => {
+    if (prevTabRef.current !== currentTab) {
+      setSearchKeyword('');
+    }
+    prevTabRef.current = currentTab;
+  }, [currentTab]);
+
+  useEffect(() => {
+    const keyword = searchParams.get('keyword') || '';
+    setSearchKeyword(keyword);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams(searchParams);
+
+    if (searchKeyword) {
+      newSearchParams.set('keyword', searchKeyword);
+    } else {
+      newSearchParams.delete('keyword');
+    }
+
+    setSearchParams(newSearchParams, { replace: true });
+  }, [searchKeyword, searchParams]);
 
   const contentType = currentTab === 'User blog' ? 'blog' : 'qna';
   const { handleLike: listHandleLike, handleBookmark: listHandleBookmark } = useContentActions({
     contentType,
   });
 
+  const { data: featuredBlog, refetch: refetchFeaturedBlog } = useFeaturedBlogs();
+
   const { handleLike: featuredHandleLike, handleBookmark: featuredHandleBookmark } = useContentActions({
     contentType: 'blog',
+    refetchRecommended: refetchFeaturedBlog,
   });
-
-  const { data: featuredBlog } = useFeaturedBlogs();
 
   return (
     <>
-      <Navbar withSearch />
+      <Navbar withSearch setSearchKeyword={setSearchKeyword} />
       <div>
         {featuredBlog && (
           <SwiperList

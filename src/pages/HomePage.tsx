@@ -4,11 +4,12 @@ import { SwiperList } from '@/components/community/swiper';
 import { useContentActions, useFeaturedBlogs } from '@/hooks';
 
 export const HomePage = () => {
+  const { data: featuredBlog, refetch: refetchFeaturedBlog } = useFeaturedBlogs();
+
   const { handleLike: featuredHandleLike, handleBookmark: featuredHandleBookmark } = useContentActions({
     contentType: 'blog',
+    refetchRecommended: refetchFeaturedBlog,
   });
-
-  const { data: featuredBlog } = useFeaturedBlogs();
 
   return (
     <>

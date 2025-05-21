@@ -51,6 +51,8 @@ export function SwiperCard({
   const navigate = useNavigate();
   const location = useLocation();
 
+  const NAVIGATION_CARD = location.search ? location.search : '?tab=User%20blog';
+
   const categoryNames = Array.isArray(categoryId)
     ? categoryId
         .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
@@ -59,7 +61,7 @@ export function SwiperCard({
     : CATEGORIES.find((cat) => cat.id === categoryId)?.name || '';
 
   const handleNavigate = () => {
-    const newPath = `/community/detail/${id}${location.search}`;
+    const newPath = `/community/detail/${id}${NAVIGATION_CARD}`;
     navigate(newPath);
   };
 
@@ -85,7 +87,7 @@ export function SwiperCard({
             <button
               className="flex items-center gap-1 group"
               onClick={(e) => {
-                onLike?.(e, id, isHearted);
+                onLike(e, id, isHearted);
               }}
             >
               <div className="transition-colors group-hover:[&>svg]:text-red-500">
@@ -104,7 +106,7 @@ export function SwiperCard({
           </div>
           <button
             onClick={(e) => {
-              onBookmark?.(e, id, isBookmarked);
+              onBookmark(e, id, isBookmarked);
             }}
             className="flex items-center transition-colors hover:[&>svg]:text-[#6952F9]"
           >

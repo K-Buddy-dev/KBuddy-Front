@@ -10,7 +10,6 @@ interface ContentProps {
 }
 
 export const Content: React.FC<ContentProps> = ({ id, date, profileImageUrl, title, categoryId, imageUrl }) => {
-  console.log('imageUrl: ', imageUrl);
   return (
     <div className="flex items-center justify-between">
       <div>
