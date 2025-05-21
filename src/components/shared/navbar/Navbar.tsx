@@ -56,7 +56,7 @@ function NavWrapper({ children }: { children: React.ReactNode }) {
 function NavbarWithSearch({ setSearchKeyword }: NavbarWithSearchProps) {
   return (
     <NavWrapper>
-      <Logo />
+      <Logo className="mr-2" />
       <NavSearch setSearchKeyword={setSearchKeyword} />
       <AlarmIcon />
     </NavWrapper>
