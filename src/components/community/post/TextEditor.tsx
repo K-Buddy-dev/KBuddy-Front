@@ -35,7 +35,7 @@ export const TextEditor = () => {
 
   const handleKeyboardHeight = (event: MessageEvent) => {
     try {
-      const { data } = JSON.parse(event.data);
+      const data = JSON.parse(event.data);
       if (data.action === 'keyboardHeightData') {
         console.log('keyboardHeight', data.height);
         setKeyboardHeight(data.height);
