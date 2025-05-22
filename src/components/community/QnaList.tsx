@@ -163,7 +163,7 @@ export const QnaList = ({ onLike, onBookmark }: QnaProps) => {
           )}
         </>
       ) : (
-        <NoContent type="Q&A" />
+        <NoContent type="qna" />
       )}
       <div className="h-[136px]"></div>
     </div>
