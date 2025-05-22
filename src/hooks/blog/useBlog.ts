@@ -101,52 +101,6 @@ export const useBlogDetail = (blogId: number | null) => {
 //   });
 // };
 
-// 블로그 생성 (낙관적 업데이트 적용)
-// export const useCreateQna = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation<Community, Error, BlogRequest, { previousBlogs: CommunityListResponse | undefined }>({
-//     mutationFn: (data) => blogService.createBlog(data),
-//     onMutate: async (newBlog) => {
-//       await queryClient.cancelQueries({ queryKey: blogQueryKeys.all });
-//       const previousBlogs = queryClient.getQueryData<CommunityListResponse>(blogQueryKeys.blog.list({}));
-//       if (previousBlogs) {
-//         queryClient.setQueryData<CommunityListResponse>(blogQueryKeys.blog.list({}), {
-//           ...previousBlogs,
-//           data: {
-//             ...previousBlogs.data,
-//             results: [
-//               {
-//                 ...newBlog,
-//                 id: Date.now(),
-//                 writer: 'currentUser',
-//                 heartCount: 0,
-//                 commentCount: 0,
-//                 viewCount: 0,
-//                 comments: [],
-//                 createdDate: new Date().toISOString(),
-//               },
-//               ...previousBlogs.data.result,
-//             ],
-//           },
-//         });
-//       }
-//       return { previousBlogs };
-//     },
-//     onError: (error, newBlog, context) => {
-//       if (context?.previousBlogs) {
-//         queryClient.setQueryData(blogQueryKeys.blog.list({}), context.previousBlogs);
-//       }
-//       console.error('Failed to create blog:', error.message);
-//     },
-//     onSettled: () => {
-//       queryClient.invalidateQueries({
-//         predicate: (query) => query.queryKey.includes('blogs'),
-//       });
-//     },
-//   });
-// };
-
 // // 블로그 수정 (낙관적 업데이트 적용)
 // export const useUpdateBlog = (blogId: number) => {
 //   const queryClient = useQueryClient();
