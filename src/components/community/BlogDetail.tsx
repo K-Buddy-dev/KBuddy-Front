@@ -8,6 +8,7 @@ import { formatDate } from '@/utils/utils';
 import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 import { RecommendSwiper } from './swiper';
+import { CommunityContent } from './CommunityContent';
 
 interface BlogDetailProps {
   contentId: number;
@@ -58,7 +59,7 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
       </div>
       {blog.data.images.length > 0 && <ContentImage images={blog.data.images} title={blog.data.title} />}
       <div className="px-4">
-        <p className="text-base text-text-default pt-4 pb-6">{blog.data.description}</p>
+        <CommunityContent content={blog.data.description} className="text-base text-text-default pt-4 pb-6" />
       </div>
 
       <div className="flex items-center justify-between h-10 text-text-weak border-b-[1px] border-solid border-border-default bg-bg-medium">
