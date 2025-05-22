@@ -8,7 +8,7 @@ import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
 import { CategoryFilterSwiper } from './swiper';
 import { formatDate } from '@/utils/utils';
-import { NoContent } from './detail/NoContent';
+import { NoContent } from './detail';
 
 interface BlogProps {
   onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
@@ -128,7 +128,7 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
       </div>
 
       <div
-        className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${
+        className={`fixed inset-0 z-20 transition-all duration-500 ease-in-out ${
           isModalOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
         }`}
       >

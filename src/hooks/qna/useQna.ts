@@ -87,52 +87,6 @@ export const useQnaDetail = (qnaId: number | null) => {
 //   });
 // };
 
-// QnA 생성 (낙관적 업데이트 적용)
-// export const useCreateQna = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation<Community, Error, QnaRequest, { previousQnas: CommunityListResponse | undefined }>({
-//     mutationFn: (data) => qnaService.createQna(data),
-//     onMutate: async (newQna) => {
-//       await queryClient.cancelQueries({ queryKey: qnaQueryKeys.all });
-//       const previousQnas = queryClient.getQueryData<CommunityListResponse>(qnaQueryKeys.qna.list({}));
-//       if (previousQnas) {
-//         queryClient.setQueryData<CommunityListResponse>(qnaQueryKeys.qna.list({}), {
-//           ...previousQnas,
-//           data: {
-//             ...previousQnas.data,
-//             results: [
-//               {
-//                 ...newQna,
-//                 id: Date.now(),
-//                 writer: 'currentUser',
-//                 heartCount: 0,
-//                 commentCount: 0,
-//                 viewCount: 0,
-//                 comments: [],
-//                 createdDate: new Date().toISOString(),
-//               },
-//               ...previousQnas.data.result,
-//             ],
-//           },
-//         });
-//       }
-//       return { previousQnas };
-//     },
-//     onError: (error, newQna, context) => {
-//       if (context?.previousQnas) {
-//         queryClient.setQueryData(qnaQueryKeys.qna.list({}), context.previousQnas);
-//       }
-//       console.error('Failed to create qna:', error.message);
-//     },
-//     onSettled: () => {
-//       queryClient.invalidateQueries({
-//         predicate: (query) => query.queryKey.includes('qnas'),
-//       });
-//     },
-//   });
-// };
-
 // // QnA 수정 (낙관적 업데이트 적용)
 // export const useUpdateQna = (qnaId: number) => {
 //   const queryClient = useQueryClient();
