@@ -1,13 +1,16 @@
 import { CancelIcon, HanburgerMenu, PreviewBackIcon, ShareIcon } from '@/components/shared/icon';
+import { Dispatch, SetStateAction } from 'react';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 
 interface DetailTopbarProps {
   title: string;
   type: 'cancel' | 'back';
   isBookmarked?: boolean;
+  showDetailModal: boolean;
   onBack?: () => void;
   onCancle?: () => void;
   onBookmark?: (event: React.MouseEvent) => void;
+  setShowDetailModal: Dispatch<SetStateAction<boolean>>;
 }
 
 function DetailTopbarWrapper({ children }: { children: React.ReactNode }) {
@@ -22,7 +25,16 @@ function PageTitle({ children }: { children: React.ReactNode }) {
   return <h1 className="flex-1 font-roboto font-normal text-text-default text-[22px] leading-7">{children}</h1>;
 }
 
-export function DetailTopbar({ title, type, isBookmarked, onBack, onCancle, onBookmark }: DetailTopbarProps) {
+export function DetailTopbar({
+  title,
+  type,
+  isBookmarked,
+  showDetailModal,
+  onBack,
+  onCancle,
+  onBookmark,
+  setShowDetailModal,
+}: DetailTopbarProps) {
   return (
     <DetailTopbarWrapper>
       <div className="flex items-center justify-start gap-2">
@@ -59,7 +71,10 @@ export function DetailTopbar({ title, type, isBookmarked, onBack, onCancle, onBo
           <ShareIcon />
         </button>
         {/* 메뉴 */}
-        <button className="w-12 h-12 flex items-center justify-center">
+        <button
+          className="w-12 h-12 flex items-center justify-center"
+          onClick={() => setShowDetailModal(!showDetailModal)}
+        >
           <span className="sr-only">menu</span>
           <HanburgerMenu />
         </button>
