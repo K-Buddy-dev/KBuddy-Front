@@ -19,7 +19,7 @@ export const DetailModal = ({ contentId, writerUuid, deleteMutate, setShowDetail
   }
   const userInfo = JSON.parse(localUserData);
 
-  const isMyPost = userInfo.id === writerUuid;
+  const isMyPost = userInfo.uuid === writerUuid;
 
   const handleReport = () => {
     alert('신고가 접수되었습니다.(임시)');
