@@ -28,7 +28,7 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
       return;
     }
 
-    const commentRequest = { content: description, parent: null };
+    const commentRequest = { content: description, parentId: null };
     createComment(commentRequest);
   };
 

@@ -455,6 +455,126 @@ export const useUpdateComment = (blogId: number, commentId: number) => {
   });
 };
 
+export const useDeleteComment = (blogId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, number>({
+    mutationFn: (commentId: number) => blogService.deleteComment(commentId),
+    onSuccess: (_, commentId) => {
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'blogs';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  comments: page.data.comments?.filter((comment: Comment) => comment.id !== commentId),
+                  commentCount: Math.max(0, (page.data.commentCount || 0) - 1),
+                },
+              })),
+            };
+          });
+        });
+      queryClient.removeQueries({ queryKey: blogQueryKeys.blog.detail(blogId), exact: true });
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+    },
+    onError: (error, commentId) => {
+      console.error(`Failed to delete comment ${commentId}:`, error.message);
+    },
+  });
+};
+
+export const useAddCommentHeart = (blogId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, number>({
+    mutationFn: (commentId: number) => blogService.addCommentHeart(blogId, commentId),
+    onSuccess: (_, commentId) => {
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'blogs';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  comments: page.data.comments?.map((comment: Comment) =>
+                    comment.id === commentId
+                      ? { ...comment, heartCount: comment.heartCount + 1, isHearted: true }
+                      : comment
+                  ),
+                },
+              })),
+            };
+          });
+        });
+    },
+    onError: (error, commentId) => {
+      console.error(`Failed to add heart to comment ${commentId}:`, error.message);
+    },
+  });
+};
+
+export const useRemoveCommentHeart = (blogId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, number>({
+    mutationFn: (commentId: number) => blogService.removeCommentHeart(blogId, commentId),
+    onSuccess: (_, commentId) => {
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'blogs';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  comments: page.data.comments?.map((comment: Comment) =>
+                    comment.id === commentId
+                      ? { ...comment, heartCount: Math.max(0, comment.heartCount - 1), isHearted: false }
+                      : comment
+                  ),
+                },
+              })),
+            };
+          });
+        });
+    },
+    onError: (error, commentId) => {
+      console.error(`Failed to remove heart from comment ${commentId}:`, error.message);
+    },
+  });
+};
 // // 블로그 신고
 // export const useReportBlog = (blogId: number) => {
 //   const queryClient = useQueryClient();

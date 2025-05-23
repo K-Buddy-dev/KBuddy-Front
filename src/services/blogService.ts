@@ -103,8 +103,9 @@ export const blogService = {
     return response.status === 200;
   },
   // 댓글 삭제
-  deleteComment: async (commentId: number): Promise<void> => {
-    await authClient.delete(`/blog/comment/${commentId}`);
+  deleteComment: async (commentId: number): Promise<boolean> => {
+    const response = await authClient.delete(`/blog/comment/${commentId}`);
+    return response.status === 200;
   },
   // 댓글에 좋아요 추가
   addCommentHeart: async (blogId: number, commentId: number): Promise<void> => {

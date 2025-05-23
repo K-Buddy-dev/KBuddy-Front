@@ -38,7 +38,7 @@ export const CommentInput = ({ onCommentSubmit }: CommentInputProps) => {
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
           placeholder="Type comment"
-          className="indent-3 flex-1 flex items-center bg-bg-medium rounded-[50px] h-[35px] font-roboto font-normal text-sm"
+          className="indent-3 flex-1 flex items-center bg-bg-medium rounded-[50px] h-[40px] font-roboto font-normal text-sm"
         />
         <button
           onClick={handleSubmit}
