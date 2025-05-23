@@ -16,7 +16,7 @@ export const CommunityPage = () => {
     return searchParams.get('keyword') || '';
   });
   const { toast, hideToast } = useToast();
-  console.log('toast: ', toast);
+
   const currentTab = searchParams.get('tab') || 'Curated blog';
   const prevTabRef = useRef<string>(currentTab);
 

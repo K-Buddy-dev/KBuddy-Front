@@ -1,5 +1,7 @@
 import {
   BlogFilters,
+  Comment,
+  CommentRequest,
   Community,
   CommunityDetailResponse,
   CommunityListResponse,
@@ -348,47 +350,110 @@ export const useRemoveBlogHeart = () => {
   });
 };
 
-// // 댓글 작성 (낙관적 업데이트 적용)
-// export const useCreateComment = (blogId: number) => {
-//   const queryClient = useQueryClient();
+export const useCreateComment = (blogId: number) => {
+  const queryClient = useQueryClient();
 
-//   return useMutation<Comment, Error, CommentRequest, { previousBlog: Blog | undefined }>({
-//     mutationFn: (data) => blogService.createComment(blogId, data),
-//     onMutate: async (newComment) => {
-//       await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       const previousBlog = queryClient.getQueryData<Blog>(blogQueryKeys.blog.detail(blogId));
-//       if (previousBlog) {
-//         queryClient.setQueryData<Blog>(blogQueryKeys.blog.detail(blogId), {
-//           ...previousBlog,
-//           comments: [
-//             ...previousBlog.comments,
-//             {
-//               id: Date.now(),
-//               content: newComment.content,
-//               writer: 'currentUser',
-//               heartCount: 0,
-//               isReply: false,
-//               parentId: null,
-//               createdDate: new Date().toISOString(),
-//               deleted: false,
-//             },
-//           ],
-//           commentCount: previousBlog.commentCount + 1,
-//         });
-//       }
-//       return { previousBlog };
-//     },
-//     onError: (error, newComment, context) => {
-//       if (context?.previousBlog) {
-//         queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), context.previousBlog);
-//       }
-//       console.error(`Failed to create comment for blog ${blogId}:`, error.message);
-//     },
-//     onSettled: () => {
-//       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//     },
-//   });
-// };
+  const localUserData = localStorage.getItem('basicUserData');
+  let userInfo = null;
+  if (localUserData) {
+    try {
+      userInfo = JSON.parse(localUserData);
+    } catch (error) {
+      console.error('Failed to parse localStorage data:', error);
+    }
+  }
+
+  return useMutation<boolean, Error, CommentRequest, { previousBlog: CommunityDetailResponse | undefined }>({
+    mutationFn: (data) => blogService.createComment(blogId, data),
+    onMutate: async (newComment) => {
+      await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+      const previousBlog = queryClient.getQueryData<CommunityDetailResponse>(blogQueryKeys.blog.detail(blogId));
+      if (previousBlog) {
+        const newCommentData: Comment = {
+          id: Date.now(),
+          blogId,
+          writerUuid: userInfo?.uuid ?? 0,
+          writerName: userInfo?.userId ?? '',
+          writerProfileImageUrl: userInfo?.profileImageUrl ?? null,
+          description: newComment.content,
+          createdAt: new Date().toISOString(),
+          modifiedAt: new Date().toISOString(),
+          heartCount: 0,
+          isHearted: false,
+        };
+
+        const updatedData = {
+          ...previousBlog.data,
+          comments: [...(previousBlog.data.comments || []), newCommentData],
+          commentCount: (previousBlog.data.commentCount || 0) + 1,
+        };
+
+        queryClient.setQueryData<CommunityDetailResponse>(blogQueryKeys.blog.detail(blogId), {
+          ...previousBlog,
+          data: updatedData,
+        });
+      }
+      return { previousBlog };
+    },
+    onError: (error, _, context) => {
+      if (context?.previousBlog) {
+        queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), context.previousBlog);
+      }
+      console.error(`Failed to create comment for blog ${blogId}:`, error.message);
+    },
+    onSuccess: (success) => {
+      if (success) {
+        queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+    },
+  });
+};
+
+// 댓글 작성
+export const useUpdateComment = (blogId: number, commentId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, CommentRequest, { previousBlog: CommunityDetailResponse | undefined }>({
+    mutationFn: (data) => blogService.updateComment(commentId, data),
+    onMutate: async (updatedComment) => {
+      await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+      const previousBlog = queryClient.getQueryData<CommunityDetailResponse>(blogQueryKeys.blog.detail(blogId));
+      if (previousBlog) {
+        const updatedData = {
+          ...previousBlog.data,
+          comments: previousBlog.data.comments?.map((comment) =>
+            comment.id === commentId
+              ? { ...comment, description: updatedComment.content, modifiedAt: new Date().toISOString() }
+              : comment
+          ),
+        };
+
+        queryClient.setQueryData<CommunityDetailResponse>(blogQueryKeys.blog.detail(blogId), {
+          ...previousBlog,
+          data: updatedData,
+        });
+      }
+      return { previousBlog };
+    },
+    onError: (error, _, context) => {
+      if (context?.previousBlog) {
+        queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), context.previousBlog);
+      }
+      console.error(`Failed to update comment ${commentId}:`, error.message);
+    },
+    onSuccess: (success) => {
+      if (success) {
+        queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
+    },
+  });
+};
 
 // // 블로그 신고
 // export const useReportBlog = (blogId: number) => {
