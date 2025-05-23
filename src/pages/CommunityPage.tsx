@@ -3,18 +3,20 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { Tab } from '@/components/community/tab';
 
-import { BlogList, FloatPostAction } from '@/components';
+import { BlogList, FloatPostAction, Toast } from '@/components';
 import { QnaList } from '@/components/community';
 import { SwiperList } from '@/components/community/swiper';
 import { useContentActions, useFeaturedBlogs } from '@/hooks';
 import { useEffect, useRef, useState } from 'react';
+import { useToast } from '@/hooks/useToastContext';
 
 export const CommunityPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchKeyword, setSearchKeyword] = useState<string>(() => {
     return searchParams.get('keyword') || '';
   });
-
+  const { toast, hideToast } = useToast();
+  console.log('toast: ', toast);
   const currentTab = searchParams.get('tab') || 'Curated blog';
   const prevTabRef = useRef<string>(currentTab);
 
@@ -56,6 +58,7 @@ export const CommunityPage = () => {
 
   return (
     <>
+      {toast && <Toast message={toast.message} type={toast.type} duration={toast.duration} onClose={hideToast} />}
       <Navbar withSearch setSearchKeyword={setSearchKeyword} />
       <div>
         {featuredBlog && (

@@ -119,52 +119,48 @@ export const useQnaDetail = (qnaId: number | null) => {
 //   });
 // };
 
-// // QnA 삭제 (낙관적 업데이트 적용)
-// export const useDeleteQna = () => {
-//   const queryClient = useQueryClient();
+// QnA 삭제
+export const useDeleteQna = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation<
-//     void,
-//     Error,
-//     number,
-//     { previousQna: Qna | undefined; previousQnas: CommunityListResponse | undefined }
-//   >({
-//     mutationFn: (qnaId) => qnaService.deleteQna(qnaId),
-//     onMutate: async (qnaId) => {
-//       await queryClient.cancelQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
-//       const previousQna = queryClient.getQueryData<Qna>(qnaQueryKeys.qna.detail(qnaId));
-//       const previousQnas = queryClient.getQueryData<CommunityListResponse>(qnaQueryKeys.qna.list({}));
-//       if (previousQna) {
-//         queryClient.setQueryData(qnaQueryKeys.qna.detail(qnaId), undefined);
-//       }
-//       if (previousQnas) {
-//         queryClient.setQueryData<CommunityListResponse>(qnaQueryKeys.qna.list({}), {
-//           ...previousQnas,
-//           data: {
-//             ...previousQnas.data,
-//             qnas: previousQnas.data.qnas.filter((qna: any) => qna.id !== qnaId),
-//           },
-//         });
-//       }
-//       return { previousQna, previousQnas };
-//     },
-//     onError: (error, qnaId, context) => {
-//       if (context?.previousQna) {
-//         queryClient.setQueryData(qnaQueryKeys.qna.detail(qnaId), context.previousQna);
-//       }
-//       if (context?.previousQnas) {
-//         queryClient.setQueryData(qnaQueryKeys.qna.list({}), context.previousQnas);
-//       }
-//       console.error(`Failed to delete qna ${qnaId}:`, error.message);
-//     },
-//     onSettled: (data, error, qnaId) => {
-//       queryClient.invalidateQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
-//       queryClient.invalidateQueries({
-//         predicate: (query) => query.queryKey.includes('qnas'),
-//       });
-//     },
-//   });
-// };
+  return useMutation<boolean, Error, number>({
+    mutationFn: (qnaId: number) => qnaService.deleteQna(qnaId),
+    onSuccess: (_, qnaId) => {
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'qnas';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  results: page.data.results?.filter((qna: Community) => qna.id !== qnaId),
+                },
+              })),
+            };
+          });
+        });
+
+      // 쿼리 무효화
+      queryClient.removeQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes('qnas'),
+      });
+    },
+    onError: (error, qnaId) => {
+      console.error(`Failed to delete blog ${qnaId}:`, error.message);
+    },
+  });
+};
 
 // QnA 북마크 추가
 export const useAddQnaBookmark = () => {

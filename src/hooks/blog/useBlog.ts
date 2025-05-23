@@ -80,10 +80,13 @@ export const useFeaturedBlogs = ({ size = 5, sort = 'VIEW_COUNT' }: UseRecommend
 
 // 블로그 단건 조회
 export const useBlogDetail = (blogId: number | null) => {
+  const { isSuccess: isBlogDeleteSuccess } = useDeleteBlog();
+
   return useQuery<CommunityDetailResponse, Error>({
     queryKey: blogQueryKeys.blog.detail(blogId ?? 0),
     queryFn: () => blogService.getBlogById(blogId!),
-    enabled: !!blogId,
+    enabled: !!blogId && !isBlogDeleteSuccess,
+    retry: false, // 422 에러 재시도 방지
   });
 };
 
@@ -133,52 +136,48 @@ export const useBlogDetail = (blogId: number | null) => {
 //   });
 // };
 
-// // 블로그 삭제 (낙관적 업데이트 적용)
-// export const useDeleteBlog = () => {
-//   const queryClient = useQueryClient();
+// 블로그 삭제
+export const useDeleteBlog = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation<
-//     void,
-//     Error,
-//     number,
-//     { previousBlog: Blog | undefined; previousBlogs: CommunityListResponse | undefined }
-//   >({
-//     mutationFn: (blogId) => blogService.deleteBlog(blogId),
-//     onMutate: async (blogId) => {
-//       await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       const previousBlog = queryClient.getQueryData<Blog>(blogQueryKeys.blog.detail(blogId));
-//       const previousBlogs = queryClient.getQueryData<CommunityListResponse>(blogQueryKeys.blog.list({}));
-//       if (previousBlog) {
-//         queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), undefined);
-//       }
-//       if (previousBlogs) {
-//         queryClient.setQueryData<CommunityListResponse>(blogQueryKeys.blog.list({}), {
-//           ...previousBlogs,
-//           data: {
-//             ...previousBlogs.data,
-//             blogs: previousBlogs.data.blogs.filter((blog: any) => blog.id !== blogId),
-//           },
-//         });
-//       }
-//       return { previousBlog, previousBlogs };
-//     },
-//     onError: (error, blogId, context) => {
-//       if (context?.previousBlog) {
-//         queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), context.previousBlog);
-//       }
-//       if (context?.previousBlogs) {
-//         queryClient.setQueryData(blogQueryKeys.blog.list({}), context.previousBlogs);
-//       }
-//       console.error(`Failed to delete blog ${blogId}:`, error.message);
-//     },
-//     onSettled: (data, error, blogId) => {
-//       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-//       queryClient.invalidateQueries({
-//         predicate: (query) => query.queryKey.includes('blogs'),
-//       });
-//     },
-//   });
-// };
+  return useMutation<boolean, Error, number>({
+    mutationFn: (blogId: number) => blogService.deleteBlog(blogId),
+    onSuccess: (_, blogId) => {
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'blogs';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  results: page.data.results?.filter((blog: Community) => blog.id !== blogId),
+                },
+              })),
+            };
+          });
+        });
+
+      // 쿼리 무효화
+      queryClient.removeQueries({ queryKey: blogQueryKeys.blog.detail(blogId), exact: true });
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes('blogs'),
+      });
+    },
+    onError: (error, blogId) => {
+      console.error(`Failed to delete blog ${blogId}:`, error.message);
+    },
+  });
+};
 
 // 블로그 북마크 추가
 export const useAddBlogBookmark = () => {

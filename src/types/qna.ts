@@ -9,7 +9,7 @@ export interface CreateQnaRequest {
 
 export interface QnaListResponseData {
   id: number;
-  writerId: number;
+  writerUuid: number;
   categoryId: number;
   title: string;
   description: string;

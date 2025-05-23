@@ -2,12 +2,13 @@
 import { Actions, Content } from './card';
 
 interface CommunityCardProps {
-  writerId: string;
+  writerUuid?: string;
+  writerName: string;
+  writerProfileImageUrl: string;
   createdAt: string;
   title: string;
   categoryId: number[] | number;
-  imageUrl?: string;
-  profileImageUrl?: string;
+  thumbnailImageUrl: string;
   heartCount: number;
   comments: number;
   isBookmarked: boolean;
@@ -17,12 +18,12 @@ interface CommunityCardProps {
 }
 
 export const CommunityCard: React.FC<CommunityCardProps> = ({
-  writerId,
+  writerName,
   createdAt,
   title,
   categoryId,
-  imageUrl,
-  profileImageUrl,
+  writerProfileImageUrl,
+  thumbnailImageUrl,
   heartCount,
   comments,
   isBookmarked,
@@ -33,12 +34,12 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({
   return (
     <div className="w-full px-4 py-[18px] bg-bg-default rounded-lg">
       <Content
-        id={writerId}
+        writerName={writerName}
         date={createdAt}
-        profileImageUrl={profileImageUrl}
+        profileImageUrl={writerProfileImageUrl}
         title={title}
         categoryId={categoryId}
-        imageUrl={imageUrl}
+        imageUrl={thumbnailImageUrl}
       />
       <Actions
         heartCount={heartCount}

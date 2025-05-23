@@ -33,7 +33,8 @@ function SwiperCardWrapper({ children, onclick }: { children: React.ReactNode; o
 export function SwiperCard({
   id,
   title,
-  writerId,
+  writerName,
+  writerProfileImageUrl,
   categoryId,
   heartCount,
   commentCount,
@@ -42,8 +43,7 @@ export function SwiperCard({
   isBookmarked,
   onLike,
   onBookmark,
-  profileImageUrl,
-  imageUrl,
+  thumbnailImageUrl,
 }: Community & {
   onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
   onBookmark: (event: React.MouseEvent, id: number, isBookmarked: boolean) => void;
@@ -69,9 +69,9 @@ export function SwiperCard({
     <SwiperCardWrapper onclick={handleNavigate}>
       <div className="flex flex-col gap-1 py-[13px] font-roboto">
         <div className="flex items-center gap-2 font-medium">
-          <img src={profileImageUrl || defaultImg} alt="Profile" className="w-10 h-10 rounded-full" />
+          <img src={writerProfileImageUrl || defaultImg} alt="Profile" className="w-10 h-10 rounded-full" />
           <div className="font-roboto font-medium">
-            <p className="text-xs text-text-default">@{writerId}</p>
+            <p className="text-xs text-text-default">@{writerName}</p>
             <p className="text-xs text-text-weak">{formatDate(createdAt)}</p>
           </div>
         </div>
@@ -81,7 +81,13 @@ export function SwiperCard({
         </div>
       </div>
       <div className="flex flex-col gap-1 py-[3px]">
-        <div>{<img src={imageUrl} alt={`${title}_image`} className="w-[100px] h-[100px] object-cover rounded" />}</div>
+        {thumbnailImageUrl ? (
+          <div>
+            <img src={thumbnailImageUrl} alt={`${title}_image`} className="w-[100px] h-[100px] object-cover rounded" />
+          </div>
+        ) : (
+          <div className="w-[100px] h-[100px]"></div>
+        )}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
             <button
@@ -210,7 +216,10 @@ export const SwiperList = ({ cards, onLike, onBookmark }: SwiperWrapperProps) =>
           <SwiperSlide key={index}>
             <SwiperCard
               id={card.id}
-              writerId={card.writerId}
+              writerUuid={card.writerUuid}
+              writerName={card.writerName}
+              writerProfileImageUrl={card.writerProfileImageUrl}
+              thumbnailImageUrl={card.thumbnailImageUrl}
               categoryId={card.categoryId}
               title={card.title}
               description={card.description}

@@ -24,7 +24,9 @@ export interface Blog {
 // 응답 데이터 타입
 export interface Community {
   id: number;
-  writerId: number;
+  writerUuid: number;
+  writerName: string;
+  writerProfileImageUrl: string;
   categoryId: number[] | number;
   title: string;
   description: string;
@@ -34,22 +36,27 @@ export interface Community {
   isBookmarked: boolean;
   commentCount: number;
   createdAt: string;
-  profileImageUrl?: string;
-  imageUrl?: string;
+  thumbnailImageUrl: string;
 }
 
 export interface Comment {
   id: number;
   blogId: number;
-  writerId: number;
+  writerUuid: number;
+  writerName: string;
+  writerProfileImageUrl: string;
   description: string;
   createdAt: string;
   modifiedAt: string;
+  heartCount: number;
+  isHearted: boolean;
 }
 
 export interface CommunityDetail {
   id: number;
-  writerId: number;
+  writerUuid: number;
+  writerName: string;
+  writerProfileImageUrl: string;
   categoryId: number[] | number;
   title: string;
   description: string;

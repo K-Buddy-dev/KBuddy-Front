@@ -81,7 +81,10 @@ export const RecommendSwiper = ({ cards, onLike, onBookmark }: SwiperWrapperProp
             <SwiperSlide key={index}>
               <SwiperCard
                 id={card.id}
-                writerId={card.writerId}
+                writerUuid={card.writerUuid}
+                writerName={card.writerName}
+                writerProfileImageUrl={card.writerProfileImageUrl}
+                thumbnailImageUrl={card.thumbnailImageUrl}
                 categoryId={card.categoryId}
                 title={card.title}
                 description={card.description}

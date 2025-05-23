@@ -52,7 +52,7 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
         <div className="flex items-center gap-2 mb-4">
           <img src={defaultImg} alt="Profile" className="w-10 h-10 rounded-full" />
           <div className="flex flex-col items-start gap-1">
-            <span className="text-sm font-medium text-text-default">@{blog.data.writerId}</span>
+            <span className="text-sm font-medium text-text-default">@{blog.data.writerName}</span>
             <span className="text-sm font-medium text-text-weak">{formatDate(blog.data.createdAt)}</span>
           </div>
         </div>
