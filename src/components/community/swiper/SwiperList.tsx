@@ -23,7 +23,7 @@ function SwiperCardWrapper({ children, onclick }: { children: React.ReactNode; o
   return (
     <div
       onClick={onclick}
-      className="flex items-center justify-between w-full min-w-[242px] xs:min-w-none xs:w-[312px] h-[162px] py-[11px] px-[12px] xs:py-[14px] xs:px-4 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.04),_0px_4px_8px_0px_rgba(0,0,0,0.06)] bg-bg-default border-[1px] border-border-weak2 cursor-pointer rounded-lg"
+      className="flex items-start justify-between w-full min-w-[242px] xs:min-w-none xs:w-[312px] h-[162px] py-[11px] px-[12px] xs:py-[14px] xs:px-4 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.04),_0px_4px_8px_0px_rgba(0,0,0,0.06)] bg-bg-default border-[1px] border-border-weak2 cursor-pointer rounded-lg"
     >
       {children}
     </div>
@@ -67,7 +67,7 @@ export function SwiperCard({
 
   return (
     <SwiperCardWrapper onclick={handleNavigate}>
-      <div className="flex flex-col gap-1 py-[13px] font-roboto">
+      <div className="flex flex-col gap-2 font-roboto">
         <div className="flex items-center gap-2 font-medium">
           <img src={writerProfileImageUrl || defaultImg} alt="Profile" className="w-10 h-10 rounded-full" />
           <div className="font-roboto font-medium">
