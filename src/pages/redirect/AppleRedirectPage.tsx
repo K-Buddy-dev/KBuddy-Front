@@ -48,6 +48,7 @@ export function AppleRedirectPage() {
       const validatedUserInfo = AppleIdTokenSchema.parse(parseJwt(idToken));
       setOauthSignupData(validatedUserInfo);
       setMemberCheckData({ oAuthUid: validatedUserInfo.sub, oAuthCategory: 'APPLE' });
+      window.location.href = `kbuddy://oauth?id_token=${idToken}`;
     } catch (error) {
       console.error('Apple login error:', error instanceof z.ZodError ? error.errors : error);
     }

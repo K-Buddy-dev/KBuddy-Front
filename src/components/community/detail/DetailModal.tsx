@@ -3,12 +3,13 @@ import { FaExclamationTriangle, FaEdit, FaTrash, FaTimes } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom';
 
 interface DetailModalProps {
-  writerId: number;
-  showDetailModal: boolean;
+  contentId: number;
+  writerUuid: number;
+  deleteMutate: (id: number) => void;
   setShowDetailModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export const DetailModal = ({ writerId, setShowDetailModal }: DetailModalProps) => {
+export const DetailModal = ({ contentId, writerUuid, deleteMutate, setShowDetailModal }: DetailModalProps) => {
   const navigate = useNavigate();
 
   const localUserData = localStorage.getItem('basicUserData');
@@ -18,7 +19,7 @@ export const DetailModal = ({ writerId, setShowDetailModal }: DetailModalProps) 
   }
   const userInfo = JSON.parse(localUserData);
 
-  const isMyPost = userInfo.id === writerId;
+  const isMyPost = userInfo.id === writerUuid;
 
   const handleReport = () => {
     alert('신고가 접수되었습니다.(임시)');
@@ -29,8 +30,10 @@ export const DetailModal = ({ writerId, setShowDetailModal }: DetailModalProps) 
     console.log('수정수정');
   };
 
-  const handleDelete = () => {
-    console.log('삭제삭제');
+  const handleDelete = (contentId: number) => {
+    // const targetTab = isBlogTab ? 'User+blog' : 'Q&A';
+    navigate(`/community?tab=User+blog`, { replace: true });
+    deleteMutate(contentId);
   };
   return (
     <div
@@ -67,7 +70,7 @@ export const DetailModal = ({ writerId, setShowDetailModal }: DetailModalProps) 
               </button>
               <button
                 className="w-full py-[21px] px-2 text-text-default font-semibold flex items-center"
-                onClick={handleDelete}
+                onClick={() => handleDelete(contentId)}
               >
                 <FaTrash className="mr-2" /> Delete this content
               </button>

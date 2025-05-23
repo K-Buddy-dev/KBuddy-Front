@@ -1,5 +1,5 @@
 import { authClient } from '@/api/axiosConfig';
-import { BlogRequest, CommunityDetailResponse, CommunityListResponse } from '@/types/community';
+import { BlogRequest, CommentRequest, CommunityDetailResponse, CommunityListResponse } from '@/types/community';
 
 // blogService 정의
 export const blogService = {
@@ -75,6 +75,7 @@ export const blogService = {
   //     });
   //     return response.data;
   //   },
+
   // 블로그 북마크 추가
   addBookmark: async (blogId: number): Promise<void> => {
     await authClient.post(`/blog/${blogId}/bookmark`);
@@ -91,33 +92,29 @@ export const blogService = {
   removeBlogHeart: async (blogId: number): Promise<void> => {
     await authClient.delete(`/blog/${blogId}/hearts`);
   },
-  //   // 블로그에 댓글 작성
-  //   createComment: async (blogId: number, data: CommentRequest): Promise<Comment> => {
-  //     const response = await authClient.post<Comment>(`/blog/${blogId}/comment`, data);
-  //     return response.data;
-  //   },
-  //   // 댓글 수정
-  //   updateComment: async (blogId: number, commentId: number, data: CommentRequest): Promise<Comment> => {
-  //     const response = await authClient.patch<Comment>(`/blog/${blogId}/comment/${commentId}`, data);
-  //     return response.data;
-  //   },
-  //   // 댓글 삭제
-  //   deleteComment: async (blogId: number, commentId: number): Promise<void> => {
-  //     await authClient.delete(`/blog/${blogId}/comment/${commentId}`);
-  //   },
-  //   // 댓글에 좋아요 추가
-  //   addCommentHeart: async (blogId: number, commentId: number): Promise<void> => {
-  //     await authClient.post(`/blog/${blogId}/comment/${commentId}/hearts`);
-  //   },
-  //   // 댓글 좋아요 삭제
-  //   removeCommentHeart: async (blogId: number, commentId: number): Promise<void> => {
-  //     await authClient.delete(`/blog/${blogId}/comment/${commentId}/hearts`);
-  //   },
-  //   // 댓글에 답글 작성
-  //   createReply: async (blogId: number, commentId: number, data: CommentRequest): Promise<Comment> => {
-  //     const response = await authClient.post<Comment>(`/blog/${blogId}/comment/${commentId}/reply`, data);
-  //     return response.data;
-  //   },
+  // 블로그에 댓글 작성
+  createComment: async (blogId: number, data: CommentRequest): Promise<boolean> => {
+    const response = await authClient.post<Comment>(`/blog/${blogId}/comment`, data);
+    return response.status === 200;
+  },
+  // 댓글 수정
+  updateComment: async (commentId: number, data: CommentRequest): Promise<boolean> => {
+    const response = await authClient.put<Comment>(`/blog/comment/${commentId}`, data);
+    return response.status === 200;
+  },
+  // 댓글 삭제
+  deleteComment: async (commentId: number): Promise<boolean> => {
+    const response = await authClient.delete(`/blog/comment/${commentId}`);
+    return response.status === 200;
+  },
+  // 댓글에 좋아요 추가
+  addCommentHeart: async (blogId: number, commentId: number): Promise<void> => {
+    await authClient.post(`/blog/${blogId}/${commentId}/hearts`);
+  },
+  // 댓글 좋아요 삭제
+  removeCommentHeart: async (blogId: number, commentId: number): Promise<void> => {
+    await authClient.delete(`/blog/${blogId}/${commentId}/hearts`);
+  },
 
   //   // 블로그 신고
   //   reportBlog: async (blogId: number, data: ReportRequest): Promise<void> => {

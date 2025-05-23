@@ -140,7 +140,10 @@ export const QnaList = ({ onLike, onBookmark }: QnaProps) => {
                     onClick={() => handleDetail(qna.id)}
                   >
                     <CommunityCard
-                      writerId={`${qna.writerId}`}
+                      writerUuid={`${qna.writerUuid}`}
+                      writerName={qna.writerName}
+                      writerProfileImageUrl={qna.writerProfileImageUrl}
+                      thumbnailImageUrl={qna.thumbnailImageUrl}
                       createdAt={new Date(qna.createdAt).toLocaleDateString()}
                       title={qna.title}
                       categoryId={qna.categoryId}
