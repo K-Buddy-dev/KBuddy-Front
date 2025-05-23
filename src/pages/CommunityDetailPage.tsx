@@ -1,23 +1,36 @@
-import { useParams, useSearchParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 import { DetailTopbar } from '@/components/shared';
 import { BlogDetail, QnaDetail } from '@/components/community';
-import { useBlogDetail, useContentActions, useQnaDetail, useRecommendedBlogs, useRecommendedQnas } from '@/hooks';
+import {
+  useBlogDetail,
+  useContentActions,
+  useDeleteBlog,
+  useDeleteQna,
+  useQnaDetail,
+  useRecommendedBlogs,
+  useRecommendedQnas,
+} from '@/hooks';
 import { Spinner } from '@/components/shared/spinner';
 import { DetailModal } from '@/components/community/detail';
+import { useToast } from '@/hooks/useToastContext';
 
 export const CommunityDetailPage = () => {
   const { id } = useParams();
   const contentId = Number(id);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
+  const { showToast } = useToast();
 
   const currentTab = searchParams.get('tab') || 'Curated blog';
   const isBlogTab = currentTab === 'User blog';
 
   const { data: blog, isLoading: blogLoading } = useBlogDetail(isBlogTab ? contentId : null);
   const { data: qna, isLoading: qnaLoading } = useQnaDetail(!isBlogTab ? contentId : null);
+  const { mutate: deleteBlog, isSuccess: isBlogDeleteSuccess } = useDeleteBlog();
+  const { mutate: deleteQna, isSuccess: isQnaDeleteSuccess } = useDeleteQna();
 
   const currentData = currentTab === 'User blog' ? blog?.data : qna?.data;
 
@@ -50,6 +63,19 @@ export const CommunityDetailPage = () => {
   };
 
   const isLoading = isBlogTab ? blogLoading : qnaLoading;
+
+  useEffect(() => {
+    if (isBlogDeleteSuccess || isQnaDeleteSuccess) {
+      setShowDetailModal(false);
+      showToast({
+        message: 'Successfully deleted this blog',
+        type: 'success',
+        duration: 3000,
+      });
+      const targetTab = isBlogTab ? 'User+blog' : 'Q&A';
+      navigate(`/community?tab=${targetTab}`, { replace: true });
+    }
+  }, [isBlogDeleteSuccess, isQnaDeleteSuccess, isBlogTab, navigate, showToast]);
 
   if (isLoading)
     return (
@@ -90,8 +116,9 @@ export const CommunityDetailPage = () => {
       )}
       {showDetailModal && (
         <DetailModal
-          writerId={currentData.writerId}
-          showDetailModal={showDetailModal}
+          contentId={currentData.id}
+          writerUuid={currentData.writerUuid}
+          deleteMutate={isBlogTab ? deleteBlog : deleteQna}
           setShowDetailModal={setShowDetailModal}
         />
       )}

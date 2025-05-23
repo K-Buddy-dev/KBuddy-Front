@@ -12,7 +12,7 @@ export * from './useEmailVerifyContext';
 export * from './useCommunityFormContext';
 export * from './blog/blogKeys';
 export * from './blog/useBlog';
-export * from './useToast';
+export * from './useToastContext';
 export * from './qna/qnaKeys';
 export * from './qna/useQna';
 export * from './useContentActions';

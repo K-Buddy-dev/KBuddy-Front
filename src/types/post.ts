@@ -12,7 +12,7 @@ export interface PostFormData {
 
 export interface PostDraft {
   id: number;
-  writerId: number;
+  writerUuid: number;
   categoryId: number | number[];
   title: string;
   description: string;

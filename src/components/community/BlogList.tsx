@@ -156,7 +156,10 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
                     onClick={() => handleDetail(blog.id)}
                   >
                     <CommunityCard
-                      writerId={`${blog.writerId}`}
+                      writerUuid={`${blog.writerUuid}`}
+                      writerName={blog.writerName}
+                      writerProfileImageUrl={blog.writerProfileImageUrl}
+                      thumbnailImageUrl={blog.thumbnailImageUrl}
                       createdAt={formatDate(blog.createdAt)}
                       title={blog.title}
                       categoryId={blog.categoryId}

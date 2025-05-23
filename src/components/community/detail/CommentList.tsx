@@ -17,7 +17,7 @@ export const CommentList = ({ comments }: CommentListProps) => {
             <div className="bg-bg-default p-3 rounded-xl">
               <div className="flex justify-start items-center text-text-weak">
                 <span className="text-xs font-medium border-r-[1px] border-solid border-border-default pr-2">
-                  @{comment.writerId}
+                  @{comment.writerName}
                 </span>
                 <span className="text-xs pl-2">{formatRelativeDate(comment.createdAt, comment.modifiedAt)}</span>
               </div>

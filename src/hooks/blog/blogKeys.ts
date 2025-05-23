@@ -14,5 +14,8 @@ export const blogQueryKeys = {
 
     // 북마크된 블로그 목록 조회
     bookmarked: (blogId?: number) => [...blogQueryKeys.bookmarks, ...(blogId ? [blogId] : [])] as const,
+
+    // 댓글
+    comments: (blogId: number) => ['blogs', blogId, 'comments'] as const,
   },
 };

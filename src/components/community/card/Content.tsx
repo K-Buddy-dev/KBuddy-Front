@@ -1,7 +1,7 @@
 import defaultImg from '@/assets/images/default-profile.png';
 
 interface ContentProps {
-  id: string;
+  writerName: string;
   date: string;
   profileImageUrl?: string;
   title: string;
@@ -9,14 +9,14 @@ interface ContentProps {
   imageUrl?: string;
 }
 
-export const Content: React.FC<ContentProps> = ({ id, date, profileImageUrl, title, categoryId, imageUrl }) => {
+export const Content: React.FC<ContentProps> = ({ writerName, date, profileImageUrl, title, categoryId, imageUrl }) => {
   return (
     <div className="flex items-center justify-between">
       <div>
         <div className="flex items-center justify-start gap-2 mb-2">
           <img src={profileImageUrl || defaultImg} alt="Profile" className="w-10 h-10 rounded-full" />
           <div className="font-roboto font-medium">
-            <p className="text-xs text-text-default">@{id}</p>
+            <p className="text-xs text-text-default">@{writerName}</p>
             <p className="text-xs text-text-weak">{date}</p>
           </div>
         </div>
@@ -25,7 +25,13 @@ export const Content: React.FC<ContentProps> = ({ id, date, profileImageUrl, tit
           <p className="text-sm font-roboto font-normal text-gray-600">{categoryId}</p>
         </div>
       </div>
-      {imageUrl && <div>{<img src={imageUrl} alt={title} className="w-[100px] h-[100px] object-cover rounded" />}</div>}
+      {imageUrl ? (
+        <div>
+          <img src={imageUrl} alt={title} className="w-[100px] h-[100px] object-cover rounded" />
+        </div>
+      ) : (
+        <div className="w-[100px] h-[100px]"></div>
+      )}
     </div>
   );
 };
