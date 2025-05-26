@@ -1,5 +1,4 @@
 import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FloatLeft, FloatRight } from '@/components/shared';
@@ -46,6 +45,19 @@ export const RecommendSwiper = ({ cards, onLike, onBookmark }: SwiperWrapperProp
     navigate(viewAllPath);
   };
 
+  if (cards.length === 0) {
+    return (
+      <SwiperListWrapper>
+        <div className="flex flex-col items-start justify-center h-[200px] px-4">
+          <p className="text-sm text-text-default mb-2">No recommended posts available.</p>
+          <button onClick={handleViewAllClick} className="text-sm underline text-text-default">
+            View all posts →
+          </button>
+        </div>
+      </SwiperListWrapper>
+    );
+  }
+
   const handlePrev = () => swiper?.slidePrev();
   const handleNext = () => swiper?.slideNext();
 
@@ -59,7 +71,6 @@ export const RecommendSwiper = ({ cards, onLike, onBookmark }: SwiperWrapperProp
             setIsEnd(e.isEnd);
           }}
           onReachEnd={() => setIsEnd(true)}
-          modules={[Navigation]}
           spaceBetween={10}
           slidesPerView={1.1}
           breakpoints={{
@@ -111,13 +122,13 @@ export const RecommendSwiper = ({ cards, onLike, onBookmark }: SwiperWrapperProp
         <div>
           <div
             onClick={handlePrev}
-            className={`swiper-button-prev absolute top-[47%] left-4 z-10 flex items-center justify-center rounded-full ${isBeginning && 'hidden'}`}
+            className={`absolute top-[47%] left-4 z-10 flex items-center justify-center cursor-pointer rounded-full ${isBeginning && 'hidden'}`}
           >
             <FloatLeft />
           </div>
           <div
             onClick={handleNext}
-            className={`swiper-button-next absolute top-[47%] right-4 z-10 flex items-center justify-center rounded-full ${isEnd && 'hidden'}`}
+            className={`absolute top-[47%] right-4 z-10 flex items-center justify-center cursor-pointer rounded-full ${isEnd && 'hidden'}`}
           >
             <FloatRight />
           </div>
