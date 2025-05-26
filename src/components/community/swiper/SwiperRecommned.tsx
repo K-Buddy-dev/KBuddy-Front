@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FloatLeft, FloatRight } from '@/components/shared';
 import { SwiperCard, SwiperWrapperProps } from './SwiperList';
+import { Navigation } from 'swiper/modules';
 
 function SwiperListWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -70,6 +71,7 @@ export const RecommendSwiper = ({ cards, onLike, onBookmark }: SwiperWrapperProp
             setIsBeginning(e.isBeginning);
             setIsEnd(e.isEnd);
           }}
+          modules={[Navigation]}
           onReachEnd={() => setIsEnd(true)}
           spaceBetween={10}
           slidesPerView={1.1}
