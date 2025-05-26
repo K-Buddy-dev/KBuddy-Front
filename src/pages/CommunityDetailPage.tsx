@@ -15,6 +15,7 @@ import {
 import { Spinner } from '@/components/shared/spinner';
 import { DetailModal } from '@/components/community/detail';
 import { useToast } from '@/hooks/useToastContext';
+import { PostFormType } from '@/types';
 
 export const CommunityDetailPage = () => {
   const { id } = useParams();
@@ -26,6 +27,7 @@ export const CommunityDetailPage = () => {
 
   const currentTab = searchParams.get('tab') || 'Curated blog';
   const isBlogTab = currentTab === 'User blog';
+  const targetTab: PostFormType = isBlogTab ? 'Blog' : 'Q&A';
 
   const { data: blog, isLoading: blogLoading } = useBlogDetail(isBlogTab ? contentId : null);
   const { data: qna, isLoading: qnaLoading } = useQnaDetail(!isBlogTab ? contentId : null);
@@ -72,8 +74,6 @@ export const CommunityDetailPage = () => {
         type: 'success',
         duration: 3000,
       });
-      const targetTab = isBlogTab ? 'User+blog' : 'Q&A';
-      navigate(`/community?tab=${targetTab}`, { replace: true });
     }
   }, [isBlogDeleteSuccess, isQnaDeleteSuccess, isBlogTab, navigate, showToast]);
 
@@ -116,8 +116,10 @@ export const CommunityDetailPage = () => {
       )}
       {showDetailModal && (
         <DetailModal
+          content={currentData}
           contentId={currentData.id}
           writerUuid={currentData.writerUuid}
+          targetTab={targetTab}
           deleteMutate={isBlogTab ? deleteBlog : deleteQna}
           setShowDetailModal={setShowDetailModal}
         />

@@ -1,4 +1,5 @@
 import defaultImg from '@/assets/images/default-profile.png';
+import { getCategoryNames } from '@/utils/utils';
 
 interface ContentProps {
   writerName: string;
@@ -10,6 +11,7 @@ interface ContentProps {
 }
 
 export const Content: React.FC<ContentProps> = ({ writerName, date, profileImageUrl, title, categoryId, imageUrl }) => {
+  const categoryNames = getCategoryNames(categoryId);
   return (
     <div className="flex items-center justify-between">
       <div>
@@ -22,7 +24,7 @@ export const Content: React.FC<ContentProps> = ({ writerName, date, profileImage
         </div>
         <div className="flex flex-col gap-1">
           <h2 className="text-base font-roboto font-medium">{title}</h2>
-          <p className="text-sm font-roboto font-normal text-gray-600">{categoryId}</p>
+          <p className="text-sm font-roboto font-normal text-gray-600">{categoryNames}</p>
         </div>
       </div>
       {imageUrl ? (

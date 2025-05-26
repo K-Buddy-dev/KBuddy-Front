@@ -69,7 +69,9 @@ export function GoogleRedirectPage() {
       const validatedUserInfo = GoogleIdTokenSchema.parse(parseJwt(id_token));
       setOauthSignupData(validatedUserInfo);
       setMemberCheckData({ oAuthUid: validatedUserInfo.sub, oAuthCategory: 'GOOGLE' });
-      window.location.href = `kbuddy://oauth?code=${code}`;
+      if (window.ReactNativeWebView) {
+        window.location.href = `kbuddy://oauth?code=${code}`;
+      }
     } catch (error) {
       console.error('Google login error:', error instanceof z.ZodError ? error.errors : error);
     }
