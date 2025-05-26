@@ -60,7 +60,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
 
     return (
       <div className="w-full flex flex-col items-start mb-4">
-        <Label id={id} label={label} />
+        <Label htmlFor={id} label={label} />
         <div
           className={cn(
             passwordVariants({

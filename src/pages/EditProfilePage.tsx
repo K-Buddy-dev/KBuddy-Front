@@ -122,7 +122,7 @@ export function EditProfilePage() {
         </div>
         <TextField id="userId" label="User ID" value={basicUserData?.userId} readOnly />
         <div className="w-full flex flex-col items-start pb-[42px]">
-          <Label id="bio" label={'Bio'} />
+          <Label htmlFor="bio" label={'Bio'} />
           <textarea
             id="bio"
             name="bio"
