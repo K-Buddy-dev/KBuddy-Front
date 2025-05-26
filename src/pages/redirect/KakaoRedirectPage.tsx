@@ -143,10 +143,6 @@ export function KakaoRedirectPage() {
 
       setOauthSignupData(userInfo);
       setMemberCheckData({ oAuthUid: userInfo.id.toString(), oAuthCategory: 'KAKAO' });
-
-      if (window.ReactNativeWebView) {
-        window.location.href = `kbuddy://oauth?code=${code}`;
-      }
     } catch (error) {
       console.error('Kakao login error:', error instanceof z.ZodError ? error.errors : error);
     }
