@@ -1,8 +1,10 @@
 import {
-  BlogFilters,
+  CommentRequest,
   Community,
   CommunityDetailResponse,
   CommunityListResponse,
+  Comment,
+  BlogFilters,
   UseRecommendedBlogsProps,
 } from '@/types/community';
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -157,7 +159,7 @@ export const useDeleteQna = () => {
       });
     },
     onError: (error, qnaId) => {
-      console.error(`Failed to delete blog ${qnaId}:`, error.message);
+      console.error(`Failed to delete qna ${qnaId}:`, error.message);
     },
   });
 };
@@ -329,47 +331,186 @@ export const useRemoveQnaHeart = () => {
   });
 };
 
-// // 댓글 작성 (낙관적 업데이트 적용)
-// export const useCreateComment = (qnaId: number) => {
-//   const queryClient = useQueryClient();
+export const useCreateQnaComment = (qnaId: number) => {
+  const queryClient = useQueryClient();
 
-//   return useMutation<Comment, Error, CommentRequest, { previousQna: Qna | undefined }>({
-//     mutationFn: (data) => qnaService.createComment(qnaId, data),
-//     onMutate: async (newComment) => {
-//       await queryClient.cancelQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
-//       const previousQna = queryClient.getQueryData<Qna>(qnaQueryKeys.qna.detail(qnaId));
-//       if (previousQna) {
-//         queryClient.setQueryData<Qna>(qnaQueryKeys.qna.detail(qnaId), {
-//           ...previousQna,
-//           comments: [
-//             ...previousQna.comments,
-//             {
-//               id: Date.now(),
-//               content: newComment.content,
-//               writer: 'currentUser',
-//               heartCount: 0,
-//               isReply: false,
-//               parentId: null,
-//               createdDate: new Date().toISOString(),
-//               deleted: false,
-//             },
-//           ],
-//           commentCount: previousQna.commentCount + 1,
-//         });
-//       }
-//       return { previousQna };
-//     },
-//     onError: (error, newComment, context) => {
-//       if (context?.previousQna) {
-//         queryClient.setQueryData(qnaQueryKeys.qna.detail(qnaId), context.previousQna);
-//       }
-//       console.error(`Failed to create comment for qna ${qnaId}:`, error.message);
-//     },
-//     onSettled: () => {
-//       queryClient.invalidateQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
-//     },
-//   });
-// };
+  return useMutation<boolean, Error, CommentRequest>({
+    mutationFn: (data) => qnaService.createComment(qnaId, data),
+    onError: (error) => {
+      console.error(`Failed to create comment for qna ${qnaId}:`, error.message);
+    },
+    onSuccess: (success) => {
+      if (success) {
+        queryClient.invalidateQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
+    },
+  });
+};
+
+export const useUpdateQnaComment = (qnaId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, { commentId: number; content: string }>({
+    mutationFn: ({ commentId, content }) => {
+      const data = { content: content };
+      return qnaService.updateComment(qnaId, commentId, data);
+    },
+    onError: (error, variables) => {
+      console.error(`Failed to update comment ${variables.commentId}:`, error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
+    },
+  });
+};
+
+export const useDeleteQnaComment = (qnaId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, number>({
+    mutationFn: (commentId: number) => qnaService.deleteComment(commentId),
+    onSuccess: (_, commentId) => {
+      queryClient.setQueryData(qnaQueryKeys.qna.detail(qnaId), (oldData: any) => {
+        if (!oldData || !oldData.data) return oldData;
+
+        const updatedComments = oldData.data.comments
+          .filter((comment: Comment) => comment.id !== commentId)
+          .map((comment: Comment) => ({
+            ...comment,
+            replies: comment.replies?.filter((reply: Comment) => reply.id !== commentId),
+          }));
+
+        return {
+          ...oldData,
+          data: {
+            ...oldData.data,
+            comments: updatedComments,
+            commentCount: Math.max(0, (oldData.data.commentCount || 0) - 1),
+          },
+        };
+      });
+
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => Array.isArray(query.queryKey) && query.queryKey[0] === 'qnas',
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  comments: page.data.comments
+                    ?.filter((comment: Comment) => comment.id !== commentId)
+                    ?.map((comment: Comment) => ({
+                      ...comment,
+                      replies: comment.replies?.filter((reply: Comment) => reply.id !== commentId),
+                    })),
+                  commentCount: Math.max(0, (page.data.commentCount || 0) - 1),
+                },
+              })),
+            };
+          });
+        });
+    },
+    onError: (error, commentId) => {
+      console.error(`Failed to delete comment ${commentId}:`, error.message);
+    },
+  });
+};
+
+export const useAddQnaCommentHeart = (qnaId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, number>({
+    mutationFn: (commentId: number) => qnaService.addCommentHeart(commentId),
+    onSuccess: (_, commentId) => {
+      queryClient.invalidateQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'qnas';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  comments: page.data.comments?.map((comment: Comment) =>
+                    comment.id === commentId
+                      ? { ...comment, heartCount: comment.heartCount + 1, isHearted: true }
+                      : comment
+                  ),
+                },
+              })),
+            };
+          });
+        });
+    },
+    onError: (error, commentId) => {
+      console.error(`Failed to add heart to comment ${commentId}:`, error.message);
+    },
+  });
+};
+
+export const useRemoveQnaCommentHeart = (qnaId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, number>({
+    mutationFn: (commentId: number) => qnaService.removeCommentHeart(commentId),
+    onSuccess: (_, commentId) => {
+      queryClient.invalidateQueries({ queryKey: qnaQueryKeys.qna.detail(qnaId) });
+      queryClient
+        .getQueryCache()
+        .findAll({
+          predicate: (query) => {
+            return Array.isArray(query.queryKey) && query.queryKey[0] === 'qnas';
+          },
+        })
+        .forEach((query) => {
+          queryClient.setQueryData(query.queryKey, (oldData: any) => {
+            if (!oldData || !oldData.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                data: {
+                  ...page.data,
+                  comments: page.data.comments?.map((comment: Comment) =>
+                    comment.id === commentId
+                      ? { ...comment, heartCount: Math.max(0, comment.heartCount - 1), isHearted: false }
+                      : comment
+                  ),
+                },
+              })),
+            };
+          });
+        });
+    },
+    onError: (error, commentId) => {
+      console.error(`Failed to remove heart from comment ${commentId}:`, error.message);
+    },
+  });
+};
 
 // // QnA 신고
 // export const useReportQna = (qnaId: number) => {

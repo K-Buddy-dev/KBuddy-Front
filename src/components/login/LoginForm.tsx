@@ -21,7 +21,7 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data);
-      navigate('/community');
+      navigate('/home');
     } catch (error) {
       console.error(error);
     }

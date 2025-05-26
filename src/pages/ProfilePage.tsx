@@ -1,5 +1,4 @@
 import { Button, Navbar } from '@/components';
-import { authService } from '@/services';
 import { User } from '@/types';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -17,18 +16,13 @@ export function ProfilePage() {
   };
 
   useEffect(() => {
-    const getUserProfile = async () => {
-      try {
-        const response = await authService.getUserProfile();
-        setUser(response.data);
-        const basicUserData = response.data;
-        localStorage.setItem('basicUserData', JSON.stringify(basicUserData));
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    getUserProfile();
+    const localUserData = localStorage.getItem('basicUserData');
+    if (!localUserData) {
+      navigate('/');
+      return;
+    }
+    const userInfo = JSON.parse(localUserData);
+    setUser(userInfo);
   }, []);
 
   return (

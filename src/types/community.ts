@@ -48,6 +48,7 @@ export interface Comment {
   description: string;
   createdAt: string;
   modifiedAt: string;
+  replies: Comment[];
   heartCount: number;
   isHearted: boolean;
 }

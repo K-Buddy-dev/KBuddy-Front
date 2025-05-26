@@ -1,4 +1,11 @@
-import { useQnaDetail } from '@/hooks';
+import {
+  useAddQnaCommentHeart,
+  useCreateQnaComment,
+  useDeleteQnaComment,
+  useQnaDetail,
+  useRemoveQnaCommentHeart,
+  useUpdateQnaComment,
+} from '@/hooks';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 import defaultImg from '@/assets/images/default-profile.png';
@@ -9,6 +16,7 @@ import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 import { RecommendSwiper } from './swiper';
 import { CommunityContent } from './CommunityContent';
+import { useCallback, useState } from 'react';
 
 interface QnaDetailProps {
   contentId: number;
@@ -21,10 +29,66 @@ interface QnaDetailProps {
 
 export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData }: QnaDetailProps) => {
   const { data: qna, isLoading, error } = useQnaDetail(contentId);
+  const { mutate: createComment } = useCreateQnaComment(contentId);
+  const { mutate: updateComment } = useUpdateQnaComment(contentId);
+
+  const { mutate: addQnaCommentHeart } = useAddQnaCommentHeart(contentId);
+  const { mutate: removeQnaCommentHeart } = useRemoveQnaCommentHeart(contentId);
+  const { mutate: deleteComment } = useDeleteQnaComment(contentId);
+
+  const [replyId, setReplyId] = useState<null | number>(null);
+  const [editId, setEditId] = useState<null | number>(null);
+  const [editText, setEditText] = useState<null | string>(null);
 
   const handleCommentSubmit = (description: string) => {
-    console.log('New comment:', description);
+    if (!description.trim()) return;
+
+    const commentRequest = { content: description, parentId: replyId };
+
+    try {
+      createComment(commentRequest);
+      setReplyId(null);
+    } catch (error) {
+      console.error('Fail create Comment:', error);
+    }
   };
+
+  const handleCommentEdit = (id: number, description: string) => {
+    if (!description.trim()) return;
+
+    const commentRequest = { commentId: id, content: description };
+
+    try {
+      updateComment(commentRequest);
+      setEditId(null);
+      setEditText(null);
+    } catch (error) {
+      console.error('Fail create Comment:', error);
+    }
+  };
+
+  const handleCommentLike = useCallback(
+    (event: React.MouseEvent, commentId: number, isHearted: boolean) => {
+      event.stopPropagation();
+      if (isHearted) {
+        removeQnaCommentHeart(commentId, {
+          onError: (error) => alert(`Fail remove Like: ${error.message}`),
+        });
+      } else {
+        addQnaCommentHeart(commentId, {
+          onError: (error) => alert(`Fail add Like: ${error.message}`),
+        });
+      }
+    },
+    [removeQnaCommentHeart, addQnaCommentHeart]
+  );
+
+  const handleDelete = useCallback(
+    (commentId: number) => {
+      deleteComment(commentId);
+    },
+    [deleteComment]
+  );
 
   if (isLoading)
     return (
@@ -83,14 +147,28 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData }: Qn
           <span>{qna.data.commentCount} comments</span>
         </div>
 
-        <CommentList comments={qna.data.comments} />
+        <CommentList
+          comments={qna.data.comments}
+          handleCommentLike={handleCommentLike}
+          handleDelete={handleDelete}
+          replyId={replyId}
+          setReplyId={setReplyId}
+          editId={editId}
+          setEditId={setEditId}
+          setEditText={setEditText}
+        />
       </div>
 
       {/* 추천 게시물 */}
       {recommendedData && <RecommendSwiper cards={recommendedData} onLike={onLike} onBookmark={onBookmark} />}
 
       {/* 하단 고정 댓글 입력창 */}
-      <CommentInput onCommentSubmit={handleCommentSubmit} />
+      <CommentInput
+        editId={editId}
+        editText={editText}
+        onCommentSubmit={handleCommentSubmit}
+        onCommentEdit={handleCommentEdit}
+      />
     </main>
   );
 };

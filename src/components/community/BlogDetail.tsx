@@ -1,4 +1,11 @@
-import { useBlogDetail, useCreateComment } from '@/hooks';
+import {
+  useAddBlogCommentHeart,
+  useBlogDetail,
+  useCreateBlogComment,
+  useDeleteBlogComment,
+  useRemoveBlogCommentHeart,
+  useUpdateBlogComment,
+} from '@/hooks';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 import defaultImg from '@/assets/images/default-profile.png';
@@ -9,6 +16,7 @@ import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 import { RecommendSwiper } from './swiper';
 import { CommunityContent } from './CommunityContent';
+import { useCallback, useState } from 'react';
 
 interface BlogDetailProps {
   contentId: number;
@@ -21,16 +29,66 @@ interface BlogDetailProps {
 
 export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: BlogDetailProps) => {
   const { data: blog, isLoading, error } = useBlogDetail(contentId);
-  const { mutate: createComment } = useCreateComment(contentId);
+  const { mutate: createComment } = useCreateBlogComment(contentId);
+  const { mutate: updateComment } = useUpdateBlogComment(contentId);
+
+  const { mutate: addBlogCommentHeart } = useAddBlogCommentHeart(contentId);
+  const { mutate: removeBlogCommentHeart } = useRemoveBlogCommentHeart(contentId);
+  const { mutate: deleteComment } = useDeleteBlogComment(contentId);
+
+  const [replyId, setReplyId] = useState<null | number>(null);
+  const [editId, setEditId] = useState<null | number>(null);
+  const [editText, setEditText] = useState<null | string>(null);
 
   const handleCommentSubmit = (description: string) => {
-    if (!description.trim()) {
-      return;
-    }
+    if (!description.trim()) return;
 
-    const commentRequest = { content: description, parentId: null };
-    createComment(commentRequest);
+    const commentRequest = { content: description, parentId: replyId };
+
+    try {
+      createComment(commentRequest);
+      setReplyId(null);
+    } catch (error) {
+      console.error('Fail create Comment:', error);
+    }
   };
+
+  const handleCommentEdit = (id: number, description: string) => {
+    if (!description.trim()) return;
+
+    const commentRequest = { commentId: id, content: description };
+
+    try {
+      updateComment(commentRequest);
+      setEditId(null);
+      setEditText(null);
+    } catch (error) {
+      console.error('Fail create Comment:', error);
+    }
+  };
+
+  const handleCommentLike = useCallback(
+    (event: React.MouseEvent, commentId: number, isHearted: boolean) => {
+      event.stopPropagation();
+      if (isHearted) {
+        removeBlogCommentHeart(commentId, {
+          onError: (error) => alert(`Fail remove Like: ${error.message}`),
+        });
+      } else {
+        addBlogCommentHeart(commentId, {
+          onError: (error) => alert(`Fail add Like: ${error.message}`),
+        });
+      }
+    },
+    [removeBlogCommentHeart, addBlogCommentHeart]
+  );
+
+  const handleDelete = useCallback(
+    (commentId: number) => {
+      deleteComment(commentId);
+    },
+    [deleteComment]
+  );
 
   if (isLoading)
     return (
@@ -93,14 +151,28 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
           <span>{blog.data.commentCount} comments</span>
         </div>
 
-        <CommentList comments={blog.data.comments} />
+        <CommentList
+          comments={blog.data.comments}
+          handleCommentLike={handleCommentLike}
+          handleDelete={handleDelete}
+          replyId={replyId}
+          setReplyId={setReplyId}
+          editId={editId}
+          setEditId={setEditId}
+          setEditText={setEditText}
+        />
       </div>
 
       {/* 추천 게시물 */}
       {recommendedData && <RecommendSwiper cards={recommendedData} onLike={onLike} onBookmark={onBookmark} />}
 
       {/* 하단 고정 댓글 입력창 */}
-      <CommentInput onCommentSubmit={handleCommentSubmit} />
+      <CommentInput
+        editId={editId}
+        editText={editText}
+        onCommentSubmit={handleCommentSubmit}
+        onCommentEdit={handleCommentEdit}
+      />
     </main>
   );
 };
