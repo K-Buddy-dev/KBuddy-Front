@@ -16,6 +16,7 @@ import {
   CommunityPostPage,
   SignupVerifyPage,
   SignupFormPage,
+  CommunityEditPage,
 } from './pages';
 
 import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
@@ -52,8 +53,9 @@ function App() {
               <Route path="/community" element={<CommunityPage />} />
               <Route element={<CommunityFormContextProvider />}>
                 <Route path="/community/post" element={<CommunityPostPage />} />
+                <Route path="/community/edit" element={<CommunityEditPage />} />
+                <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
               </Route>
-              <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
 
               <Route path="/home" element={<HomePage />} />
               <Route path="/service" element={<TempPage />} />

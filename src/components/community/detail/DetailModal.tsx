@@ -1,16 +1,31 @@
+import { useCommunityFormActionContext } from '@/hooks';
+import { CommunityDetail, PostFormType } from '@/types';
+import { urlToFile } from '@/utils/utils';
+
 import { Dispatch, SetStateAction } from 'react';
 import { FaExclamationTriangle, FaEdit, FaTrash, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 interface DetailModalProps {
+  content: CommunityDetail;
   contentId: number;
   writerUuid: number;
+  targetTab: PostFormType;
   deleteMutate: (id: number) => void;
   setShowDetailModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export const DetailModal = ({ contentId, writerUuid, deleteMutate, setShowDetailModal }: DetailModalProps) => {
+export const DetailModal = ({
+  content,
+  contentId,
+  writerUuid,
+  targetTab,
+  deleteMutate,
+  setShowDetailModal,
+}: DetailModalProps) => {
   const navigate = useNavigate();
+  const { setType, setCategoryId, setTitle, setDescription, setImages, setDraftId, setIsEditMode, setOriginalType } =
+    useCommunityFormActionContext();
 
   const localUserData = localStorage.getItem('basicUserData');
   if (!localUserData) {
@@ -26,13 +41,38 @@ export const DetailModal = ({ contentId, writerUuid, deleteMutate, setShowDetail
     setShowDetailModal(false);
   };
 
-  const handleEdit = () => {
-    console.log('수정수정');
+  const handleEdit = async (content: CommunityDetail) => {
+    setOriginalType(targetTab);
+
+    setType(targetTab);
+    if (Array.isArray(content.categoryId)) {
+      setCategoryId(content.categoryId);
+    } else {
+      setCategoryId([content.categoryId]);
+    }
+    setTitle(content.title);
+    setDescription(content.description);
+
+    try {
+      if (content.images && content.images.length > 0) {
+        const filePromises = content.images.map((image, index) => urlToFile(image.url, `content-image-${index}.jpg`));
+        const files = await Promise.all(filePromises);
+        setImages(files);
+      } else {
+        setImages([]);
+      }
+    } catch (error) {
+      console.error('Error converting image URLs to files:', error);
+      setImages([]);
+    }
+
+    setDraftId(content.id);
+    setIsEditMode(true);
+    navigate('/community/edit');
   };
 
   const handleDelete = (contentId: number) => {
-    // const targetTab = isBlogTab ? 'User+blog' : 'Q&A';
-    navigate(`/community?tab=User+blog`, { replace: true });
+    navigate(`/community?tab=${targetTab === 'Q&A' ? 'Q&A' : 'User+blog'}`, { replace: true });
     deleteMutate(contentId);
   };
   return (
@@ -64,7 +104,7 @@ export const DetailModal = ({ contentId, writerUuid, deleteMutate, setShowDetail
             <>
               <button
                 className="w-full py-[21px] px-2 text-text-default font-semibold border-b-2 flex items-center"
-                onClick={handleEdit}
+                onClick={() => handleEdit(content)}
               >
                 <FaEdit className="mr-2" /> Edit this content
               </button>

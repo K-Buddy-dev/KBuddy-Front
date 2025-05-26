@@ -8,8 +8,8 @@ import { Navigation } from 'swiper/modules';
 import { CommentIcon } from '@/components/shared/icon/Icon';
 
 import { FloatLeft, FloatRight } from '@/components/shared/icon';
-import { CATEGORIES, Community } from '@/types';
-import { formatDate } from '@/utils/utils';
+import { Community } from '@/types';
+import { formatDate, getCategoryNames } from '@/utils/utils';
 
 import defaultImg from '@/assets/images/default-profile.png';
 
@@ -53,12 +53,7 @@ export function SwiperCard({
 
   const NAVIGATION_CARD = location.search ? location.search : '?tab=User%20blog';
 
-  const categoryNames = Array.isArray(categoryId)
-    ? categoryId
-        .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
-        .filter(Boolean)
-        .join(' | ')
-    : CATEGORIES.find((cat) => cat.id === categoryId)?.name || '';
+  const categoryNames = getCategoryNames(categoryId);
 
   const handleNavigate = () => {
     const newPath = `/community/detail/${id}${NAVIGATION_CARD}`;

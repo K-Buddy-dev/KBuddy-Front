@@ -72,7 +72,7 @@ export const TitleImageDescription = () => {
   return (
     <div className="font-roboto w-full min-h-screen pt-20">
       <Topbar
-        title="New Post"
+        title={`${isEditMode ? 'Edit Post' : 'New Post'}`}
         type="back"
         next="Post"
         isNext={isValid && !isLoading}

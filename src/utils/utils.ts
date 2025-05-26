@@ -1,3 +1,4 @@
+import { CATEGORIES } from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -85,3 +86,13 @@ export const formatRelativeDate = (createdAt: string, modifiedAt: string): strin
     return `${diffSeconds}s ago`;
   }
 };
+
+export function getCategoryNames(categoryId: number | number[]): string {
+  if (Array.isArray(categoryId)) {
+    return categoryId
+      .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
+      .filter(Boolean)
+      .join(' | ');
+  }
+  return CATEGORIES.find((cat) => cat.id === categoryId)?.name || '';
+}
