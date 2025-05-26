@@ -1,7 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { BottomNavigation } from '../BottomNavigation';
-import { useEffect } from 'react';
-import { authService } from '@/services';
 
 export function DefaultLayout() {
   const location = useLocation();
@@ -16,23 +14,6 @@ export function DefaultLayout() {
     location.pathname.includes('/oauth') ||
     location.pathname.includes('/community/post') ||
     location.pathname.includes('/community/detail');
-
-  useEffect(() => {
-    const existing = localStorage.getItem('basicUserData');
-    if (existing) return;
-
-    const getUserProfile = async () => {
-      try {
-        const response = await authService.getUserProfile();
-        const basicUserData = response.data;
-        localStorage.setItem('basicUserData', JSON.stringify(basicUserData));
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    getUserProfile();
-  }, []);
 
   return (
     <div className="w-full h-full min-h-screen flex items-start justify-center bg-slate-200">

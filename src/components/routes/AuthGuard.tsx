@@ -48,7 +48,7 @@ export function AuthGuard() {
   }
 
   if (PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
-    return <Navigate to={'/community'} />;
+    return <Navigate to={'/home'} />;
   }
 
   if (!PUBLIC_PATHS.includes(pathname) && !isAuthenticated) {

@@ -91,7 +91,7 @@ export function SignupFormPage() {
             name="birthDate"
             render={({ field }) => (
               <div className="w-full flex flex-col items-start mb-4">
-                <Label id={'birthDate'} label={'Birth date'} />
+                <Label htmlFor={'birthDate'} label={'Birth date'} />
                 <div className="w-full flex justify-between">
                   <SelectBox
                     label={'Year'}
@@ -120,7 +120,7 @@ export function SignupFormPage() {
             name="country"
             render={({ field }) => (
               <div className="w-full flex flex-col items-start mb-4">
-                <Label id={'country'} label={'Nationality'} />
+                <Label htmlFor={'country'} label={'Nationality'} />
                 <SelectBox
                   size="large"
                   label={'Select your nationality'}

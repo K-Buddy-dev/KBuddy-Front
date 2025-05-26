@@ -131,7 +131,7 @@ export const useOauthLoginHandler = () => {
       const result = await oauthLogin(data);
       const { accessToken } = result.data;
       authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-      navigate('/community');
+      navigate('/home');
     } catch (err: any) {
       console.error('로그인 실패:', err);
     }
