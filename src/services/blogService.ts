@@ -95,17 +95,17 @@ export const blogService = {
   // 블로그에 댓글 작성
   createComment: async (blogId: number, data: CommentRequest): Promise<boolean> => {
     const response = await authClient.post<Comment>(`/blog/${blogId}/comment`, data);
-    return response.status === 200;
+    return response.status === 204;
   },
   // 댓글 수정
-  updateComment: async (commentId: number, data: CommentRequest): Promise<boolean> => {
+  updateComment: async (commentId: number, data: { content: string }): Promise<boolean> => {
     const response = await authClient.put<Comment>(`/blog/comment/${commentId}`, data);
-    return response.status === 200;
+    return response.status === 204;
   },
   // 댓글 삭제
   deleteComment: async (commentId: number): Promise<boolean> => {
     const response = await authClient.delete(`/blog/comment/${commentId}`);
-    return response.status === 200;
+    return response.status === 204;
   },
   // 댓글에 좋아요 추가
   addCommentHeart: async (blogId: number, commentId: number): Promise<void> => {

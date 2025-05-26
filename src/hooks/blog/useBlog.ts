@@ -88,7 +88,7 @@ export const useBlogDetail = (blogId: number | null) => {
     queryKey: blogQueryKeys.blog.detail(blogId ?? 0),
     queryFn: () => blogService.getBlogById(blogId!),
     enabled: !!blogId && !isBlogDeleteSuccess,
-    retry: false, // 422 에러 재시도 방지
+    retry: false,
   });
 };
 
@@ -350,55 +350,12 @@ export const useRemoveBlogHeart = () => {
   });
 };
 
-export const useCreateComment = (blogId: number) => {
+export const useCreateBlogComment = (blogId: number) => {
   const queryClient = useQueryClient();
 
-  const localUserData = localStorage.getItem('basicUserData');
-  let userInfo = null;
-  if (localUserData) {
-    try {
-      userInfo = JSON.parse(localUserData);
-    } catch (error) {
-      console.error('Failed to parse localStorage data:', error);
-    }
-  }
-
-  return useMutation<boolean, Error, CommentRequest, { previousBlog: CommunityDetailResponse | undefined }>({
+  return useMutation<boolean, Error, CommentRequest>({
     mutationFn: (data) => blogService.createComment(blogId, data),
-    onMutate: async (newComment) => {
-      await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-      const previousBlog = queryClient.getQueryData<CommunityDetailResponse>(blogQueryKeys.blog.detail(blogId));
-      if (previousBlog) {
-        const newCommentData: Comment = {
-          id: Date.now(),
-          blogId,
-          writerUuid: userInfo?.uuid ?? 0,
-          writerName: userInfo?.userId ?? '',
-          writerProfileImageUrl: userInfo?.profileImageUrl ?? null,
-          description: newComment.content,
-          createdAt: new Date().toISOString(),
-          modifiedAt: new Date().toISOString(),
-          heartCount: 0,
-          isHearted: false,
-        };
-
-        const updatedData = {
-          ...previousBlog.data,
-          comments: [...(previousBlog.data.comments || []), newCommentData],
-          commentCount: (previousBlog.data.commentCount || 0) + 1,
-        };
-
-        queryClient.setQueryData<CommunityDetailResponse>(blogQueryKeys.blog.detail(blogId), {
-          ...previousBlog,
-          data: updatedData,
-        });
-      }
-      return { previousBlog };
-    },
-    onError: (error, _, context) => {
-      if (context?.previousBlog) {
-        queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), context.previousBlog);
-      }
+    onError: (error) => {
       console.error(`Failed to create comment for blog ${blogId}:`, error.message);
     },
     onSuccess: (success) => {
@@ -412,42 +369,19 @@ export const useCreateComment = (blogId: number) => {
   });
 };
 
-// 댓글 작성
-export const useUpdateComment = (blogId: number, commentId: number) => {
+export const useUpdateBlogComment = (blogId: number) => {
   const queryClient = useQueryClient();
 
-  return useMutation<boolean, Error, CommentRequest, { previousBlog: CommunityDetailResponse | undefined }>({
-    mutationFn: (data) => blogService.updateComment(commentId, data),
-    onMutate: async (updatedComment) => {
-      await queryClient.cancelQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-      const previousBlog = queryClient.getQueryData<CommunityDetailResponse>(blogQueryKeys.blog.detail(blogId));
-      if (previousBlog) {
-        const updatedData = {
-          ...previousBlog.data,
-          comments: previousBlog.data.comments?.map((comment) =>
-            comment.id === commentId
-              ? { ...comment, description: updatedComment.content, modifiedAt: new Date().toISOString() }
-              : comment
-          ),
-        };
-
-        queryClient.setQueryData<CommunityDetailResponse>(blogQueryKeys.blog.detail(blogId), {
-          ...previousBlog,
-          data: updatedData,
-        });
-      }
-      return { previousBlog };
+  return useMutation<boolean, Error, { commentId: number; content: string }>({
+    mutationFn: ({ commentId, content }) => {
+      const data = { content: content };
+      return blogService.updateComment(commentId, data);
     },
-    onError: (error, _, context) => {
-      if (context?.previousBlog) {
-        queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), context.previousBlog);
-      }
-      console.error(`Failed to update comment ${commentId}:`, error.message);
+    onError: (error, variables) => {
+      console.error(`Failed to update comment ${variables.commentId}:`, error.message);
     },
-    onSuccess: (success) => {
-      if (success) {
-        queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
-      }
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
@@ -455,18 +389,36 @@ export const useUpdateComment = (blogId: number, commentId: number) => {
   });
 };
 
-export const useDeleteComment = (blogId: number) => {
+export const useDeleteBlogComment = (blogId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation<boolean, Error, number>({
     mutationFn: (commentId: number) => blogService.deleteComment(commentId),
     onSuccess: (_, commentId) => {
+      queryClient.setQueryData(blogQueryKeys.blog.detail(blogId), (oldData: any) => {
+        if (!oldData || !oldData.data) return oldData;
+
+        const updatedComments = oldData.data.comments
+          .filter((comment: Comment) => comment.id !== commentId)
+          .map((comment: Comment) => ({
+            ...comment,
+            replies: comment.replies?.filter((reply: Comment) => reply.id !== commentId),
+          }));
+
+        return {
+          ...oldData,
+          data: {
+            ...oldData.data,
+            comments: updatedComments,
+            commentCount: Math.max(0, (oldData.data.commentCount || 0) - 1),
+          },
+        };
+      });
+
       queryClient
         .getQueryCache()
         .findAll({
-          predicate: (query) => {
-            return Array.isArray(query.queryKey) && query.queryKey[0] === 'blogs';
-          },
+          predicate: (query) => Array.isArray(query.queryKey) && query.queryKey[0] === 'blogs',
         })
         .forEach((query) => {
           queryClient.setQueryData(query.queryKey, (oldData: any) => {
@@ -478,15 +430,18 @@ export const useDeleteComment = (blogId: number) => {
                 ...page,
                 data: {
                   ...page.data,
-                  comments: page.data.comments?.filter((comment: Comment) => comment.id !== commentId),
+                  comments: page.data.comments
+                    ?.filter((comment: Comment) => comment.id !== commentId)
+                    ?.map((comment: Comment) => ({
+                      ...comment,
+                      replies: comment.replies?.filter((reply: Comment) => reply.id !== commentId),
+                    })),
                   commentCount: Math.max(0, (page.data.commentCount || 0) - 1),
                 },
               })),
             };
           });
         });
-      queryClient.removeQueries({ queryKey: blogQueryKeys.blog.detail(blogId), exact: true });
-      queryClient.invalidateQueries({ queryKey: blogQueryKeys.blog.detail(blogId) });
     },
     onError: (error, commentId) => {
       console.error(`Failed to delete comment ${commentId}:`, error.message);
@@ -494,7 +449,7 @@ export const useDeleteComment = (blogId: number) => {
   });
 };
 
-export const useAddCommentHeart = (blogId: number) => {
+export const useAddBlogCommentHeart = (blogId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, number>({
@@ -535,7 +490,7 @@ export const useAddCommentHeart = (blogId: number) => {
   });
 };
 
-export const useRemoveCommentHeart = (blogId: number) => {
+export const useRemoveBlogCommentHeart = (blogId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, number>({

@@ -14,5 +14,8 @@ export const qnaQueryKeys = {
 
     // 북마크된 QnA 목록 조회
     bookmarked: (filters: { cursor?: number; size?: number }) => [...qnaQueryKeys.bookmarks, filters] as const,
+
+    // 댓글
+    comments: (qnaId: number) => ['qnas', qnaId, 'comments'] as const,
   },
 };

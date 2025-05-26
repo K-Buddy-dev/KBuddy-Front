@@ -64,14 +64,12 @@ export const formatDate = (isoDate: string): string => {
   return `${month}/${day}/${year}`;
 };
 
-export const formatRelativeDate = (createdAt: string, modifiedAt: string): string => {
+export const formatRelativeDate = (createdAt: string): string => {
   const createdDate = new Date(createdAt);
-  const modifiedDate = new Date(modifiedAt);
-  const latestDate = createdDate > modifiedDate ? createdDate : modifiedDate;
-
   const now = new Date();
-  const diffMs = now.getTime() - latestDate.getTime();
-  const diffSeconds = Math.floor(diffMs / 1000);
+
+  const diffMs = now.getTime() - createdDate.getTime();
+  const diffSeconds = Math.max(0, Math.floor(diffMs / 1000));
   const diffMinutes = Math.floor(diffSeconds / 60);
   const diffHours = Math.floor(diffMinutes / 60);
   const diffDays = Math.floor(diffHours / 24);

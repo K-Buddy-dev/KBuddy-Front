@@ -2,6 +2,8 @@ import { Navbar } from '@/components/shared/navbar/Navbar';
 
 import { SwiperList } from '@/components/community/swiper';
 import { useContentActions, useFeaturedBlogs } from '@/hooks';
+import { useEffect } from 'react';
+import { authService } from '@/services';
 
 export const HomePage = () => {
   const { data: featuredBlog, refetch: refetchFeaturedBlog } = useFeaturedBlogs();
@@ -10,6 +12,20 @@ export const HomePage = () => {
     contentType: 'blog',
     refetchRecommended: refetchFeaturedBlog,
   });
+
+  useEffect(() => {
+    const getUserProfile = async () => {
+      try {
+        const response = await authService.getUserProfile();
+        const basicUserData = response.data;
+        localStorage.setItem('basicUserData', JSON.stringify(basicUserData));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getUserProfile();
+  }, []);
 
   return (
     <>
