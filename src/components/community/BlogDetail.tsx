@@ -2,9 +2,9 @@ import { useBlogDetail, useCreateComment } from '@/hooks';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 import defaultImg from '@/assets/images/default-profile.png';
-import { CATEGORIES, Community } from '@/types';
+import { Community } from '@/types';
 import { CommentInput, CommentList, ContentImage } from '@/components/community/detail';
-import { formatDate } from '@/utils/utils';
+import { formatDate, getCategoryNames } from '@/utils/utils';
 import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 import { RecommendSwiper } from './swiper';
@@ -32,13 +32,6 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
     createComment(commentRequest);
   };
 
-  const categoryNames = Array.isArray(blog?.data.categoryId)
-    ? blog?.data.categoryId
-        .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
-        .filter(Boolean)
-        .join(' | ')
-    : CATEGORIES.find((cat) => cat.id === blog?.data.categoryId)?.name || '';
-
   if (isLoading)
     return (
       <div className="w-screen h-screen flex items-center justify-center">
@@ -47,6 +40,8 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
     );
   if (error) return <div className="w-screen h-screen flex items-center justify-center">Error: {error.message}</div>;
   if (!blog?.data) return <div className="w-screen h-screen flex items-center justify-center">No data found</div>;
+
+  const categoryNames = getCategoryNames(blog.data.categoryId);
 
   return (
     <main className=" pb-20 font-roboto">

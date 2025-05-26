@@ -1,6 +1,7 @@
 export { CommunityPage } from './CommunityPage';
 export { CommunityDetailPage } from './CommunityDetailPage';
 export { CommunityPostPage } from './CommunityPostPage';
+export { CommunityEditPage } from './CommunityEditPage';
 export { LoginPage } from './LoginPage';
 export { KakaoRedirectPage } from './redirect/KakaoRedirectPage';
 export { GoogleRedirectPage } from './redirect/GoogleRedirectPage';
