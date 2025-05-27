@@ -62,7 +62,7 @@ export const ToolbarPlugin = ({ isMobile, isFocused }: ToolbarPluginProps) => {
       id="toolbar"
       className={cn(
         'w-full h-auto !border-0',
-        isMobile ? (isFocused ? 'fixed top-[calc(100vh-24px)] left-0 p-0 bg-white' : 'hidden') : 'relative pb-4'
+        isMobile ? (isFocused ? 'fixed top-[calc(100%-24px)] left-0 p-0 bg-white z-50' : 'hidden') : 'relative pb-4'
       )}
     >
       <div className="flex items-center gap-4">
