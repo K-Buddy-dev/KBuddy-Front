@@ -13,7 +13,7 @@ interface DraftProps {
 }
 
 export const Draft = ({ draft, isSelected, isEditing, setSelectedDrafts, onNext }: DraftProps) => {
-  const { setType, setCategoryId, setTitle, setDescription, setImages, setDraftId, setIsEditMode, setOriginalType } =
+  const { setType, setCategoryId, setTitle, setDescription, setImages, setDraftId, setIsDraftMode, setOriginalType } =
     useCommunityFormActionContext();
 
   const selectDraftItem = () => {
@@ -39,7 +39,6 @@ export const Draft = ({ draft, isSelected, isEditing, setSelectedDrafts, onNext 
 
     // 임시저장 게시글 데이터 설정
     setType(draft.type);
-    console.log('draft.type: ', draft.type);
     if (Array.isArray(draft.categoryId)) {
       setCategoryId(draft.categoryId);
     } else {
@@ -62,7 +61,7 @@ export const Draft = ({ draft, isSelected, isEditing, setSelectedDrafts, onNext 
     }
 
     setDraftId(draft.id);
-    setIsEditMode(true);
+    setIsDraftMode(true);
 
     onNext();
   };

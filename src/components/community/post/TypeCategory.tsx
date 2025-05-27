@@ -6,16 +6,23 @@ import { TypeSelector } from './TypeSelector';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
 import { useStackNavigation } from 'j-react-stack';
 import { TitleImageDescription } from './TitleImageDescription';
+import { useNavigate } from 'react-router-dom';
 
 export const TypeCategory = () => {
+  const navigate = useNavigate();
   const { push, pop } = useStackNavigation();
   const { reset } = useCommunityFormActionContext();
-  const { type, categoryId } = useCommunityFormStateContext();
+  const { type, categoryId, detailBackUrl, isEditMode } = useCommunityFormStateContext();
   const [showExitModal, setShowExitModal] = useState(false);
 
   const onExit = () => {
     pop();
     reset();
+  };
+
+  const onEditExit = () => {
+    pop();
+    navigate(`${detailBackUrl}`, { replace: true });
   };
 
   const onNext = () => {
@@ -52,7 +59,7 @@ export const TypeCategory = () => {
       </div> */}
       <TypeSelector />
       <CategorySelector onNext={onNext} />
-      {showExitModal && <DraftModal onExit={onExit} setShowExitModal={setShowExitModal} />}
+      {showExitModal && <DraftModal onExit={isEditMode ? onEditExit : onExit} setShowExitModal={setShowExitModal} />}
     </div>
   );
 };

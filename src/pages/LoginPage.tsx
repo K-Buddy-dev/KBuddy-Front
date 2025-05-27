@@ -4,9 +4,6 @@ import { NativeSocialLoginForm } from '@/components/login/Social/NativeSocialLog
 
 export function LoginPage() {
   const isNative = typeof window !== 'undefined' && !!window.ReactNativeWebView;
-  console.log('isNative: ', isNative);
-  console.log('typeof window:', typeof window);
-  console.log('window.ReactNativeWebView:', window.ReactNativeWebView);
 
   return (
     <>
