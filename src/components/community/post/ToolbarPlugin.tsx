@@ -58,12 +58,14 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
     [editor]
   );
 
+  console.log(keyboardHeight);
+
   return (
     <div
       id="toolbar"
       className={cn(
         'w-full h-auto !border-0',
-        isMobile ? (isFocused ? `fixed p-0 left-0 bottom-[${keyboardHeight}px]` : 'hidden') : 'relative pb-4'
+        isMobile ? (isFocused ? `fixed p-0 left-0 bottom-0` : 'hidden') : `fixed p-0 left-0 bottom-[380px]`
       )}
     >
       <div className="flex items-center gap-4">
