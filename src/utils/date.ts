@@ -6,10 +6,17 @@ export const formatDate = (isoDate: string): string => {
   return `${month}/${day}/${year}`;
 };
 
-export const formatRelativeDate = (createdAt: string, modifiedAt: string): string => {
+export const formatRelativeDate = (createdAt: string, modifiedAt?: string): string => {
   const createdDate = new Date(createdAt);
-  const modifiedDate = new Date(modifiedAt);
-  const latestDate = createdDate > modifiedDate ? createdDate : modifiedDate;
+
+  let latestDate: Date;
+
+  if (!modifiedAt) {
+    latestDate = createdDate;
+  } else {
+    const modifiedDate = new Date(modifiedAt);
+    latestDate = createdDate > modifiedDate ? createdDate : modifiedDate;
+  }
 
   const now = new Date();
   const diffMs = now.getTime() - latestDate.getTime();
