@@ -15,7 +15,9 @@ export const CommunityFormContextProvider = () => {
   const [images, setImages] = useState<File[]>([]);
   const [type, setType] = useState<PostFormType>('');
   const [draftId, setDraftId] = useState<number | null>(null);
-  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [isDraftMode, setIsDraftMode] = useState<boolean>(false);
+  const [isEditMode, setisEditMode] = useState<boolean>(false);
+  const [detailBackUrl, setDetailBackUrl] = useState<string>('');
   const [originalType, setOriginalType] = useState<PostFormType | null>(null);
 
   const stateValue = useMemo<CommunityFormStateContextType>(
@@ -26,10 +28,12 @@ export const CommunityFormContextProvider = () => {
       images,
       type,
       draftId,
+      isDraftMode,
       isEditMode,
+      detailBackUrl,
       originalType,
     }),
-    [categoryId, title, description, images, type, draftId, isEditMode, originalType]
+    [categoryId, title, description, images, type, draftId, isDraftMode, isEditMode, detailBackUrl, originalType]
   );
 
   const actionValue = useMemo<CommunityFormActionContextType>(
@@ -40,7 +44,9 @@ export const CommunityFormContextProvider = () => {
       setImages,
       setType,
       setDraftId,
-      setIsEditMode,
+      setIsDraftMode,
+      setisEditMode,
+      setDetailBackUrl,
       setOriginalType,
       reset: () => {
         setCategoryId([]);
@@ -49,11 +55,12 @@ export const CommunityFormContextProvider = () => {
         setImages([]);
         setType('');
         setDraftId(null);
-        setIsEditMode(false);
+        setIsDraftMode(false);
+        setisEditMode(false);
         setOriginalType(null);
       },
     }),
-    [categoryId, title, description, images, type, draftId, isEditMode, originalType]
+    [categoryId, title, description, images, type, draftId, isDraftMode, setisEditMode, setDetailBackUrl, originalType]
   );
 
   return (

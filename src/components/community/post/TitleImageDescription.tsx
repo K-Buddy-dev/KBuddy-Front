@@ -9,7 +9,7 @@ import { useStackNavigation } from 'j-react-stack';
 import { Complete } from './Complete';
 
 export const TitleImageDescription = () => {
-  const { title, description, images, type, categoryId, draftId, isEditMode, originalType } =
+  const { title, description, images, type, categoryId, draftId, isDraftMode, isEditMode, originalType } =
     useCommunityFormStateContext();
   const { createPost, updatePost, isLoading } = usePost();
   const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -27,7 +27,7 @@ export const TitleImageDescription = () => {
         categoryId,
       };
 
-      if (isEditMode && draftId) {
+      if (isDraftMode && draftId) {
         // 타입이 변경되었고 원본 타입이 있는 경우 originalType을 전달
         if (originalType && originalType !== type) {
           await updatePost(draftId, data, originalType);

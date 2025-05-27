@@ -8,7 +8,9 @@ export interface CommunityFormStateContextType {
   images: File[];
   type: PostFormType;
   draftId: number | null;
+  isDraftMode: boolean;
   isEditMode: boolean;
+  detailBackUrl: string;
   originalType: PostFormType | null;
 }
 
@@ -19,7 +21,9 @@ export interface CommunityFormActionContextType {
   setImages: Dispatch<SetStateAction<File[]>>;
   setType: Dispatch<SetStateAction<PostFormType>>;
   setDraftId: Dispatch<SetStateAction<number | null>>;
-  setIsEditMode: Dispatch<SetStateAction<boolean>>;
+  setIsDraftMode: Dispatch<SetStateAction<boolean>>;
+  setisEditMode: Dispatch<SetStateAction<boolean>>;
+  setDetailBackUrl: Dispatch<SetStateAction<string>>;
   setOriginalType: Dispatch<SetStateAction<PostFormType | null>>;
   reset: () => void;
 }
