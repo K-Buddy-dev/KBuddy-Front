@@ -72,8 +72,6 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
     });
   }, [editor, updateToolbar]);
 
-  console.log(keyboardHeight);
-
   return (
     <div
       id="toolbar"
@@ -81,7 +79,7 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
         'w-full h-auto !border-0',
         isMobile ? (isFocused ? `fixed p-4 left-0 bg-white z-50` : 'hidden') : 'relative pb-4'
       )}
-      style={isMobile && isFocused ? { top: `${scrollY + window.innerHeight - 56}px` } : undefined}
+      style={isMobile && isFocused ? { top: `${scrollY + window.innerHeight - 56 - keyboardHeight}px` } : undefined}
     >
       <div className="flex items-center gap-4">
         <button
