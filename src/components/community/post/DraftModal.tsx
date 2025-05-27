@@ -7,7 +7,8 @@ interface DraftModalProps {
 }
 
 export const DraftModal = ({ onExit, setShowExitModal }: DraftModalProps) => {
-  const { type, categoryId, title, description, images } = useCommunityFormStateContext();
+  const { type, categoryId, title, description, images, isEditMode } = useCommunityFormStateContext();
+
   const { createPost } = usePost();
   const handleDelete = () => onExit();
 
@@ -34,9 +35,11 @@ export const DraftModal = ({ onExit, setShowExitModal }: DraftModalProps) => {
           <button onClick={handleDelete} className="py-[21px] text-text-danger-default font-semibold border-b-2">
             Discard post
           </button>
-          <button onClick={handleSave} className="py-[21px] text-text-default font-semibold border-b-2">
-            Save draft
-          </button>
+          {!isEditMode && (
+            <button onClick={handleSave} className="py-[21px] text-text-default font-semibold border-b-2">
+              Save draft
+            </button>
+          )}
           <button onClick={() => setShowExitModal(false)} className="py-[21px] text-text-default font-semibold">
             Keep editing
           </button>

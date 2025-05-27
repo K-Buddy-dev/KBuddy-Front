@@ -4,7 +4,7 @@ import { urlToFile } from '@/utils/utils';
 
 import { Dispatch, SetStateAction } from 'react';
 import { FaExclamationTriangle, FaEdit, FaTrash, FaTimes } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface DetailModalProps {
   content: CommunityDetail;
@@ -24,8 +24,20 @@ export const DetailModal = ({
   setShowDetailModal,
 }: DetailModalProps) => {
   const navigate = useNavigate();
-  const { setType, setCategoryId, setTitle, setDescription, setImages, setDraftId, setIsEditMode, setOriginalType } =
-    useCommunityFormActionContext();
+  const location = useLocation();
+
+  const {
+    setType,
+    setCategoryId,
+    setTitle,
+    setDescription,
+    setImages,
+    setDraftId,
+    setIsDraftMode,
+    setisEditMode,
+    setDetailBackUrl,
+    setOriginalType,
+  } = useCommunityFormActionContext();
 
   const localUserData = localStorage.getItem('basicUserData');
   if (!localUserData) {
@@ -67,8 +79,10 @@ export const DetailModal = ({
     }
 
     setDraftId(content.id);
-    setIsEditMode(true);
-    navigate('/community/edit');
+    setisEditMode(true);
+    setIsDraftMode(true);
+    setDetailBackUrl(`${location.pathname}${location.search}`);
+    navigate('/community/edit', { replace: true });
   };
 
   const handleDelete = (contentId: number) => {
