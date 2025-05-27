@@ -13,6 +13,7 @@ import { EditorState } from 'lexical';
 
 export const TextEditor = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const { description } = useCommunityFormStateContext();
   const { setDescription } = useCommunityFormActionContext();
@@ -32,9 +33,22 @@ export const TextEditor = () => {
     [setDescription]
   );
 
+  const handleKeyboardHeight = (event: MessageEvent) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.action === 'keyboardHeightData') {
+        console.log('keyboardHeight', data.height);
+        setKeyboardHeight(data.height);
+      }
+    } catch (error) {
+      console.error('Error parsing message:', error);
+    }
+  };
+
   useEffect(() => {
     if (window.ReactNativeWebView) {
       setIsMobile(true);
+      window.addEventListener('message', handleKeyboardHeight);
     }
 
     const editorElement = editorRef.current;
@@ -56,6 +70,7 @@ export const TextEditor = () => {
     editorElement.addEventListener('blur', handleBlur, true);
 
     return () => {
+      window.removeEventListener('message', handleKeyboardHeight);
       editorElement.removeEventListener('focus', handleFocus, true);
       editorElement.removeEventListener('blur', handleBlur, true);
     };
@@ -77,7 +92,7 @@ export const TextEditor = () => {
 
   return (
     <>
-      <ToolbarPlugin isMobile={isMobile} isFocused={isFocused} />
+      <ToolbarPlugin isMobile={isMobile} keyboardHeight={keyboardHeight} isFocused={isFocused} />
       <div ref={editorRef}>
         <RichTextPlugin
           contentEditable={<ContentEditable className="outline-none" />}

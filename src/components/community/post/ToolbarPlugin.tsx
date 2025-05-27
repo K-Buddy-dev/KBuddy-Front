@@ -7,10 +7,11 @@ import { INSERT_UNORDERED_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, $isListNode
 
 export interface ToolbarPluginProps {
   isMobile: boolean;
+  keyboardHeight: number;
   isFocused: boolean;
 }
 
-export const ToolbarPlugin = ({ isMobile, isFocused }: ToolbarPluginProps) => {
+export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPluginProps) => {
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -62,8 +63,9 @@ export const ToolbarPlugin = ({ isMobile, isFocused }: ToolbarPluginProps) => {
       id="toolbar"
       className={cn(
         'w-full h-auto !border-0',
-        isMobile ? (isFocused ? 'fixed top-[calc(100%-24px)] left-0 p-0 bg-white z-50' : 'hidden') : 'relative pb-4'
+        isMobile ? (isFocused ? `fixed p-0 left-0 bg-white z-50` : 'hidden') : 'relative pb-4'
       )}
+      style={isMobile && isFocused ? { bottom: `${keyboardHeight}px` } : undefined}
     >
       <div className="flex items-center gap-4">
         <button
