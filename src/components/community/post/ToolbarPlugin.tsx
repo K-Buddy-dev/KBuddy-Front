@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { cn } from '@/utils/utils';
 import { BoldTextIcon, ItalicTextIcon, CancelLineTextIcon, ListTextIcon } from '@/components/shared';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
@@ -19,6 +19,8 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
   const [isList, setIsList] = useState(false);
 
   const [scrollY, setScrollY] = useState(0);
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>();
 
   const formatText = useCallback(
     (format: 'bold' | 'italic' | 'strikethrough') => {
@@ -54,10 +56,25 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+
+      rafRef.current = requestAnimationFrame(() => {
+        if (toolbarRef.current) {
+          const currentScroll = window.scrollY;
+          setScrollY(currentScroll);
+        }
+      });
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -70,10 +87,15 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
 
   return (
     <div
+      ref={toolbarRef}
       id="toolbar"
       className={cn(
-        'w-full h-auto !border-0',
-        isMobile ? (isFocused ? `fixed p-4 left-0 bg-white z-50` : 'hidden') : 'relative pb-4'
+        'w-full h-auto !border-0 ',
+        isMobile
+          ? isFocused
+            ? `fixed p-4 left-0 bg-white z-50 transition-transform duration-100`
+            : 'hidden'
+          : 'relative pb-4'
       )}
       style={
         isMobile && isFocused
