@@ -18,6 +18,38 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [isList, setIsList] = useState(false);
 
+  const [scrollY, setScrollY] = useState(0);
+
+  const formatText = useCallback(
+    (format: 'bold' | 'italic' | 'strikethrough') => {
+      editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
+    },
+    [editor]
+  );
+
+  const formatList = useCallback(
+    (type: 'unordered' | 'ordered') => {
+      if (type === 'unordered') {
+        editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+      } else {
+        editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+      }
+    },
+    [editor]
+  );
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
@@ -40,32 +72,14 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
     });
   }, [editor, updateToolbar]);
 
-  const formatText = useCallback(
-    (format: 'bold' | 'italic' | 'strikethrough') => {
-      editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
-    },
-    [editor]
-  );
-
-  const formatList = useCallback(
-    (type: 'unordered' | 'ordered') => {
-      if (type === 'unordered') {
-        editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-      } else {
-        editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
-      }
-    },
-    [editor]
-  );
-
   return (
     <div
       id="toolbar"
       className={cn(
         'w-full h-auto !border-0',
-        isMobile ? (isFocused ? `fixed p-0 left-0 bg-white z-50` : 'hidden') : 'relative pb-4'
+        isMobile ? (isFocused ? `fixed p-4 left-0 bg-white z-50` : 'hidden') : 'relative pb-4'
       )}
-      style={isMobile && isFocused ? { bottom: `${keyboardHeight}px` } : undefined}
+      style={isMobile && isFocused ? { top: `${scrollY + window.innerHeight - keyboardHeight}px` } : undefined}
     >
       <div className="flex items-center gap-4">
         <button
