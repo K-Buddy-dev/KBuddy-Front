@@ -1,4 +1,4 @@
-import { formatRelativeDate } from '@/utils/utils';
+import { formatRelativeDate } from '@/utils';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import defaultImg from '@/assets/images/default-profile.png';
 import { Comment } from '@/types';

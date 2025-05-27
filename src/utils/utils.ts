@@ -56,35 +56,6 @@ export const urlToFile = async (url: string, fileName: string): Promise<File> =>
   return new File([blob], fileName, { type: blob.type });
 };
 
-export const formatDate = (isoDate: string): string => {
-  const date = new Date(isoDate);
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${month}/${day}/${year}`;
-};
-
-export const formatRelativeDate = (createdAt: string): string => {
-  const createdDate = new Date(createdAt);
-  const now = new Date();
-
-  const diffMs = now.getTime() - createdDate.getTime();
-  const diffSeconds = Math.max(0, Math.floor(diffMs / 1000));
-  const diffMinutes = Math.floor(diffSeconds / 60);
-  const diffHours = Math.floor(diffMinutes / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffDays > 0) {
-    return `${diffDays}d ago`;
-  } else if (diffHours > 0) {
-    return `${diffHours}h ago`;
-  } else if (diffMinutes > 0) {
-    return `${diffMinutes}m ago`;
-  } else {
-    return `${diffSeconds}s ago`;
-  }
-};
-
 export function getCategoryNames(categoryId: number | number[]): string {
   if (Array.isArray(categoryId)) {
     return categoryId

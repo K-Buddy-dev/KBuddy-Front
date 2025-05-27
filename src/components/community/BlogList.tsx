@@ -7,7 +7,7 @@ import { CommunityCard } from './CommunityCard';
 import { SkeletonCard } from './SkeletonCard';
 import { FiltersModal } from './filter';
 import { CategoryFilterSwiper } from './swiper';
-import { formatDate } from '@/utils/utils';
+import { formatDate } from '@/utils';
 import { NoContent } from './detail';
 
 interface BlogProps {

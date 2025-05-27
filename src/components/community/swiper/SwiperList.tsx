@@ -9,7 +9,7 @@ import { CommentIcon } from '@/components/shared/icon/Icon';
 
 import { FloatLeft, FloatRight } from '@/components/shared/icon';
 import { Community } from '@/types';
-import { formatDate, getCategoryNames } from '@/utils/utils';
+import { formatDate, getCategoryNames } from '@/utils';
 
 import defaultImg from '@/assets/images/default-profile.png';
 
