@@ -1,6 +1,6 @@
 import { useCommunityFormActionContext } from '@/hooks';
 import { PostDraft } from '@/types';
-import { formatDate, urlToFile } from '@/utils/utils';
+import { formatDate, urlToFile } from '@/utils';
 import { Dispatch, SetStateAction } from 'react';
 import { Checkbox } from '@/components/shared/checkbox/Checkbox';
 

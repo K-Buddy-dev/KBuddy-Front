@@ -11,7 +11,7 @@ import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import defaultImg from '@/assets/images/default-profile.png';
 import { Community } from '@/types';
 import { CommentInput, CommentList, ContentImage } from '@/components/community/detail';
-import { formatDate, getCategoryNames } from '@/utils/utils';
+import { formatDate, getCategoryNames } from '@/utils';
 import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 import { RecommendSwiper } from './swiper';
