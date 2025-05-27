@@ -18,15 +18,15 @@ export function TempPage() {
         <SettingsIcon primary={true} />
       </div>
 
-      <h1 className="text-2xl font-medium text-text-default mb-3">서비스 준비중입니다{dots}</h1>
+      <h1 className="text-2xl font-medium text-text-default mb-3">We're getting ready for you{dots}</h1>
       <p className="text-center text-text-weak mb-8">
-        더 나은 서비스를 제공하기 위해 준비중입니다.
+        We're working hard to bring you a better experience.
         <br />
-        빠른 시일 내에 찾아뵙겠습니다.
+        We'll be with you shortly.
       </p>
 
       <div className="text-sm text-text-weak">
-        <span className="text-text-brand-default font-medium">KBuddy</span> 드림
+        <span className="text-text-brand-default font-medium">KBuddy</span> Team
       </div>
     </div>
   );
