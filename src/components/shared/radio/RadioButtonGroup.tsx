@@ -20,7 +20,7 @@ export const RadioButtonGroup = forwardRef<HTMLInputElement, RadioButtonGroupPro
   ({ id, label, options, value, onChange, error, ...props }, ref) => {
     return (
       <div className="w-full flex flex-col items-start mb-4">
-        <Label id={id} label={label} />
+        <Label htmlFor={id} label={label} />
         <div className="flex">
           {options.map((option) => (
             <label key={option.value} className="mr-4 flex items-center gap-2">

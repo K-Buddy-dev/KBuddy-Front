@@ -49,12 +49,13 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       onChange?.({
         target: { value: '', name, id },
       } as React.ChangeEvent<HTMLInputElement>);
+
       inputRef.current?.focus();
     };
 
     return (
       <div className="w-full flex flex-col items-start mb-4">
-        <Label id={id} label={label} />
+        <Label htmlFor={id} label={label} />
         <div
           className={cn(
             textFieldVariants({
@@ -63,6 +64,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           )}
         >
           <input
+            id={id}
             type="text"
             className="w-full pr-10 flex-1 h-6 bg-transparent outline-none text-gray-900 placeholder-gray-400"
             ref={ref || inputRef}

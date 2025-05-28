@@ -62,11 +62,11 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
       if (target.files && target.files.length > 0) {
         const files = Array.from(target.files);
 
-        const validTypes = ['image/jpeg', 'image/png'];
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
         const invalidFiles = files.filter((file) => !validTypes.includes(file.type));
 
         if (invalidFiles.length > 0) {
-          alert('JPEG, PNG 형식의 이미지만 업로드 가능합니다.');
+          alert('Only JPEG, PNG, JPG, and WEBP images can be uploaded.');
           return;
         }
 
@@ -106,9 +106,9 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
 
   useEffect(() => {
     if (imageUrls.length >= MAX_IMAGES) {
-      setMaxImageMessage(`최대 ${MAX_IMAGES}개의 이미지만 추가할 수 있습니다.`);
+      setMaxImageMessage(`You can add up to ${MAX_IMAGES} images.`);
     } else {
-      setMaxImageMessage(`${MAX_IMAGES - imageUrls.length}개의 이미지를 더 선택할 수 있습니다.`);
+      setMaxImageMessage(`${MAX_IMAGES - imageUrls.length} more image(s) can be selected.`);
     }
   }, [imageUrls.length]);
 
