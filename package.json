@@ -16,6 +16,7 @@
     "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage",
     "storybook": "storybook dev -p 6006",
+    "type-check": "tsc --noEmit",
     "build-storybook": "storybook build"
   },
   "dependencies": {
@@ -80,11 +81,13 @@
   "lint-staged": {
     "**/*.{ts,tsx}": [
       "eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "tsc --noEmit"
     ],
     "**/*.{js,jsx}": [
       "eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "tsc --noEmit"
     ],
     "**/*.{css,scss,md}": [
       "prettier --write"
