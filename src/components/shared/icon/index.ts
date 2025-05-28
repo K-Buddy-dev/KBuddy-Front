@@ -36,3 +36,6 @@ export * from './CancelLineTextIcon';
 export * from './ListTextIcon';
 export * from './ShareIcon';
 export * from './HamburgerMenu';
+export * from './KakaoLogo';
+export * from './GoogleLogo';
+export * from './AppleLogo';
