@@ -1,10 +1,7 @@
 import { Accordion, AccordionItem, Topbar } from '@/components/shared';
 import { EmailVerifyForm, LoginForm, SocialLoginForm } from '@/components';
-import { NativeSocialLoginForm } from '@/components/login/Social/NativeSocialLoginForm';
 
 export function LoginPage() {
-  const isNative = typeof window !== 'undefined' && !!window.ReactNativeWebView;
-
   return (
     <>
       <Topbar title="Log in or sign up" type="cancel" />
@@ -22,7 +19,7 @@ export function LoginPage() {
           <span className="text-text-default text-body-200-light">or</span>
           <div className="h-[1px] flex-1 bg-border-weak1"></div>
         </div>
-        {isNative ? <NativeSocialLoginForm /> : <SocialLoginForm />}
+        <SocialLoginForm />
       </div>
     </>
   );

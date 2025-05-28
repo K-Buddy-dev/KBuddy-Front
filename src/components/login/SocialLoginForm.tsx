@@ -1,16 +1,20 @@
-import { AppleLogo, GoogleLogo, KakaoLogo } from '@/components/shared';
+import { AppleLogo, GoogleLogo, KakaoLogo } from '../shared';
 import { SocialButton } from './Social/SocialButton';
 import { generateRandomString } from '@/utils/utils';
 
 export function SocialLoginForm() {
+  const isNative = typeof window !== 'undefined' && !!window.ReactNativeWebView;
   const VITE_KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_KAKAO_REDIRECT_URI)}&response_type=code`;
   const VITE_GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_GOOGLE_REDIRECT_URI)}&response_type=code&scope=${import.meta.env.VITE_GOOGLE_SCOPE}`;
-  // const VITE_APPLE_AUTH_URL = `https://appleid.apple.com/auth/authorize?client_id=${import.meta.env.VITE_APPLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_APPLE_REDIRECT_URI)}&response_type=code%20id_token&scope=name%20email&response_mode=fragment`;
 
   const state = generateRandomString(32);
 
-  const handleSocialLogin = (url: string) => {
-    window.location.href = url;
+  const handleSocialLogin = (url: string, type: 'Kakao' | 'Google') => {
+    if (isNative && window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ type, action: 'getSocialLogin' }));
+    } else {
+      window.location.href = url;
+    }
   };
 
   const handleAppleLogin = async () => {
@@ -22,7 +26,12 @@ export function SocialLoginForm() {
         state: state,
       });
 
-      window.location.href = `https://appleid.apple.com/auth/authorize?${params}`;
+      const url = `https://appleid.apple.com/auth/authorize?${params}`;
+      if (isNative && window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'Apple', action: 'getSocialLogin' }));
+      } else {
+        window.location.href = url;
+      }
     } catch (error) {
       console.error('Apple login error:', error);
     }
@@ -30,10 +39,10 @@ export function SocialLoginForm() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-3">
-      <div className="w-full" onClick={() => handleSocialLogin(VITE_KAKAO_AUTH_URL)}>
+      <div className="w-full" onClick={() => handleSocialLogin(VITE_KAKAO_AUTH_URL, 'Kakao')}>
         <SocialButton logo={<KakaoLogo />} title="Continue with Kakao" type="kakao" />
       </div>
-      <div className="w-full" onClick={() => handleSocialLogin(VITE_GOOGLE_AUTH_URL)}>
+      <div className="w-full" onClick={() => handleSocialLogin(VITE_GOOGLE_AUTH_URL, 'Google')}>
         <SocialButton logo={<GoogleLogo />} title="Continue with Google" type="google" />
       </div>
       <div className="w-full" onClick={() => handleAppleLogin()}>
