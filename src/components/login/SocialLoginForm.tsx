@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { AppleLogo, GoogleLogo, KakaoLogo } from '../shared';
 import { SocialButton } from './Social/SocialButton';
 import { generateRandomString } from '@/utils/utils';
@@ -36,6 +37,25 @@ export function SocialLoginForm() {
       console.error('Apple login error:', error);
     }
   };
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const message = JSON.parse(event.data);
+        console.log('message: ', message);
+        if (typeof message === 'object' && message.oAuthUid && message.oAuthCategory) {
+          console.log(`oAuthUid: ${message.oAuthUid}, oAuthCategory: ${message.oAuthCategory}`);
+        }
+      } catch (error) {
+        console.error('Error parsing message from RN:', error);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center gap-3">
