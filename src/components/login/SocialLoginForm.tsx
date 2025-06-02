@@ -78,6 +78,7 @@ export function SocialLoginForm() {
 
   useEffect(() => {
     if (!memberCheckData) return;
+    console.log('memberCheckData: ', memberCheckData);
     checkMember(memberCheckData)
       .then(setIsMember)
       .catch((error) => console.error('Member check failed:', error));
