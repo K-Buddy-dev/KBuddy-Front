@@ -60,6 +60,7 @@ export function SocialLoginForm() {
     const handleMessage = (event: MessageEvent) => {
       try {
         const message = JSON.parse(event.data);
+        console.log('message: ', message);
         if (message.oAuthEmail && message.oAuthUid && message.oAuthCategory) {
           setOauthSignupData(message);
           setMemberCheckData({ oAuthUid: message.oAuthUid, oAuthCategory: message.oAuthCategory });
