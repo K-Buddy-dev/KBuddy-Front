@@ -1,4 +1,4 @@
-import { authService } from '@/services';
+import { userService } from '@/services';
 import { useEffect, useState, useCallback } from 'react';
 import { Draft } from './Draft';
 import { PostDraft } from '@/types';
@@ -27,7 +27,7 @@ export const DraftPosts = ({ onNext }: DraftPostsProps) => {
   const refreshDrafts = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await authService.getUserDrafts();
+      const response = await userService.getUserDrafts();
       const saved = response.data;
       if (saved) {
         setDrafts(saved);

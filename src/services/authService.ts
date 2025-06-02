@@ -1,40 +1,13 @@
 import { apiClient, authClient } from '@/api/axiosConfig';
-import { OauthRequest, ProfileEditFormData } from '@/types';
-
-export interface LoginRequest {
-  emailOrUserId: string;
-  password: string;
-}
-
-export interface EmailVerifyRequest {
-  email: string;
-}
-
-export interface SendCodeRequest {
-  email: string;
-}
-
-export interface VerifyCodeRequest {
-  email: string;
-  code: string;
-}
-
-export interface SignupRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  userId: string;
-  password?: string;
-  birthDate: string;
-  country: string;
-  gender: string;
-  oAuthUid?: string | number;
-  oAuthCategory?: 'KAKAO' | 'GOOGLE' | 'APPLE' | null;
-}
-
-export interface UserIdCheckRequest {
-  userId: string;
-}
+import {
+  EmailVerifyRequest,
+  LoginRequest,
+  OauthRequest,
+  SendCodeRequest,
+  SignupRequest,
+  UserIdCheckRequest,
+  VerifyCodeRequest,
+} from '@/types';
 
 export const authService = {
   login: async (data: LoginRequest) => {
@@ -79,31 +52,6 @@ export const authService = {
   },
   refreshAccessToken: async () => {
     const response = await authClient.get('/auth/accessToken');
-    return response.data;
-  },
-  getUserDrafts: async () => {
-    const response = await authClient.get('/user/drafts');
-    return response.data;
-  },
-  getUserProfile: async () => {
-    const response = await authClient.get('/user');
-    return response.data;
-  },
-  editProfile: async (data: ProfileEditFormData) => {
-    const formData = new FormData();
-
-    const { bio, profileImage } = data;
-    if (bio) {
-      formData.append('bio', JSON.stringify({ bio }));
-    }
-    if (profileImage) {
-      formData.append('profileImage', profileImage);
-    }
-    const response = await authClient.patch('/user/profile', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
     return response.data;
   },
 };

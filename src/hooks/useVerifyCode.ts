@@ -1,4 +1,5 @@
-import { authService, VerifyCodeRequest } from '@/services';
+import { authService } from '@/services';
+import { VerifyCodeRequest } from '@/types';
 import { useState } from 'react';
 
 export const useVerifyCode = () => {

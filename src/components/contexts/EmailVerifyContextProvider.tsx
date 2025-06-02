@@ -4,7 +4,8 @@ import {
   EmailVerifyStateContext,
   EmailVerifyStateContextType,
 } from '@/hooks';
-import { authService, EmailVerifyRequest } from '@/services';
+import { authService } from '@/services';
+import { EmailVerifyRequest } from '@/types';
 import { useCallback, useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
