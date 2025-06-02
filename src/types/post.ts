@@ -10,15 +10,25 @@ export interface PostFormData {
   images: File[];
 }
 
-export interface PostDraft {
+interface PostDraftBase {
   id: number;
   writerUuid: number;
-  categoryId: number | number[];
   title: string;
   description: string;
   images: string[];
   createdAt: string;
   modifiedAt: string;
   status: PostStatus;
-  type: PostFormType;
 }
+
+interface BlogDraft extends PostDraftBase {
+  type: 'Blog';
+  categoryId: number[];
+}
+
+interface QnADraft extends PostDraftBase {
+  type: 'Q&A';
+  categoryId: number;
+}
+
+export type PostDraft = BlogDraft | QnADraft;

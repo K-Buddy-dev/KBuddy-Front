@@ -1,13 +1,51 @@
-export interface ProfileEditFormData {
-  userId?: string;
-  profileImage?: File | null;
-  bio?: string | null;
+interface EmailRequestBase {
+  email: string;
 }
 
-export interface BasicUserData {
+export interface EmailVerifyRequest extends EmailRequestBase {}
+
+export interface SendCodeRequest extends EmailRequestBase {}
+
+export interface VerifyCodeRequest extends EmailRequestBase {
+  code: string;
+}
+
+export interface UserIdCheckRequest {
   userId: string;
-  profileImageUrl: string | null;
+}
+
+interface SignupBase {
+  firstName: string;
+  lastName: string;
+  email: string;
+  userId: string;
+  password?: string;
+  country: string;
+  gender: string;
+  oAuthUid?: string | number;
+  oAuthCategory?: 'KAKAO' | 'GOOGLE' | 'APPLE' | null;
+}
+
+export interface SignupFormData extends SignupBase {
+  confirmPassword?: string;
+  birthDate: { year: string; month: string; day: string };
+}
+
+export interface SignupRequest extends SignupBase {
+  birthDate: string;
+}
+
+interface ProfileDataBase {
+  userId: string;
   bio: string | null;
+}
+
+export interface ProfileEditFormData extends Partial<ProfileDataBase> {
+  profileImage?: File | null;
+}
+
+export interface BasicUserData extends ProfileDataBase {
+  profileImageUrl: string | null;
 }
 
 export interface User extends BasicUserData {
@@ -19,7 +57,5 @@ export interface User extends BasicUserData {
   id: number;
   isActive: boolean;
   lastName: string;
-  profileImageUrl: string | null;
   roles: string[];
-  userId: string;
 }
