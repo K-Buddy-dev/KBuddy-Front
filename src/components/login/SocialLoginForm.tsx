@@ -1,7 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AppleLogo, GoogleLogo, KakaoLogo } from '../shared';
 import { SocialButton } from './Social/SocialButton';
 import { generateRandomString } from '@/utils/utils';
+import { OauthRequest, ReactNativeRequest } from '@/types';
+import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
+import { useSocialStore } from '@/store';
+import { useNavigate } from 'react-router-dom';
 
 export function SocialLoginForm() {
   const isNative = typeof window !== 'undefined' && !!window.ReactNativeWebView;
@@ -9,6 +13,14 @@ export function SocialLoginForm() {
   const VITE_GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_GOOGLE_REDIRECT_URI)}&response_type=code&scope=${import.meta.env.VITE_GOOGLE_SCOPE}`;
 
   const state = generateRandomString(32);
+  const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
+  const [isMember, setIsMember] = useState<boolean | null>(null);
+
+  const navigate = useNavigate();
+
+  const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset } = useSocialStore();
+  const { checkMember } = useMemberCheckHandler();
+  const { handleLogin } = useOauthLoginHandler();
 
   const handleSocialLogin = (url: string, type: 'Kakao' | 'Google') => {
     if (isNative && window.ReactNativeWebView) {
@@ -16,6 +28,12 @@ export function SocialLoginForm() {
     } else {
       window.location.href = url;
     }
+  };
+
+  const setOauthSignupData = (data: ReactNativeRequest) => {
+    setEmail(data.oAuthEmail || '');
+    setoAuthUid(data.oAuthUid);
+    setoAuthCategory(data.oAuthCategory);
   };
 
   const handleAppleLogin = async () => {
@@ -42,9 +60,9 @@ export function SocialLoginForm() {
     const handleMessage = (event: MessageEvent) => {
       try {
         const message = JSON.parse(event.data);
-        console.log('message: ', message);
         if (typeof message === 'object' && message.oAuthUid && message.oAuthCategory) {
-          console.log(`oAuthUid: ${message.oAuthUid}, oAuthCategory: ${message.oAuthCategory}`);
+          setOauthSignupData(message);
+          setMemberCheckData({ oAuthUid: message.oAuthUid, oAuthCategory: message.oAuthCategory });
         }
       } catch (error) {
         console.error('Error parsing message from RN:', error);
@@ -56,6 +74,24 @@ export function SocialLoginForm() {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
+
+  useEffect(() => {
+    if (!memberCheckData) return;
+    checkMember(memberCheckData)
+      .then(setIsMember)
+      .catch((error) => console.error('Member check failed:', error));
+  }, [memberCheckData]);
+
+  useEffect(() => {
+    if (isMember === null) return;
+
+    if (isMember) {
+      handleLogin(memberCheckData!);
+      socialStoreReset();
+    } else {
+      navigate('/oauth/signup/form');
+    }
+  }, [isMember]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-3">
