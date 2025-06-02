@@ -61,7 +61,7 @@ export function SocialLoginForm() {
     const handleMessage = (event: MessageEvent) => {
       try {
         const message = JSON.parse(event.data);
-        console.log('message: ', message);
+        // console.log('message: ', message);
         if (message.oAuthEmail && message.oAuthUid && message.oAuthCategory) {
           setOauthSignupData(message);
           setMemberCheckData({ oAuthUid: message.oAuthUid, oAuthCategory: message.oAuthCategory });
@@ -79,15 +79,14 @@ export function SocialLoginForm() {
 
   useEffect(() => {
     if (!memberCheckData) return;
-    console.log('memberCheckData: ', memberCheckData);
-    checkMember(memberCheckData)
-      .then(setIsMember)
-      .catch((error) => console.error('Member check failed:', error));
+    // console.log('memberCheckData: ', memberCheckData);
+    checkMember(memberCheckData).then(setIsMember);
+    // .catch((error) => console.error('Member check failed:', error));
   }, [memberCheckData]);
 
   useEffect(() => {
     if (isMember === null) return;
-    console.log('isMember: ', isMember);
+    // console.log('isMember: ', isMember);
 
     if (!isMember) {
       handleLogin(memberCheckData!);
