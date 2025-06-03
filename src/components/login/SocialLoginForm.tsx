@@ -88,7 +88,7 @@ export function SocialLoginForm() {
     if (isMember === null) return;
     // console.log('isMember: ', isMember);
 
-    if (!isMember) {
+    if (isMember) {
       handleLogin(memberCheckData!);
       socialStoreReset();
     } else {
