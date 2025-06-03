@@ -175,7 +175,7 @@ export function SignupFormPage() {
               />
             )}
           />
-          <Button variant="solid" color="primary" className="w-full" disabled={isSubmitDisabled}>
+          <Button variant="solid" color="primary" type="submit" className="w-full" disabled={isSubmitDisabled}>
             {isLoading ? <Spinner color="primary" size="sm" /> : 'Create account'}
           </Button>
         </form>

@@ -69,7 +69,7 @@ export function SignupVerifyPage() {
             <TextField id="code" type="text" label="Confirmation code" error={error} {...field} maxLength={6} />
           )}
         />
-        <Button variant="solid" color="primary" className="w-full mt-[184px]" disabled={!isValid}>
+        <Button variant="solid" color="primary" type="submit" className="w-full mt-[184px]" disabled={!isValid}>
           {isLoading ? <Spinner color="primary" size="sm" /> : 'Next'}
         </Button>
         <span
