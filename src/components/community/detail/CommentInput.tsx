@@ -46,7 +46,7 @@ export const CommentInput = ({ editId, editText, onCommentSubmit, onCommentEdit 
   }, [editText]);
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-border-weak1 px-4 pt-3 pb-7 z-20">
+    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 min-w-[280px] w-full sm:w-[600px] bg-white border-t border-border-weak1 px-4 pt-3 pb-7 z-20">
       <div className="flex items-center h-10 gap-2">
         <img
           src={userInfo.profileImageUrl ? userInfo.profileImageUrl : defaultImg}
