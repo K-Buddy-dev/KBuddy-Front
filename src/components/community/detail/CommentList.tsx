@@ -13,6 +13,7 @@ interface CommentListProps {
   editId: null | number;
   setEditId: Dispatch<SetStateAction<null | number>>;
   setEditText: Dispatch<SetStateAction<null | string>>;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const CommentList = ({
@@ -24,6 +25,7 @@ export const CommentList = ({
   editId,
   setEditId,
   setEditText,
+  inputRef,
 }: CommentListProps) => {
   return (
     <div>
@@ -40,6 +42,7 @@ export const CommentList = ({
               comment={comment}
               handleCommentLike={handleCommentLike}
               reply={false}
+              inputRef={inputRef}
             />
             {comment.replies.map((recomment) => (
               <CommentItem
@@ -53,6 +56,7 @@ export const CommentList = ({
                 comment={recomment}
                 handleCommentLike={handleCommentLike}
                 reply={true}
+                inputRef={inputRef}
               />
             ))}
           </div>
@@ -68,6 +72,7 @@ export const CommentList = ({
             comment={comment}
             handleCommentLike={handleCommentLike}
             reply={false}
+            inputRef={inputRef}
           />
         );
       })}

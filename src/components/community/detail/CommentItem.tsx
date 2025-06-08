@@ -3,7 +3,7 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import defaultImg from '@/assets/images/default-profile.png';
 import { Comment } from '@/types';
 import { useNavigate } from 'react-router-dom';
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { DeletelModal } from './DeleteModal';
 
 interface CommentItemProps {
@@ -18,6 +18,7 @@ interface CommentItemProps {
   editId: null | number;
   setEditId: Dispatch<SetStateAction<null | number>>;
   setEditText: Dispatch<SetStateAction<null | string>>;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const CommentItem = ({
@@ -30,12 +31,11 @@ export const CommentItem = ({
   editId,
   setEditId,
   setEditText,
+  inputRef,
 }: CommentItemProps) => {
   const navigate = useNavigate();
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [userInfo, setUserInfo] = useState<{ uuid: string } | null>(null);
-  const replyInputRef = useRef<HTMLTextAreaElement | null>(null);
-  const editInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     const localUserData = localStorage.getItem('basicUserData');
@@ -51,7 +51,12 @@ export const CommentItem = ({
       setEditId(null);
       setEditText(null);
       setReplyId(comment.id);
+      setTimeout(() => {
+        inputRef?.current?.focus();
+      }, 0);
     } else {
+      setEditId(null);
+      setEditText(null);
       setReplyId(null);
     }
   };
@@ -61,23 +66,13 @@ export const CommentItem = ({
       setReplyId(null);
       setEditId(comment.replies.length > 0 ? comment.id : comment.id);
       setEditText(comment.description);
+      inputRef?.current?.focus();
     } else {
       setEditId(null);
       setEditText(null);
+      setReplyId(null);
     }
   };
-
-  useEffect(() => {
-    if (replyId === comment.id && replyInputRef.current) {
-      replyInputRef.current.focus();
-    }
-  }, [replyId]);
-
-  useEffect(() => {
-    if (editId === comment.id && editInputRef.current) {
-      editInputRef.current.focus();
-    }
-  }, [editId]);
 
   const isMyComment = userInfo?.uuid === String(comment.writerUuid);
   return (

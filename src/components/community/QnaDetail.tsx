@@ -16,7 +16,7 @@ import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 import { RecommendSwiper } from './swiper';
 import { CommunityContent } from './CommunityContent';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 interface QnaDetailProps {
   contentId: number;
@@ -39,6 +39,7 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData }: Qn
   const [replyId, setReplyId] = useState<null | number>(null);
   const [editId, setEditId] = useState<null | number>(null);
   const [editText, setEditText] = useState<null | string>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleCommentSubmit = (description: string) => {
     if (!description.trim()) return;
@@ -156,6 +157,7 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData }: Qn
           editId={editId}
           setEditId={setEditId}
           setEditText={setEditText}
+          inputRef={inputRef}
         />
       </div>
 
@@ -168,6 +170,7 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData }: Qn
         editText={editText}
         onCommentSubmit={handleCommentSubmit}
         onCommentEdit={handleCommentEdit}
+        inputRef={inputRef}
       />
     </main>
   );
