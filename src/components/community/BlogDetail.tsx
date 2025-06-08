@@ -92,12 +92,12 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
 
   if (isLoading)
     return (
-      <div className="w-screen h-screen flex items-center justify-center">
+      <div className="w-full h-screen flex items-center justify-center">
         <Spinner />
       </div>
     );
-  if (error) return <div className="w-screen h-screen flex items-center justify-center">Error: {error.message}</div>;
-  if (!blog?.data) return <div className="w-screen h-screen flex items-center justify-center">No data found</div>;
+  if (error) return <div className="w-full h-screen flex items-center justify-center">Error: {error.message}</div>;
+  if (!blog?.data) return <div className="w-full h-screen flex items-center justify-center">No data found</div>;
 
   const categoryNames = getCategoryNames(blog.data.categoryId);
 

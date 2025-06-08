@@ -92,12 +92,12 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData }: Qn
 
   if (isLoading)
     return (
-      <div className="w-screen h-screen flex items-center justify-center">
+      <div className="w-full h-screen flex items-center justify-center">
         <Spinner />
       </div>
     );
-  if (error) return <div className="w-screen h-screen flex items-center justify-center">Error: {error.message}</div>;
-  if (!qna?.data) return <div className="w-screen h-screen flex items-center justify-center">No data found</div>;
+  if (error) return <div className="w-full h-screen flex items-center justify-center">Error: {error.message}</div>;
+  if (!qna?.data) return <div className="w-full h-screen flex items-center justify-center">No data found</div>;
 
   const categoryNames = getCategoryNames(qna.data.categoryId);
 

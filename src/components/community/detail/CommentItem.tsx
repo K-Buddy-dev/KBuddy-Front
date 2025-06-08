@@ -3,7 +3,7 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import defaultImg from '@/assets/images/default-profile.png';
 import { Comment } from '@/types';
 import { useNavigate } from 'react-router-dom';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
 import { DeletelModal } from './DeleteModal';
 
 interface CommentItemProps {
@@ -33,16 +33,23 @@ export const CommentItem = ({
 }: CommentItemProps) => {
   const navigate = useNavigate();
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [userInfo, setUserInfo] = useState<{ uuid: string } | null>(null);
+  const replyInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const editInputRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const localUserData = localStorage.getItem('basicUserData');
-  if (!localUserData) {
-    navigate('/');
-    return;
-  }
-  const userInfo = JSON.parse(localUserData);
+  useEffect(() => {
+    const localUserData = localStorage.getItem('basicUserData');
+    if (!localUserData) {
+      navigate('/');
+    } else {
+      setUserInfo(JSON.parse(localUserData));
+    }
+  }, [navigate]);
 
   const handleReply = () => {
     if (replyId === null) {
+      setEditId(null);
+      setEditText(null);
       setReplyId(comment.id);
     } else {
       setReplyId(null);
@@ -51,6 +58,7 @@ export const CommentItem = ({
 
   const handleEdit = () => {
     if (editId === null) {
+      setReplyId(null);
       setEditId(comment.replies.length > 0 ? comment.id : comment.id);
       setEditText(comment.description);
     } else {
@@ -59,7 +67,19 @@ export const CommentItem = ({
     }
   };
 
-  const isMyComment = userInfo.uuid === comment.writerUuid;
+  useEffect(() => {
+    if (replyId === comment.id && replyInputRef.current) {
+      replyInputRef.current.focus();
+    }
+  }, [replyId]);
+
+  useEffect(() => {
+    if (editId === comment.id && editInputRef.current) {
+      editInputRef.current.focus();
+    }
+  }, [editId]);
+
+  const isMyComment = userInfo?.uuid === String(comment.writerUuid);
   return (
     <div className={`flex items-start gap-2 mb-4 ${reply ? ' ml-8' : ' ml-0'}`}>
       {showDeleteModal && (
