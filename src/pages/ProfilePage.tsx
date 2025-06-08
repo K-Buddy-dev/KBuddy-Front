@@ -1,10 +1,12 @@
 import { Button, Navbar } from '@/components';
-import { User } from '@/types';
+import { BasicUserData } from '@/types';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import defaultProfileImage from '@/assets/images/default-profile.png';
+import { authService } from '@/services';
+
 export function ProfilePage() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<BasicUserData | null>(null);
   const navigate = useNavigate();
 
   const onClickEditProfile = () => {
@@ -16,13 +18,32 @@ export function ProfilePage() {
   };
 
   useEffect(() => {
-    const localUserData = localStorage.getItem('basicUserData');
-    if (!localUserData) {
-      navigate('/');
-      return;
-    }
-    const userInfo = JSON.parse(localUserData);
-    setUser(userInfo);
+    const getUserProfile = async (): Promise<BasicUserData | null> => {
+      try {
+        const response = await authService.getUserProfile();
+        const basicUserData = response.data;
+        localStorage.setItem('basicUserData', JSON.stringify(basicUserData));
+        return basicUserData;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+    };
+
+    const fetchUserProfile = async () => {
+      try {
+        const userInfo = await getUserProfile();
+        if (userInfo) {
+          setUser(userInfo);
+        } else {
+          throw new Error('User not found');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchUserProfile();
   }, []);
 
   return (
