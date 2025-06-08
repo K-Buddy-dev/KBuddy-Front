@@ -65,7 +65,7 @@ export const CommentInput = ({ editId, editText, onCommentSubmit, onCommentEdit,
         <button
           onClick={editText !== null ? handleEdit : handleSubmit}
           disabled={commentText.length === 0}
-          className={`px-4 py-2 ${commentText.length === 0 ? ' bg-bg-brand-weak' : ' bg-bg-brand-default'} ${editText !== null && commentText === editText ? ' bg-bg-brand-weak' : ' bg-bg-brand-default'} text-white rounded-lg text-sm`}
+          className={`px-4 py-2 ${commentText.length === 0 ? ' bg-bg-brand-weak' : ' bg-bg-brand-default'} text-white rounded-lg text-sm`}
         >
           {editText !== null ? 'Edit' : 'Send'}
         </button>

@@ -51,9 +51,9 @@ export const CommentItem = ({
       setEditId(null);
       setEditText(null);
       setReplyId(comment.id);
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         inputRef?.current?.focus();
-      }, 0);
+      });
     } else {
       setEditId(null);
       setEditText(null);
@@ -66,7 +66,9 @@ export const CommentItem = ({
       setReplyId(null);
       setEditId(comment.replies.length > 0 ? comment.id : comment.id);
       setEditText(comment.description);
-      inputRef?.current?.focus();
+      requestAnimationFrame(() => {
+        inputRef?.current?.focus();
+      });
     } else {
       setEditId(null);
       setEditText(null);
