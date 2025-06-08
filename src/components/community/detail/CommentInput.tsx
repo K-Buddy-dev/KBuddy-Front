@@ -7,9 +7,10 @@ interface CommentInputProps {
   editText: null | string;
   onCommentSubmit: (description: string) => void;
   onCommentEdit: (id: number, description: string) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
-export const CommentInput = ({ editId, editText, onCommentSubmit, onCommentEdit }: CommentInputProps) => {
+export const CommentInput = ({ editId, editText, onCommentSubmit, onCommentEdit, inputRef }: CommentInputProps) => {
   const [commentText, setCommentText] = useState<string>('');
   const localUserData = localStorage.getItem('basicUserData');
   let userInfo = null;
@@ -54,6 +55,7 @@ export const CommentInput = ({ editId, editText, onCommentSubmit, onCommentEdit 
           className="w-7 h-7 rounded-full"
         />
         <input
+          ref={inputRef}
           type="text"
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}

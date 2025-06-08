@@ -16,7 +16,7 @@ import { Spinner } from '@/components/shared/spinner';
 import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 import { RecommendSwiper } from './swiper';
 import { CommunityContent } from './CommunityContent';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 interface BlogDetailProps {
   contentId: number;
@@ -39,6 +39,7 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
   const [replyId, setReplyId] = useState<null | number>(null);
   const [editId, setEditId] = useState<null | number>(null);
   const [editText, setEditText] = useState<null | string>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleCommentSubmit = (description: string) => {
     if (!description.trim()) return;
@@ -160,6 +161,7 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
           editId={editId}
           setEditId={setEditId}
           setEditText={setEditText}
+          inputRef={inputRef}
         />
       </div>
 
@@ -172,6 +174,7 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
         editText={editText}
         onCommentSubmit={handleCommentSubmit}
         onCommentEdit={handleCommentEdit}
+        inputRef={inputRef}
       />
     </main>
   );
