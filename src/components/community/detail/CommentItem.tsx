@@ -51,9 +51,11 @@ export const CommentItem = ({
       setEditId(null);
       setEditText(null);
       setReplyId(comment.id);
-      requestAnimationFrame(() => {
-        inputRef?.current?.focus();
-      });
+      if (inputRef !== null) {
+        requestAnimationFrame(() => {
+          inputRef?.current?.focus();
+        });
+      }
     } else {
       setEditId(null);
       setEditText(null);
@@ -66,9 +68,11 @@ export const CommentItem = ({
       setReplyId(null);
       setEditId(comment.replies.length > 0 ? comment.id : comment.id);
       setEditText(comment.description);
-      requestAnimationFrame(() => {
-        inputRef?.current?.focus();
-      });
+      if (inputRef !== null) {
+        requestAnimationFrame(() => {
+          inputRef?.current?.focus();
+        });
+      }
     } else {
       setEditId(null);
       setEditText(null);
