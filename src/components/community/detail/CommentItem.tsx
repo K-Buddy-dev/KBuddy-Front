@@ -46,16 +46,29 @@ export const CommentItem = ({
     }
   }, [navigate]);
 
+  const focusInputWithCursor = () => {
+    const inputEl = inputRef?.current;
+    if (inputEl) {
+      inputEl.readOnly = true;
+      inputEl.focus();
+
+      setTimeout(() => {
+        inputEl.readOnly = false;
+
+        const length = inputEl.value.length;
+        inputEl.setSelectionRange(length, length);
+      }, 100);
+    }
+  };
+
   const handleReply = () => {
     if (replyId === null) {
       setEditId(null);
       setEditText(null);
       setReplyId(comment.id);
-      if (inputRef !== null) {
-        requestAnimationFrame(() => {
-          inputRef?.current?.focus();
-        });
-      }
+      requestAnimationFrame(() => {
+        focusInputWithCursor();
+      });
     } else {
       setEditId(null);
       setEditText(null);
@@ -68,11 +81,9 @@ export const CommentItem = ({
       setReplyId(null);
       setEditId(comment.replies.length > 0 ? comment.id : comment.id);
       setEditText(comment.description);
-      if (inputRef !== null) {
-        requestAnimationFrame(() => {
-          inputRef?.current?.focus();
-        });
-      }
+      requestAnimationFrame(() => {
+        focusInputWithCursor();
+      });
     } else {
       setEditId(null);
       setEditText(null);
