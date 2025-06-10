@@ -96,6 +96,12 @@ export function SocialLoginForm() {
     }
   }, [isMember]);
 
+  const isIOS = (() => {
+    if (!isNative) return true;
+    const userAgent = navigator.userAgent || '';
+    return /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+  })();
+
   return (
     <div className="flex flex-col items-center justify-center gap-3">
       <div className="w-full" onClick={() => handleSocialLogin(VITE_KAKAO_AUTH_URL, 'Kakao')}>
@@ -104,9 +110,11 @@ export function SocialLoginForm() {
       <div className="w-full" onClick={() => handleSocialLogin(VITE_GOOGLE_AUTH_URL, 'Google')}>
         <SocialButton logo={<GoogleLogo />} title="Continue with Google" type="google" />
       </div>
-      <div className="w-full" onClick={() => handleAppleLogin()}>
-        <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
-      </div>
+      {isIOS && (
+        <div className="w-full" onClick={() => handleAppleLogin()}>
+          <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
+        </div>
+      )}
     </div>
   );
 }
