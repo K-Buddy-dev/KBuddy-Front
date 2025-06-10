@@ -25,6 +25,7 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
       switch (data.action) {
         case 'albumData':
           if (data.album && data.album.length > 0) {
+            console.log('data.album', data.album);
             const files = data.album.map((base64: string, index: number) =>
               base64ToFile(base64, `selected-image-${index}.jpg`)
             );
