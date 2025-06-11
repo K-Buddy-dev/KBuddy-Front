@@ -22,7 +22,7 @@ export const EmailVerifyContextProvider = () => {
       setIsVerify(true);
       return result;
     } catch (error: any) {
-      const errorMessage = 'Email verification failed';
+      const errorMessage = 'This email is already registered';
       setError(errorMessage);
       setIsVerify(false);
       throw error;
