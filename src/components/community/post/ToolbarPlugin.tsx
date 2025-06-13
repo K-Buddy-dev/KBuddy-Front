@@ -17,6 +17,7 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
   const [isItalic, setIsItalic] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [isList, setIsList] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
 
   const [scrollY, setScrollY] = useState(0);
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -55,6 +56,8 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
   }, []);
 
   useEffect(() => {
+    const isAndroidDevice = /Android/i.test(navigator.userAgent);
+    setIsAndroid(isAndroidDevice);
     const handleScroll = () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
@@ -100,7 +103,7 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
       style={
         isMobile && isFocused
           ? {
-              bottom: `${keyboardHeight}px`,
+              bottom: isAndroid ? '0px' : `${keyboardHeight}px`,
               transform: `translateY(${scrollY}px)`,
             }
           : undefined
