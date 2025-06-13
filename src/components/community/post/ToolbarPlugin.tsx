@@ -17,10 +17,10 @@ export const ToolbarPlugin = ({ keyboardHeight, isFocused }: ToolbarPluginProps)
   const [isItalic, setIsItalic] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [isList, setIsList] = useState(false);
-  const { isMobile, thisOS } = useMobileEnv();
-  const isAndroid = thisOS === 'android';
+  const { isMobile, isAndroid } = useMobileEnv();
 
   const [scrollY, setScrollY] = useState(0);
+  const [initialScrollY, setInitialScrollY] = useState(0);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>();
 
@@ -80,6 +80,12 @@ export const ToolbarPlugin = ({ keyboardHeight, isFocused }: ToolbarPluginProps)
   }, []);
 
   useEffect(() => {
+    if (isFocused) {
+      setInitialScrollY(window.scrollY);
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
     editor.registerUpdateListener(({ editorState }) => {
       editorState.read(() => {
         updateToolbar();
@@ -104,6 +110,7 @@ export const ToolbarPlugin = ({ keyboardHeight, isFocused }: ToolbarPluginProps)
           ? isAndroid
             ? {
                 bottom: '0px',
+                transform: `translateY(${scrollY - initialScrollY}px)`,
               }
             : {
                 bottom: `${keyboardHeight}px`,
