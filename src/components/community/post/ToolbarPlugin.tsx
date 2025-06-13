@@ -4,20 +4,21 @@ import { BoldTextIcon, ItalicTextIcon, CancelLineTextIcon, ListTextIcon } from '
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { FORMAT_TEXT_COMMAND, $getSelection, $isRangeSelection } from 'lexical';
 import { INSERT_UNORDERED_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, $isListNode } from '@lexical/list';
+import { useMobileEnv } from '@/hooks/useMobileEnvContext';
 
 export interface ToolbarPluginProps {
-  isMobile: boolean;
   keyboardHeight: number;
   isFocused: boolean;
 }
 
-export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPluginProps) => {
+export const ToolbarPlugin = ({ keyboardHeight, isFocused }: ToolbarPluginProps) => {
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [isList, setIsList] = useState(false);
-  const [isAndroid, setIsAndroid] = useState(false);
+  const { isMobile, thisOS } = useMobileEnv();
+  const isAndroid = thisOS === 'android';
 
   const [scrollY, setScrollY] = useState(0);
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -56,8 +57,6 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
   }, []);
 
   useEffect(() => {
-    const isAndroidDevice = /Android/i.test(navigator.userAgent);
-    setIsAndroid(isAndroidDevice);
     const handleScroll = () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
@@ -102,10 +101,14 @@ export const ToolbarPlugin = ({ isMobile, keyboardHeight, isFocused }: ToolbarPl
       )}
       style={
         isMobile && isFocused
-          ? {
-              bottom: isAndroid ? '0px' : `${keyboardHeight}px`,
-              transform: `translateY(${scrollY}px)`,
-            }
+          ? isAndroid
+            ? {
+                bottom: '0px',
+              }
+            : {
+                bottom: `${keyboardHeight}px`,
+                transform: `translateY(${scrollY}px)`,
+              }
           : undefined
       }
     >

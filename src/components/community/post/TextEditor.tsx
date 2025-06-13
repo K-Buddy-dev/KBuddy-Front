@@ -94,7 +94,7 @@ export const TextEditor = () => {
 
   return (
     <>
-      <ToolbarPlugin isMobile={isMobile} keyboardHeight={keyboardHeight} isFocused={isFocused} />
+      <ToolbarPlugin keyboardHeight={keyboardHeight} isFocused={isFocused} />
       <div ref={editorRef}>
         <RichTextPlugin
           contentEditable={<ContentEditable className="outline-none" />}
