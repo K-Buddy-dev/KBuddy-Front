@@ -1,4 +1,4 @@
-import { EmailVerifyRequest } from '@/services';
+import { EmailVerifyRequest } from '@/types';
 import { createContext, useContext } from 'react';
 
 export interface EmailVerifyStateContextType {

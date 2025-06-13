@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CATEGORIES } from '@/types/community';
+import { POST_CATEGORIES } from '@/constants';
 import { Topbar } from '@/components/shared';
 
 interface FiltersModalProps {
@@ -62,7 +62,7 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) 
         <div className="py-[14px] font-medium text-text-default">
           <h3 className="mb-[10px]">Category selection</h3>
           <div className="grid grid-cols-2 gap-2">
-            {CATEGORIES.map((category) => (
+            {POST_CATEGORIES.map((category) => (
               <label
                 key={category.id}
                 className="flex items-center p-3 border border-border-default h-12 rounded-lg cursor-pointer"

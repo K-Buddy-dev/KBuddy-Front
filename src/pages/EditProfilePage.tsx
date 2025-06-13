@@ -3,7 +3,7 @@ import { BasicUserData } from '@/types';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import defaultProfileImage from '@/assets/images/default-profile.png';
-import { authService } from '@/services';
+import { userService } from '@/services';
 import { base64ToFile } from '@/utils/utils';
 
 export function EditProfilePage() {
@@ -84,7 +84,7 @@ export function EditProfilePage() {
     const data = Object.fromEntries(formData);
 
     try {
-      await authService.editProfile(data);
+      await userService.editProfile(data);
     } catch (error) {
       console.error(error);
     } finally {

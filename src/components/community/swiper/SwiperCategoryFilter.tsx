@@ -1,6 +1,6 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSearchParams } from 'react-router-dom';
-import { CATEGORIES } from '@/types';
+import { POST_CATEGORIES } from '@/constants';
 
 interface CategoryFilterSwiperProps {
   onCategoryChange: (categoryCode: number | undefined) => void;
@@ -31,7 +31,7 @@ export const CategoryFilterSwiper: React.FC<CategoryFilterSwiperProps> = ({ onCa
         `}
       </style>
       <Swiper className="swiper-container" spaceBetween={8} slidesPerView="auto" loop={false} allowTouchMove={true}>
-        {CATEGORIES.map((category) => (
+        {POST_CATEGORIES.map((category) => (
           <SwiperSlide key={category.id} style={{ width: 'auto' }}>
             <button
               onClick={() => handleCategorySelect(category.id)}

@@ -1,4 +1,4 @@
-import { CATEGORIES } from '@/types';
+import { POST_CATEGORIES } from '@/constants';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -59,9 +59,9 @@ export const urlToFile = async (url: string, fileName: string): Promise<File> =>
 export function getCategoryNames(categoryId: number | number[]): string {
   if (Array.isArray(categoryId)) {
     return categoryId
-      .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
+      .map((id) => POST_CATEGORIES.find((cat) => cat.id === id)?.name)
       .filter(Boolean)
       .join(' | ');
   }
-  return CATEGORIES.find((cat) => cat.id === categoryId)?.name || '';
+  return POST_CATEGORIES.find((cat) => cat.id === categoryId)?.name || '';
 }

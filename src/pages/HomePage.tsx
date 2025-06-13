@@ -3,7 +3,7 @@ import { Navbar } from '@/components/shared/navbar/Navbar';
 import { SwiperList } from '@/components/community/swiper';
 import { useContentActions, useFeaturedBlogs } from '@/hooks';
 import { useEffect } from 'react';
-import { authService } from '@/services';
+import { userService } from '@/services';
 
 export const HomePage = () => {
   const { data: featuredBlog, refetch: refetchFeaturedBlog } = useFeaturedBlogs();
@@ -16,7 +16,7 @@ export const HomePage = () => {
   useEffect(() => {
     const getUserProfile = async () => {
       try {
-        const response = await authService.getUserProfile();
+        const response = await userService.getUserProfile();
         const basicUserData = response.data;
         localStorage.setItem('basicUserData', JSON.stringify(basicUserData));
       } catch (error) {
