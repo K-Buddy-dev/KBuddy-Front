@@ -49,6 +49,7 @@ export const TextEditor = () => {
     if (window.ReactNativeWebView) {
       setIsMobile(true);
       window.addEventListener('message', handleKeyboardHeight);
+      document.addEventListener('message', handleKeyboardHeight as EventListener);
     }
 
     const editorElement = editorRef.current;
@@ -71,6 +72,7 @@ export const TextEditor = () => {
 
     return () => {
       window.removeEventListener('message', handleKeyboardHeight);
+      document.removeEventListener('message', handleKeyboardHeight as EventListener);
       editorElement.removeEventListener('focus', handleFocus, true);
       editorElement.removeEventListener('blur', handleBlur, true);
     };
