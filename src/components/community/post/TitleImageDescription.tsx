@@ -7,6 +7,8 @@ import { usePost } from '@/hooks/usePost';
 import { useEffect, useState } from 'react';
 import { useStackNavigation } from 'j-react-stack';
 import { Complete } from './Complete';
+import { useMobileEnv } from '@/hooks/useMobileEnvContext';
+import { cn } from '@/utils';
 
 export const TitleImageDescription = () => {
   const { title, description, images, type, categoryId, draftId, isDraftMode, isEditMode, originalType } =
@@ -16,6 +18,7 @@ export const TitleImageDescription = () => {
   const { push, pop } = useStackNavigation();
   const { reset } = useCommunityFormActionContext();
   const isValid = title.length > 0 && description.length > 0;
+  const { isAndroid } = useMobileEnv();
 
   const onSubmit = async () => {
     try {
@@ -70,7 +73,7 @@ export const TitleImageDescription = () => {
   }, []);
 
   return (
-    <div className="font-roboto w-full min-h-screen pt-20">
+    <div className={cn('font-roboto w-full min-h-screen pt-20', isAndroid && 'pb-6')}>
       <Topbar
         title={`${isEditMode ? 'Edit Post' : 'New Post'}`}
         type="back"

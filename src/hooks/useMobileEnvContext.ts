@@ -2,7 +2,8 @@ import { createContext, useContext } from 'react';
 
 export interface MobileEnvContextType {
   isMobile: boolean;
-  thisOS: 'ios' | 'android' | 'web';
+  isIOS: boolean;
+  isAndroid: boolean;
 }
 
 export const MobileEnvContext = createContext<MobileEnvContextType | undefined>(undefined);
