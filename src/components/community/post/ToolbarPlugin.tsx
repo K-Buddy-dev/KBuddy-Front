@@ -55,6 +55,7 @@ export const ToolbarPlugin = () => {
     <div id="toolbar" className="w-full h-auto !border-0 relative pb-4">
       <div className="flex items-center gap-4">
         <button
+          onMouseDown={(e) => e.preventDefault()}
           className="!w-6 !h-6 !p-0"
           onClick={() => {
             formatText('bold');
@@ -65,6 +66,7 @@ export const ToolbarPlugin = () => {
           <BoldTextIcon fill={isBold ? '#6952F9' : '#222222'} />
         </button>
         <button
+          onMouseDown={(e) => e.preventDefault()}
           className="!w-6 !h-6 !p-0"
           onClick={() => {
             formatText('italic');
@@ -75,6 +77,7 @@ export const ToolbarPlugin = () => {
           <ItalicTextIcon fill={isItalic ? '#6952F9' : '#222222'} />
         </button>
         <button
+          onMouseDown={(e) => e.preventDefault()}
           className="!w-6 !h-6 !p-0"
           onClick={() => {
             formatText('strikethrough');
@@ -85,6 +88,7 @@ export const ToolbarPlugin = () => {
           <CancelLineTextIcon fill={isStrikethrough ? '#6952F9' : '#222222'} />
         </button>
         <button
+          onMouseDown={(e) => e.preventDefault()}
           className="!w-6 !h-6 !p-0"
           onClick={() => {
             formatList('unordered');
