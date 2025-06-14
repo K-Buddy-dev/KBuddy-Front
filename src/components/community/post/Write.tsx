@@ -1,18 +1,12 @@
 import { Button, Topbar } from '@/components/shared';
 import { useNavigate } from 'react-router-dom';
 import { DraftPosts } from './DraftPosts';
-import { useStackNavigation } from 'j-react-stack';
-import { TypeCategory } from './TypeCategory';
 
 export const Write = () => {
-  const { push } = useStackNavigation();
   const navigate = useNavigate();
 
   const onNext = () => {
-    push({
-      key: 'typeCategory',
-      element: <TypeCategory />,
-    });
+    navigate('/community/post/type-category');
   };
 
   const handleClickCancleButton = () => {

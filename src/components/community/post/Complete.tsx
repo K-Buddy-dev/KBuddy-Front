@@ -9,7 +9,6 @@ export const Complete = () => {
   const { reset } = useCommunityFormActionContext();
 
   useEffect(() => {
-    localStorage.removeItem('community-current-step');
     reset();
   }, []);
 

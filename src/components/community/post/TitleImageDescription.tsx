@@ -5,15 +5,14 @@ import { Images } from './Images';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
 import { usePost } from '@/hooks/usePost';
 import { useEffect, useState } from 'react';
-import { useStackNavigation } from 'j-react-stack';
-import { Complete } from './Complete';
+import { useNavigate } from 'react-router-dom';
 
 export const TitleImageDescription = () => {
+  const navigate = useNavigate();
   const { title, description, images, type, categoryId, draftId, isDraftMode, isEditMode, originalType } =
     useCommunityFormStateContext();
   const { createPost, updatePost, isLoading } = usePost();
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const { push, pop } = useStackNavigation();
   const { reset } = useCommunityFormActionContext();
   const isValid = title.length > 0 && description.length > 0;
 
@@ -48,17 +47,14 @@ export const TitleImageDescription = () => {
       localStorage.removeItem('community-current-step');
       reset();
 
-      push({
-        key: 'complete',
-        element: <Complete />,
-      });
+      navigate('/community/post/complete');
     } catch (error) {
       console.error('Error submitting form:', error);
     }
   };
 
   const onBack = () => {
-    pop();
+    navigate(-1);
   };
 
   useEffect(() => {
