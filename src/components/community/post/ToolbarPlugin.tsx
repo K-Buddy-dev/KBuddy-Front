@@ -95,6 +95,12 @@ export const ToolbarPlugin = ({ keyboardHeight, isFocused }: ToolbarPluginProps)
     });
   }, [editor, updateToolbar]);
 
+  useEffect(() => {
+    console.log('scrollY', scrollY);
+    console.log('initialScrollY', initialScrollY);
+    console.log('scrollY - initialScrollY', scrollY - initialScrollY);
+  }, [scrollY, initialScrollY]);
+
   return (
     <div
       ref={toolbarRef}
