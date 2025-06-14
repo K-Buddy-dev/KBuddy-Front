@@ -19,6 +19,7 @@ export function AuthGuard() {
   const location = useLocation();
   const { pathname } = location;
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isChecking, setIsChecking] = useState<boolean>(true);
 
   const isOAuthCallback = OAUTH_CALLBACK_PATHS.some((path) => pathname.startsWith(path));
 
@@ -37,11 +38,17 @@ export function AuthGuard() {
         }
       } catch {
         setIsAuthenticated(false);
+      } finally {
+        setIsChecking(false);
       }
     };
 
     refreshToken();
   }, []);
+
+  if (isChecking && !isAuthenticated) {
+    return null;
+  }
 
   if (isOAuthCallback) {
     return <Outlet />;
