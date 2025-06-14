@@ -46,7 +46,7 @@ export const TextEditor = () => {
 
   return (
     <>
-      {isMobile && <ToolbarPlugin />}
+      {!isMobile && <ToolbarPlugin />}
       <div ref={editorRef}>
         <RichTextPlugin
           contentEditable={<ContentEditable className="outline-none" />}
