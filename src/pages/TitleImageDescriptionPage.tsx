@@ -1,13 +1,13 @@
 import { Topbar } from '@/components/shared';
-import { Description } from './Description';
-import { Title } from './Title';
-import { Images } from './Images';
+import { Description } from '../components/community/post/Description';
+import { Title } from '../components/community/post/Title';
+import { Images } from '../components/community/post/Images';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
 import { usePost } from '@/hooks/usePost';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const TitleImageDescription = () => {
+export const TitleImageDescriptionPage = () => {
   const navigate = useNavigate();
   const { title, description, images, type, categoryId, draftId, isDraftMode, isEditMode, originalType } =
     useCommunityFormStateContext();

@@ -16,3 +16,6 @@ export { ProfilePage } from './ProfilePage';
 export { EditProfilePage } from './EditProfilePage';
 export { SettingPage } from './SettingPage';
 export { HomePage } from './HomePage';
+export * from './TypeCategoryPage';
+export * from './TitleImageDescriptionPage';
+export * from './CommunityCompletePage';

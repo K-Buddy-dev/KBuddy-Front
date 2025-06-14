@@ -1,5 +1,5 @@
-import { TypeCategory } from '@/components/community/post';
+import { TypeCategoryPage } from './TypeCategoryPage';
 
 export const CommunityEditPage = () => {
-  return <TypeCategory />;
+  return <TypeCategoryPage />;
 };
