@@ -72,9 +72,12 @@ export const ToolbarPlugin = ({ keyboardHeight, isFocused }: ToolbarPluginProps)
         rafRef.current = requestAnimationFrame(() => {
           if (toolbarRef.current) {
             const currentScroll = window.scrollY;
-            if (!initialScrollY) {
-              setInitialScrollY(currentScroll);
-            }
+            setInitialScrollY((prev) => {
+              if (prev === 0) {
+                return currentScroll;
+              }
+              return prev;
+            });
             setScrollY(currentScroll);
           }
         });
