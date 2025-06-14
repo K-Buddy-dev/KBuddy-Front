@@ -11,11 +11,13 @@ export const ToolbarPlugin = ({ editor }: ToolbarPluginProps) => {
   }
 
   const handleFormat = (type: 'bold' | 'italic' | 'strike') => {
-    if (editor.isActive(type)) {
-      editor.chain().focus().unsetMark(type).run();
-    } else {
-      editor.chain().focus().setMark(type).run();
-    }
+    setTimeout(() => {
+      if (editor.isActive(type)) {
+        editor.chain().focus().unsetMark(type).run();
+      } else {
+        editor.chain().focus().setMark(type).run();
+      }
+    }, 10);
   };
 
   return (
