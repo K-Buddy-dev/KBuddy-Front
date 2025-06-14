@@ -81,7 +81,9 @@ export const ToolbarPlugin = ({ keyboardHeight, isFocused }: ToolbarPluginProps)
 
   useEffect(() => {
     if (isFocused) {
-      setInitialScrollY(window.scrollY);
+      const currentScroll = window.scrollY;
+      setInitialScrollY(currentScroll);
+      setScrollY(currentScroll);
     }
   }, [isFocused]);
 
