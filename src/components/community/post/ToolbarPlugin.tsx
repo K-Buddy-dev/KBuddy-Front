@@ -57,33 +57,35 @@ export const ToolbarPlugin = ({ keyboardHeight, isFocused }: ToolbarPluginProps)
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
-
-      rafRef.current = requestAnimationFrame(() => {
-        if (toolbarRef.current) {
-          const currentScroll = window.scrollY;
-          setScrollY(currentScroll);
-        }
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     if (isFocused) {
+      // 1. 포커스 시점의 스크롤 위치를 초기값으로 설정
       const currentScroll = window.scrollY;
       setInitialScrollY(currentScroll);
       setScrollY(currentScroll);
+
+      // 2. 스크롤 이벤트 리스너 등록
+      const handleScroll = () => {
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+        }
+
+        rafRef.current = requestAnimationFrame(() => {
+          if (toolbarRef.current) {
+            const currentScroll = window.scrollY;
+            setScrollY(currentScroll);
+          }
+        });
+      };
+
+      window.addEventListener('scroll', handleScroll, { passive: true });
+
+      // 3. Cleanup: 포커스가 해제되면 이벤트 리스너 제거
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+        }
+      };
     }
   }, [isFocused]);
 
@@ -106,7 +108,7 @@ export const ToolbarPlugin = ({ keyboardHeight, isFocused }: ToolbarPluginProps)
       ref={toolbarRef}
       id="toolbar"
       className={cn(
-        'w-full h-auto !border-0 ',
+        'w-full h-auto !border-0',
         isMobile
           ? isFocused
             ? `fixed p-4 left-0 bg-white z-50 transition-transform duration-100`

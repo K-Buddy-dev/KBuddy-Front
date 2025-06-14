@@ -73,7 +73,7 @@ export const TitleImageDescription = () => {
   }, []);
 
   return (
-    <div className={cn('font-roboto w-full min-h-screen pt-20', isAndroid && 'pb-6')}>
+    <div className={cn('font-roboto w-full min-h-screen pt-20', isAndroid && 'pb-14')}>
       <Topbar
         title={`${isEditMode ? 'Edit Post' : 'New Post'}`}
         type="back"
