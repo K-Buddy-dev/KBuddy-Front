@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CompleteImage from '@/assets/images/post/post_success.png';
 import { useCommunityFormActionContext } from '@/hooks';
 
-export const Complete = () => {
+export const CommunityCompletePage = () => {
   const navigate = useNavigate();
   const { reset } = useCommunityFormActionContext();
 

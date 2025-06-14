@@ -1,12 +1,12 @@
 import { Topbar } from '@/components/shared';
-import { DraftModal } from './DraftModal';
+import { DraftModal } from '../components/community/post/DraftModal';
 import { useEffect, useState } from 'react';
-import { CategorySelector } from './CategorySelector';
-import { TypeSelector } from './TypeSelector';
+import { CategorySelector } from '../components/community/post/CategorySelector';
+import { TypeSelector } from '../components/community/post/TypeSelector';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
 
-export const TypeCategory = () => {
+export const TypeCategoryPage = () => {
   const navigate = useNavigate();
   const { reset } = useCommunityFormActionContext();
   const { type, categoryId, isEditMode } = useCommunityFormStateContext();
@@ -43,7 +43,7 @@ export const TypeCategory = () => {
 
   return (
     <div className="font-roboto w-full min-h-screen pt-20">
-      <Topbar title="Post Preview" type="back" isNext={true} onBack={handleClickBackButton} />
+      <Topbar title={isEditMode ? 'Edit Post' : 'New Post'} type="back" isNext={true} onBack={handleClickBackButton} />
       {/* <div className="bg-bg-medium w-full h-[326px] mt-14 px-4">
         <SectionInfo
           title="Post Preview"

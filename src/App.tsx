@@ -17,6 +17,9 @@ import {
   SignupVerifyPage,
   SignupFormPage,
   CommunityEditPage,
+  TypeCategoryPage,
+  TitleImageDescriptionPage,
+  CommunityCompletePage,
 } from './pages';
 
 import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
@@ -27,9 +30,6 @@ import { CommunityFormContextProvider } from './components/contexts/CommunityFor
 import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 import { ToastProvider } from './hooks/useToastContext.tsx';
 import { MobileEnvProvider } from './components/contexts/MobileEnvContextProvider.tsx';
-import { TypeCategory } from './components/community/post/TypeCategory.tsx';
-import { TitleImageDescription } from './components/community/post/TitleImageDescription.tsx';
-import { Complete } from './components/community/post/Complete.tsx';
 
 function App() {
   return (
@@ -58,9 +58,9 @@ function App() {
                 <Route path="/community" element={<CommunityPage />} />
                 <Route element={<CommunityFormContextProvider />}>
                   <Route path="/community/post" element={<CommunityPostPage />} />
-                  <Route path="/community/post/type-category" element={<TypeCategory />} />
-                  <Route path="/community/post/title-image-description" element={<TitleImageDescription />} />
-                  <Route path="/community/post/complete" element={<Complete />} />
+                  <Route path="/community/post/type-category" element={<TypeCategoryPage />} />
+                  <Route path="/community/post/title-image-description" element={<TitleImageDescriptionPage />} />
+                  <Route path="/community/post/complete" element={<CommunityCompletePage />} />
                   <Route path="/community/edit" element={<CommunityEditPage />} />
                   <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
                 </Route>
