@@ -4,32 +4,25 @@ import { useEffect, useState } from 'react';
 import { CategorySelector } from './CategorySelector';
 import { TypeSelector } from './TypeSelector';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
-import { useStackNavigation } from 'j-react-stack';
-import { TitleImageDescription } from './TitleImageDescription';
 import { useNavigate } from 'react-router-dom';
 
 export const TypeCategory = () => {
   const navigate = useNavigate();
-  const { push, pop } = useStackNavigation();
   const { reset } = useCommunityFormActionContext();
-  const { type, categoryId, detailBackUrl, isEditMode } = useCommunityFormStateContext();
+  const { type, categoryId, isEditMode } = useCommunityFormStateContext();
   const [showExitModal, setShowExitModal] = useState(false);
 
   const onExit = () => {
-    pop();
+    navigate(-1);
     reset();
   };
 
   const onEditExit = () => {
-    pop();
-    navigate(`${detailBackUrl}`, { replace: true });
+    navigate(-1);
   };
 
   const onNext = () => {
-    push({
-      key: 'description',
-      element: <TitleImageDescription />,
-    });
+    navigate('/community/post/title-image-description');
   };
 
   const handleClickBackButton = () => {
