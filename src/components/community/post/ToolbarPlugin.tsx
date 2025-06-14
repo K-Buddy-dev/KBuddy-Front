@@ -73,7 +73,7 @@ export const ToolbarPlugin = ({ keyboardHeight, isFocused }: ToolbarPluginProps)
           if (toolbarRef.current) {
             const currentScroll = window.scrollY;
             setInitialScrollY((prev) => {
-              if (prev === 0) {
+              if (prev < currentScroll) {
                 return currentScroll;
               }
               return prev;
