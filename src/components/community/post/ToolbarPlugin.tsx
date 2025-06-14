@@ -1,98 +1,49 @@
-import { useCallback, useState, useEffect } from 'react';
+import { Editor } from '@tiptap/react';
 import { BoldTextIcon, ItalicTextIcon, CancelLineTextIcon, ListTextIcon } from '@/components/shared';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { FORMAT_TEXT_COMMAND, $getSelection, $isRangeSelection } from 'lexical';
-import { INSERT_UNORDERED_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, $isListNode } from '@lexical/list';
 
-export const ToolbarPlugin = () => {
-  const [editor] = useLexicalComposerContext();
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [isStrikethrough, setIsStrikethrough] = useState(false);
-  const [isList, setIsList] = useState(false);
+interface ToolbarPluginProps {
+  editor: Editor | null;
+}
 
-  const formatText = useCallback(
-    (format: 'bold' | 'italic' | 'strikethrough') => {
-      editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
-    },
-    [editor]
-  );
-
-  const formatList = useCallback(
-    (type: 'unordered' | 'ordered') => {
-      if (type === 'unordered') {
-        editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-      } else {
-        editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
-      }
-    },
-    [editor]
-  );
-
-  const updateToolbar = useCallback(() => {
-    const selection = $getSelection();
-    if ($isRangeSelection(selection)) {
-      setIsBold(selection.hasFormat('bold'));
-      setIsItalic(selection.hasFormat('italic'));
-      setIsStrikethrough(selection.hasFormat('strikethrough'));
-
-      // 리스트 상태 확인
-      const node = selection.anchor.getNode();
-      const parentNode = node.getParent();
-      setIsList(parentNode ? $isListNode(parentNode) : false);
-    }
-  }, []);
-
-  useEffect(() => {
-    editor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        updateToolbar();
-      });
-    });
-  }, [editor, updateToolbar]);
+export const ToolbarPlugin = ({ editor }: ToolbarPluginProps) => {
+  if (!editor) {
+    return null;
+  }
 
   return (
     <div id="toolbar" className="w-full h-auto !border-0 relative pb-4">
       <div className="flex items-center gap-4">
         <button
-          className="!w-6 !h-6 !p-0"
-          onClick={() => {
-            formatText('bold');
-          }}
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          disabled={!editor.can().chain().focus().toggleBold().run()}
+          className={editor.isActive('bold') ? 'is-active !w-6 !h-6 !p-0' : '!w-6 !h-6 !p-0'}
           title="볼드"
-          aria-label="볼드"
         >
-          <BoldTextIcon fill={isBold ? '#6952F9' : '#222222'} />
+          <BoldTextIcon fill={editor.isActive('bold') ? '#6952F9' : '#222222'} />
         </button>
         <button
-          className="!w-6 !h-6 !p-0"
-          onClick={() => {
-            formatText('italic');
-          }}
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          disabled={!editor.can().chain().focus().toggleItalic().run()}
+          className={editor.isActive('italic') ? 'is-active !w-6 !h-6 !p-0' : '!w-6 !h-6 !p-0'}
           title="이탤릭"
-          aria-label="이탤릭"
         >
-          <ItalicTextIcon fill={isItalic ? '#6952F9' : '#222222'} />
+          <ItalicTextIcon fill={editor.isActive('italic') ? '#6952F9' : '#222222'} />
         </button>
         <button
-          className="!w-6 !h-6 !p-0"
-          onClick={() => {
-            formatText('strikethrough');
-          }}
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          disabled={!editor.can().chain().focus().toggleStrike().run()}
+          className={editor.isActive('strike') ? 'is-active !w-6 !h-6 !p-0' : '!w-6 !h-6 !p-0'}
           title="취소선"
-          aria-label="취소선"
         >
-          <CancelLineTextIcon fill={isStrikethrough ? '#6952F9' : '#222222'} />
+          <CancelLineTextIcon fill={editor.isActive('strike') ? '#6952F9' : '#222222'} />
         </button>
         <button
-          className="!w-6 !h-6 !p-0"
-          onClick={() => {
-            formatList('unordered');
-          }}
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          disabled={!editor.can().chain().focus().toggleBulletList().run()}
+          className={editor.isActive('bulletList') ? 'is-active !w-6 !h-6 !p-0' : '!w-6 !h-6 !p-0'}
           title="리스트"
-          aria-label="리스트"
         >
-          <ListTextIcon fill={isList ? '#6952F9' : '#222222'} />
+          <ListTextIcon fill={editor.isActive('bulletList') ? '#6952F9' : '#222222'} />
         </button>
       </div>
     </div>

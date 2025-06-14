@@ -1,64 +1,70 @@
-import { ContentEditable } from '@lexical/react/LexicalContentEditable';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
-import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
-import { ListPlugin } from '@lexical/react/LexicalListPlugin';
-import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import { ToolbarPlugin } from './ToolbarPlugin';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { useCallback, useEffect, useRef } from 'react';
-import { EditorState } from 'lexical';
+import { useEffect } from 'react';
+import { ToolbarPlugin } from './ToolbarPlugin';
 
 export const TextEditor = () => {
   const { description } = useCommunityFormStateContext();
   const { setDescription } = useCommunityFormActionContext();
 
-  const [editor] = useLexicalComposerContext();
-  const isInitialMount = useRef(true);
-  const editorRef = useRef<HTMLDivElement>(null);
-
-  const onChange = useCallback(
-    (editorState: EditorState) => {
-      editorState.read(() => {
-        const json = editorState.toJSON();
-        setDescription(JSON.stringify(json));
-      });
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        paragraph: {
+          HTMLAttributes: {
+            class: 'my-2',
+          },
+        },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'list-disc pl-5',
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'list-decimal pl-5',
+          },
+        },
+      }),
+      Placeholder.configure({
+        placeholder: 'Start writing a blog or question',
+      }),
+    ],
+    editorProps: {
+      attributes: {
+        class: 'focus:outline-none',
+      },
     },
-    [setDescription]
-  );
+    onUpdate: ({ editor }) => {
+      const json = editor.getJSON();
+      setDescription(JSON.stringify(json));
+    },
+  });
 
   useEffect(() => {
-    if (isInitialMount.current) {
-      if (description) {
-        try {
-          const parsedState = JSON.parse(description);
-          editor.setEditorState(editor.parseEditorState(parsedState));
-        } catch (e) {
-          console.error('Failed to parse editor state:', e);
+    if (editor && description) {
+      try {
+        const parsedContent = JSON.parse(description);
+        // Tiptap 형식인지 간단히 확인
+        if (parsedContent.type === 'doc') {
+          editor.commands.setContent(parsedContent, false);
+        } else {
+          // Lexical 형식이거나 다른 형식이면 에디터를 비움
+          editor.commands.clearContent();
         }
+      } catch {
+        // JSON 파싱 실패 시 (일반 텍스트 등)
+        editor.commands.clearContent();
       }
-      isInitialMount.current = false;
     }
-  }, [description, editor]);
+  }, [editor, description]);
 
   return (
-    <>
-      <ToolbarPlugin />
-      <div ref={editorRef}>
-        <RichTextPlugin
-          contentEditable={<ContentEditable className="outline-none" />}
-          placeholder={
-            <div className="absolute text-gray-400 left-4 pointer-events-none select-none top-14">
-              Start writing a blog or question
-            </div>
-          }
-          ErrorBoundary={LexicalErrorBoundary}
-        />
-      </div>
-      <OnChangePlugin onChange={onChange} />
-      <ListPlugin />
-      <HistoryPlugin />
-    </>
+    <div>
+      <ToolbarPlugin editor={editor} />
+      <EditorContent editor={editor} />
+    </div>
   );
 };
