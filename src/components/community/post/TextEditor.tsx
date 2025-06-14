@@ -27,6 +27,21 @@ export const TextEditor = () => {
             class: 'list-decimal pl-5',
           },
         },
+        bold: {
+          HTMLAttributes: {
+            class: 'font-bold',
+          },
+        },
+        italic: {
+          HTMLAttributes: {
+            class: 'italic',
+          },
+        },
+        strike: {
+          HTMLAttributes: {
+            class: 'line-through',
+          },
+        },
       }),
       Placeholder.configure({
         placeholder: 'Start writing a blog or question',
