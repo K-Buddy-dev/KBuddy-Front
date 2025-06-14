@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, MouseEvent } from 'react';
 import { BoldTextIcon, ItalicTextIcon, CancelLineTextIcon, ListTextIcon } from '@/components/shared';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { FORMAT_TEXT_COMMAND, $getSelection, $isRangeSelection } from 'lexical';
@@ -11,27 +11,19 @@ export const ToolbarPlugin = () => {
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [isList, setIsList] = useState(false);
 
-  const formatText = useCallback(
-    (format: 'bold' | 'italic' | 'strikethrough') => {
-      editor.focus(() => {
-        editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
-      });
-    },
-    [editor]
-  );
+  const handleFormat = (event: MouseEvent<HTMLButtonElement>, format: 'bold' | 'italic' | 'strikethrough') => {
+    event.preventDefault();
+    editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
+  };
 
-  const formatList = useCallback(
-    (type: 'unordered' | 'ordered') => {
-      editor.focus(() => {
-        if (type === 'unordered') {
-          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-        } else {
-          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
-        }
-      });
-    },
-    [editor]
-  );
+  const handleList = (event: MouseEvent<HTMLButtonElement>, type: 'unordered' | 'ordered') => {
+    event.preventDefault();
+    if (type === 'unordered') {
+      editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+    } else {
+      editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+    }
+  };
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -58,21 +50,12 @@ export const ToolbarPlugin = () => {
   return (
     <div id="toolbar" className="w-full h-auto !border-0 relative pb-4">
       <div className="flex items-center gap-4">
-        <button
-          className="!w-6 !h-6 !p-0"
-          onClick={() => {
-            formatText('bold');
-          }}
-          title="볼드"
-          aria-label="볼드"
-        >
+        <button className="!w-6 !h-6 !p-0" onMouseDown={(e) => handleFormat(e, 'bold')} title="볼드" aria-label="볼드">
           <BoldTextIcon fill={isBold ? '#6952F9' : '#222222'} />
         </button>
         <button
           className="!w-6 !h-6 !p-0"
-          onClick={() => {
-            formatText('italic');
-          }}
+          onMouseDown={(e) => handleFormat(e, 'italic')}
           title="이탤릭"
           aria-label="이탤릭"
         >
@@ -80,9 +63,7 @@ export const ToolbarPlugin = () => {
         </button>
         <button
           className="!w-6 !h-6 !p-0"
-          onClick={() => {
-            formatText('strikethrough');
-          }}
+          onMouseDown={(e) => handleFormat(e, 'strikethrough')}
           title="취소선"
           aria-label="취소선"
         >
@@ -90,9 +71,7 @@ export const ToolbarPlugin = () => {
         </button>
         <button
           className="!w-6 !h-6 !p-0"
-          onClick={() => {
-            formatList('unordered');
-          }}
+          onMouseDown={(e) => handleList(e, 'unordered')}
           title="리스트"
           aria-label="리스트"
         >
