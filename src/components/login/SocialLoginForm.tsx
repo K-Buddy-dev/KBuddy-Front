@@ -72,8 +72,10 @@ export function SocialLoginForm() {
     };
 
     window.addEventListener('message', handleMessage);
+    document.addEventListener('message', handleMessage as any);
     return () => {
       window.removeEventListener('message', handleMessage);
+      document.removeEventListener('message', handleMessage as any);
     };
   }, []);
 
