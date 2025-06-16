@@ -34,7 +34,7 @@ export const OauthSignupFormPage = () => {
     };
     await oauthRegister(sumbitData);
     socialStoreReset();
-    navigate('/home');
+    navigate('/');
   };
 
   useEffect(() => {
