@@ -159,7 +159,13 @@ export const OauthSignupFormPage = () => {
               />
             )}
           />
-          <Button variant="solid" color="primary" className="w-full" disabled={isLoading || !isValid || !!userIdError}>
+          <Button
+            variant="solid"
+            color="primary"
+            type="submit"
+            className="w-full"
+            disabled={isLoading || !isValid || !!userIdError}
+          >
             {isLoading ? 'Creating account...' : 'Create account'}
           </Button>
         </form>
