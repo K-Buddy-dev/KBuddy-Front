@@ -1,10 +1,12 @@
+import { Spinner } from '@/components/shared/spinner';
+import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
+import { useSocialStore } from '@/store';
+import { OauthRequest } from '@/types';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { Spinner } from '@/components/shared/spinner';
-import { useOauthRedirectHandler } from '@/hooks';
-
-// Kakao 프로필 및 계정 스키마
 const KakaoProfileSchema = z.object({
   nickname: z.string().optional(),
   thumbnail_image_url: z.string().url().optional(),
@@ -12,7 +14,6 @@ const KakaoProfileSchema = z.object({
   is_default_image: z.boolean(),
   is_default_nickname: z.boolean(),
 });
-
 const KakaoAccountSchema = z.object({
   profile_nickname_needs_agreement: z.boolean(),
   profile_image_needs_agreement: z.boolean(),
@@ -21,9 +22,8 @@ const KakaoAccountSchema = z.object({
   email_needs_agreement: z.boolean(),
   is_email_valid: z.boolean(),
   is_email_verified: z.boolean(),
-  email: z.string().email(),
+  email: z.string().email(), // 이메일만 필수
 });
-
 const KakaoUserResponseSchema = z.object({
   id: z.number(),
   connected_at: z.string().datetime(),
@@ -34,6 +34,7 @@ const KakaoUserResponseSchema = z.object({
   }),
   kakao_account: KakaoAccountSchema,
 });
+type KakaoUserResponse = z.infer<typeof KakaoUserResponseSchema>;
 
 async function getValidKakaoAccessToken(): Promise<string | null> {
   const accessToken = localStorage.getItem('kakaoAccessToken');
@@ -73,18 +74,19 @@ async function getValidKakaoAccessToken(): Promise<string | null> {
   return accessToken;
 }
 
-async function fetchKakaoUserInfo(): Promise<{ oAuthUid: string; email: string } | null> {
+async function fetchKakaoUserInfo(): Promise<KakaoUserResponse | null> {
   const validatedToken = await getValidKakaoAccessToken();
+
   if (!validatedToken) {
     console.warn('유효한 액세스 토큰 없음. 로그인 필요');
     return null;
   }
+
   try {
     const userResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
       headers: { Authorization: `Bearer ${validatedToken}` },
     });
-    const userInfo = KakaoUserResponseSchema.parse(userResponse.data);
-    return { oAuthUid: userInfo.id.toString(), email: userInfo.kakao_account.email };
+    return KakaoUserResponseSchema.parse(userResponse.data);
   } catch (error) {
     console.error('사용자 정보 요청 실패:', error);
     return null;
@@ -92,12 +94,29 @@ async function fetchKakaoUserInfo(): Promise<{ oAuthUid: string; email: string }
 }
 
 export function KakaoRedirectPage() {
-  const fetchKakaoUserData = async (): Promise<{ email?: string; oAuthUid: string } | null> => {
-    const code = new URL(window.location.href).searchParams.get('code');
+  const navigate = useNavigate();
+
+  const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset } = useSocialStore();
+  const { checkMember, isLoading } = useMemberCheckHandler();
+  const { handleLogin } = useOauthLoginHandler();
+
+  const code = new URL(window.location.href).searchParams.get('code');
+
+  const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
+  const [isMember, setIsMember] = useState<boolean | null>(null);
+
+  const setOauthSignupData = (data: KakaoUserResponse) => {
+    setEmail(data.kakao_account.email);
+    setoAuthUid(data.id);
+    setoAuthCategory('KAKAO');
+  };
+
+  const fetchKakaoToken = async () => {
     if (!code) {
-      console.error('인증 코드 없음');
-      return null;
+      console.error('Authorization code not found');
+      return;
     }
+
     try {
       const tokenResponse = await axios.post(
         'https://kauth.kakao.com/oauth/token',
@@ -106,28 +125,50 @@ export function KakaoRedirectPage() {
           client_id: import.meta.env.VITE_KAKAO_REST_API_KEY,
           redirect_uri: import.meta.env.VITE_KAKAO_REDIRECT_URI,
           client_secret: import.meta.env.VITE_KAKAO_SECRET_KEY,
-          code,
+          code: code,
         }),
-        { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' } }
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+        }
       );
 
       const { access_token, refresh_token, expires_in } = tokenResponse.data;
+
       localStorage.setItem('kakaoAccessToken', access_token);
       localStorage.setItem('kakaoRefreshToken', refresh_token);
       localStorage.setItem('kakaoTokenExpiry', (Date.now() + expires_in * 1000).toString());
 
-      return await fetchKakaoUserInfo();
+      const userInfo = await fetchKakaoUserInfo();
+      if (!userInfo) throw new Error('Failed to fetch user info');
+
+      setOauthSignupData(userInfo);
+      setMemberCheckData({ oAuthUid: userInfo.id.toString(), oAuthCategory: 'KAKAO' });
     } catch (error) {
-      console.error('카카오 토큰 가져오기 실패:', error);
-      return null;
+      console.error('Kakao login error:', error instanceof z.ZodError ? error.errors : error);
     }
   };
 
-  const { isLoading } = useOauthRedirectHandler({
-    provider: 'KAKAO',
-    validateSchema: KakaoUserResponseSchema,
-    fetchUserData: fetchKakaoUserData,
-  });
+  useEffect(() => {
+    fetchKakaoToken();
+  }, []);
+
+  useEffect(() => {
+    if (!memberCheckData) return;
+    checkMember(memberCheckData)
+      .then(setIsMember)
+      .catch((error) => console.error('Member check failed:', error));
+  }, [memberCheckData]);
+
+  useEffect(() => {
+    if (isMember === null) return;
+
+    if (isMember) {
+      handleLogin(memberCheckData!);
+      socialStoreReset();
+    } else {
+      navigate('/oauth/signup/form');
+    }
+  }, [isMember]);
 
   return isLoading ? (
     <div className="w-full h-screen flex items-center justify-center">
