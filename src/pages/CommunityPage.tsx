@@ -1,7 +1,6 @@
 import { Navbar } from '@/components/shared/navbar/Navbar';
 import { Link, useSearchParams } from 'react-router-dom';
-
-import { Tab } from '@/components/community/tab';
+import { CommunityTab } from '@/components/community/tab';
 
 import { BlogList, FloatPostAction, Toast } from '@/components';
 import { QnaList } from '@/components/community';
@@ -68,7 +67,7 @@ export const CommunityPage = () => {
             onBookmark={featuredHandleBookmark}
           />
         )}
-        <Tab />
+        <CommunityTab />
       </div>
       <Link to="/community/post" className="fixed right-4 bottom-[92px] cursor-pointer sm:right-[calc(50%-260px-16px)]">
         <FloatPostAction />

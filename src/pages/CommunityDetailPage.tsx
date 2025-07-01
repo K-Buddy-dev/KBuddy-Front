@@ -84,7 +84,7 @@ export const CommunityDetailPage = () => {
       </div>
     );
 
-  if (!currentData) return <div className="w-screen h-screen flex items-center justify-center">No data found</div>;
+  if (!currentData) return <div className="w-full h-screen flex items-center justify-center">No data found</div>;
 
   return (
     <main className="relative min-h-screen pb-24 font-roboto">
