@@ -1,13 +1,18 @@
 import { Button, Navbar } from '@/components';
 import { BasicUserData } from '@/types';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import defaultProfileImage from '@/assets/images/default-profile.png';
 import { authService } from '@/services';
+import { MypageTab } from '@/components/community/tab';
+import { BookmarkList } from '@/components/mypage/BookmarkList';
 
 export function ProfilePage() {
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState<BasicUserData | null>(null);
   const navigate = useNavigate();
+
+  const currentTab = searchParams.get('tab') || 'Saved';
 
   const onClickEditProfile = () => {
     navigate('/profile/edit');
@@ -62,7 +67,11 @@ export function ProfilePage() {
         <Button variant="outline" color="secondary" className="w-full" onClick={onClickEditProfile}>
           Edit profile
         </Button>
+        {/* 비즈니스 멤버 유무 */}
+        <div className="py-4"></div>
+        <MypageTab />
       </div>
+      {currentTab === 'Saved' && <BookmarkList />}
     </>
   );
 }
