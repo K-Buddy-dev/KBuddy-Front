@@ -10,7 +10,7 @@ import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export const OauthSignupFormPage = () => {
-  const { email, oAuthUid, oAuthCategory, socialStoreReset } = useSocialStore();
+  const { email, oAuthUid, oAuthCategory, socialStoreReset, firstName, lastName } = useSocialStore();
 
   const navigate = useNavigate();
   const {
@@ -29,6 +29,8 @@ export const OauthSignupFormPage = () => {
     const sumbitData = {
       ...data,
       email: email,
+      firstName: firstName || '',
+      lastName: lastName || '',
       oAuthUid: String(oAuthUid),
       oAuthCategory: oAuthCategory,
     };
@@ -42,8 +44,8 @@ export const OauthSignupFormPage = () => {
       navigate('/');
     }
     resetFrom({
-      firstName: '',
-      lastName: '',
+      firstName,
+      lastName,
       email,
       userId: '',
       birthDate: { year: '', month: '', day: '' },

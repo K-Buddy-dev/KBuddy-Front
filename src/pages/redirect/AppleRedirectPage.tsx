@@ -24,7 +24,7 @@ type AppleUserResponse = z.infer<typeof AppleIdTokenSchema>;
 export function AppleRedirectPage() {
   const navigate = useNavigate();
 
-  const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset } = useSocialStore();
+  const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset, setFirstName, setLastName } = useSocialStore();
   const { checkMember, isLoading } = useMemberCheckHandler();
   const { handleLogin } = useOauthLoginHandler();
 
@@ -38,7 +38,10 @@ export function AppleRedirectPage() {
   };
 
   const getAppleUserInfo = async () => {
-    const idToken = new URL(window.location.href).searchParams.get('id_token');
+    const searchParams = new URLSearchParams(window.location.search);
+    const userString = searchParams.get('user');
+    const user = userString ? JSON.parse(userString) : null;
+    const idToken = searchParams.get('id_token');
 
     if (!idToken) {
       console.error('ID token not found');
@@ -46,6 +49,8 @@ export function AppleRedirectPage() {
     }
     try {
       const validatedUserInfo = AppleIdTokenSchema.parse(parseJwt(idToken));
+      setFirstName(user.name?.firstName || '');
+      setLastName(user.name?.lastName || '');
       setOauthSignupData(validatedUserInfo);
       setMemberCheckData({ oAuthUid: validatedUserInfo.sub, oAuthCategory: 'APPLE' });
     } catch (error) {
