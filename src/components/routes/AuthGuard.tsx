@@ -54,11 +54,11 @@ export function AuthGuard() {
     return <Outlet />;
   }
 
-  if (PUBLIC_PATHS.includes(pathname)) {
-    return <Outlet />;
+  if (PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
+    return <Navigate to={'/home'} />;
   }
 
-  if (!isAuthenticated) {
+  if (!PUBLIC_PATHS.includes(pathname) && !isAuthenticated) {
     return <Navigate to={'/'} />;
   }
 
