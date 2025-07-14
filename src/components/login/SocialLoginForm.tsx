@@ -1,18 +1,28 @@
+import { useEffect, useState } from 'react';
 import { AppleLogo, GoogleLogo, KakaoLogo } from '../shared';
 import { SocialButton } from './Social/SocialButton';
-
-declare global {
-  interface Window {
-    AppleID: any;
-  }
-}
+import { generateRandomString } from '@/utils/utils';
+import { OauthRequest, ReactNativeRequest } from '@/types';
+import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
+import { useSocialStore } from '@/store';
+import { useNavigate } from 'react-router-dom';
 
 export function SocialLoginForm() {
   const isNative = typeof window !== 'undefined' && !!window.ReactNativeWebView;
   const VITE_KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_KAKAO_REDIRECT_URI)}&response_type=code`;
   const VITE_GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_GOOGLE_REDIRECT_URI)}&response_type=code&scope=${import.meta.env.VITE_GOOGLE_SCOPE}`;
 
-  // 기존 소셜 로그인 (카카오, 구글) 처리
+  const state = generateRandomString(32);
+  const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
+  const [isMember, setIsMember] = useState<boolean | null>(null);
+
+  const navigate = useNavigate();
+
+  const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset } = useSocialStore();
+  const { checkMember } = useMemberCheckHandler();
+
+  const { handleLogin } = useOauthLoginHandler();
+
   const handleSocialLogin = (url: string, type: 'Kakao' | 'Google') => {
     if (isNative && window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(JSON.stringify({ type, action: 'getSocialLogin' }));
@@ -21,24 +31,73 @@ export function SocialLoginForm() {
     }
   };
 
-  // 팝업 방식 애플 로그인은 팝업 열기만, 후속처리는 콜백 라우트에서!
+  const setOauthSignupData = (data: ReactNativeRequest) => {
+    setEmail(data.oAuthEmail || '');
+    setoAuthUid(data.oAuthUid);
+    setoAuthCategory(data.oAuthCategory);
+  };
+
   const handleAppleLogin = async () => {
     try {
-      window.AppleID.auth.init({
-        clientId: import.meta.env.VITE_APPLE_CLIENT_ID,
-        scope: 'name email',
-        redirectURI: import.meta.env.VITE_APPLE_REDIRECT_URI,
-        usePopup: false,
+      const params = new URLSearchParams({
+        client_id: import.meta.env.VITE_APPLE_CLIENT_ID,
+        redirect_uri: import.meta.env.VITE_APPLE_REDIRECT_URI,
+        response_type: 'name code id_token',
+        state: state,
       });
 
-      await window.AppleID.auth.signIn();
-      // 여기서 멤버 체크, 네비게이션 처리 X
+      const url = `https://appleid.apple.com/auth/authorize?${params}`;
+      if (isNative && window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'Apple', action: 'getSocialLogin' }));
+      } else {
+        window.location.href = url;
+      }
     } catch (error) {
-      console.error('Apple login popup error:', error);
+      console.error('Apple login error:', error);
     }
   };
 
-  // UI
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const message = JSON.parse(event.data);
+        // console.log('message: ', message);
+        if (message.oAuthEmail && message.oAuthUid && message.oAuthCategory) {
+          setOauthSignupData(message);
+          setMemberCheckData({ oAuthUid: message.oAuthUid, oAuthCategory: message.oAuthCategory });
+        }
+      } catch (error) {
+        console.error('Error parsing message from RN:', error);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    document.addEventListener('message', handleMessage as any);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      document.removeEventListener('message', handleMessage as any);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!memberCheckData) return;
+    // console.log('memberCheckData: ', memberCheckData);
+    checkMember(memberCheckData).then(setIsMember);
+    // .catch((error) => console.error('Member check failed:', error));
+  }, [memberCheckData]);
+
+  useEffect(() => {
+    if (isMember === null) return;
+    // console.log('isMember: ', isMember);
+
+    if (isMember) {
+      handleLogin(memberCheckData!);
+      socialStoreReset();
+    } else {
+      navigate('/oauth/signup/form');
+    }
+  }, [isMember]);
+
   const isIOS = (() => {
     if (!isNative) return true;
     const userAgent = navigator.userAgent || '';
