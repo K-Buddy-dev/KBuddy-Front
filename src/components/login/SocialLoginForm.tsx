@@ -4,7 +4,7 @@ import { SocialButton } from './Social/SocialButton';
 import { OauthRequest } from '@/types';
 import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
 import { useSocialStore } from '@/store';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { parseJwt } from '@/utils/utils';
 
@@ -35,7 +35,7 @@ export function SocialLoginForm() {
   const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
   const [isMember, setIsMember] = useState<boolean | null>(null);
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset, setFirstName, setLastName } = useSocialStore();
   const { checkMember } = useMemberCheckHandler();
   const { handleLogin } = useOauthLoginHandler();
@@ -129,7 +129,6 @@ export function SocialLoginForm() {
   useEffect(() => {
     if (isMember === null) return;
     if (isMember) {
-      console.log('isMember: ', isMember);
       handleLogin(memberCheckData!);
       socialStoreReset();
     }
@@ -137,8 +136,7 @@ export function SocialLoginForm() {
 
   useEffect(() => {
     if (isMember === false) {
-      console.log('isMember: ', isMember);
-      // navigate('/oauth/signup/form', { replace: true });
+      navigate('/oauth/signup/form', { replace: true });
     }
   }, [isMember]);
 
