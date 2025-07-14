@@ -1,5 +1,5 @@
 import { Spinner } from '@/components/shared/spinner';
-import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
+import { useMemberCheckHandler, useOauthLoginHandler, useToast } from '@/hooks';
 import { useSocialStore } from '@/store';
 import { OauthRequest } from '@/types';
 import { parseJwt } from '@/utils/utils';
@@ -27,6 +27,7 @@ export function AppleRedirectPage() {
   const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset, setFirstName, setLastName } = useSocialStore();
   const { checkMember, isLoading } = useMemberCheckHandler();
   const { handleLogin } = useOauthLoginHandler();
+  const { showToast } = useToast();
 
   const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
   const [isMember, setIsMember] = useState<boolean | null>(null);
@@ -47,10 +48,23 @@ export function AppleRedirectPage() {
       console.error('ID token not found');
       return;
     }
+
     try {
       const validatedUserInfo = AppleIdTokenSchema.parse(parseJwt(idToken));
-      setFirstName(user.name?.firstName || '');
-      setLastName(user.name?.lastName || '');
+
+      if (!user?.name?.firstName || !user?.name?.lastName) {
+        showToast({
+          message: 'Name sharing is required to sign up with Apple.',
+          type: 'error',
+          duration: 3000,
+        });
+        navigate('/');
+        return;
+      }
+
+      setFirstName(user.name.firstName);
+      setLastName(user.name.lastName);
+
       setOauthSignupData(validatedUserInfo);
       setMemberCheckData({ oAuthUid: validatedUserInfo.sub, oAuthCategory: 'APPLE' });
     } catch (error) {
