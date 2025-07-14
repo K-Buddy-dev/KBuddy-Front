@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
 import { AppleLogo, GoogleLogo, KakaoLogo } from '../shared';
 import { SocialButton } from './Social/SocialButton';
-import { generateRandomString } from '@/utils/utils';
 import { OauthRequest, ReactNativeRequest } from '@/types';
 import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
 import { useSocialStore } from '@/store';
 import { useNavigate } from 'react-router-dom';
+
+declare global {
+  interface Window {
+    AppleID: any;
+  }
+}
 
 export function SocialLoginForm() {
   const isNative = typeof window !== 'undefined' && !!window.ReactNativeWebView;
   const VITE_KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_KAKAO_REDIRECT_URI)}&response_type=code`;
   const VITE_GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_GOOGLE_REDIRECT_URI)}&response_type=code&scope=${import.meta.env.VITE_GOOGLE_SCOPE}`;
 
-  const state = generateRandomString(32);
   const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
   const [isMember, setIsMember] = useState<boolean | null>(null);
 
@@ -39,19 +43,15 @@ export function SocialLoginForm() {
 
   const handleAppleLogin = async () => {
     try {
-      const params = new URLSearchParams({
-        client_id: import.meta.env.VITE_APPLE_CLIENT_ID,
-        redirect_uri: import.meta.env.VITE_APPLE_REDIRECT_URI,
-        response_type: 'name code id_token',
-        state: state,
+      window.AppleID.auth.init({
+        clientId: import.meta.env.VITE_APPLE_CLIENT_ID,
+        scope: 'name email',
+        redirectURI: import.meta.env.VITE_APPLE_REDIRECT_URI,
+        usePopup: false, // 리다이렉트 방식으로 변경
       });
 
-      const url = `https://appleid.apple.com/auth/authorize?${params}`;
-      if (isNative && window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'Apple', action: 'getSocialLogin' }));
-      } else {
-        window.location.href = url;
-      }
+      await window.AppleID.auth.signIn();
+      // 리다이렉트 됨 → 여기서 후속처리 안 해도 됨
     } catch (error) {
       console.error('Apple login error:', error);
     }
