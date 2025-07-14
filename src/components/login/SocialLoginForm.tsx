@@ -28,7 +28,7 @@ export function SocialLoginForm() {
         clientId: import.meta.env.VITE_APPLE_CLIENT_ID,
         scope: 'name email',
         redirectURI: import.meta.env.VITE_APPLE_REDIRECT_URI,
-        usePopup: true,
+        usePopup: false,
       });
 
       await window.AppleID.auth.signIn();
