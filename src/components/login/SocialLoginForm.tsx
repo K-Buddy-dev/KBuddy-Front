@@ -1,16 +1,31 @@
 import { useEffect, useState } from 'react';
 import { AppleLogo, GoogleLogo, KakaoLogo } from '../shared';
 import { SocialButton } from './Social/SocialButton';
-import { OauthRequest, ReactNativeRequest } from '@/types';
+import { OauthRequest } from '@/types';
 import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
 import { useSocialStore } from '@/store';
 import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+import { parseJwt } from '@/utils/utils';
 
 declare global {
   interface Window {
     AppleID: any;
   }
 }
+
+const AppleIdTokenSchema = z.object({
+  iss: z.literal('https://appleid.apple.com'),
+  auth_time: z.number(),
+  aud: z.string(),
+  sub: z.string(),
+  email: z.string().email().optional(),
+  email_verified: z.boolean().optional(),
+  iat: z.number(),
+  exp: z.number(),
+  nonce_supported: z.boolean(),
+  c_hash: z.string(),
+});
 
 export function SocialLoginForm() {
   const isNative = typeof window !== 'undefined' && !!window.ReactNativeWebView;
@@ -25,6 +40,7 @@ export function SocialLoginForm() {
   const { checkMember } = useMemberCheckHandler();
   const { handleLogin } = useOauthLoginHandler();
 
+  // 기존 소셜 로그인 (카카오, 구글) 처리
   const handleSocialLogin = (url: string, type: 'Kakao' | 'Google') => {
     if (isNative && window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(JSON.stringify({ type, action: 'getSocialLogin' }));
@@ -33,12 +49,30 @@ export function SocialLoginForm() {
     }
   };
 
-  const setOauthSignupData = (data: ReactNativeRequest) => {
-    setEmail(data.oAuthEmail || '');
-    setoAuthUid(data.oAuthUid);
-    setoAuthCategory(data.oAuthCategory);
-  };
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const message = JSON.parse(event.data);
+        if (message.oAuthEmail && message.oAuthUid && message.oAuthCategory) {
+          setEmail(message.oAuthEmail || '');
+          setoAuthUid(message.oAuthUid);
+          setoAuthCategory(message.oAuthCategory);
+          setMemberCheckData({ oAuthUid: message.oAuthUid, oAuthCategory: message.oAuthCategory });
+        }
+      } catch (error) {
+        console.error('Error parsing message from RN:', error);
+      }
+    };
 
+    window.addEventListener('message', handleMessage);
+    document.addEventListener('message', handleMessage as any);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      document.removeEventListener('message', handleMessage as any);
+    };
+  }, []);
+
+  // 팝업 방식 애플 로그인
   const handleAppleLogin = async () => {
     try {
       window.AppleID.auth.init({
@@ -66,26 +100,27 @@ export function SocialLoginForm() {
   };
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      try {
-        const message = JSON.parse(event.data);
-        if (message.oAuthEmail && message.oAuthUid && message.oAuthCategory) {
-          setOauthSignupData(message);
-          setMemberCheckData({ oAuthUid: message.oAuthUid, oAuthCategory: message.oAuthCategory });
-        }
-      } catch (error) {
-        console.error('Error parsing message from RN:', error);
-      }
-    };
+    const searchParams = new URLSearchParams(window.location.search);
+    const idToken = searchParams.get('id_token');
+    const userString = searchParams.get('user');
+    const user = userString ? JSON.parse(userString) : null;
 
-    window.addEventListener('message', handleMessage);
-    document.addEventListener('message', handleMessage as any);
-    return () => {
-      window.removeEventListener('message', handleMessage);
-      document.removeEventListener('message', handleMessage as any);
-    };
+    if (idToken) {
+      try {
+        const validatedUserInfo = AppleIdTokenSchema.parse(parseJwt(idToken));
+        setEmail(validatedUserInfo.email || '');
+        setoAuthUid(validatedUserInfo.sub);
+        setoAuthCategory('APPLE');
+        if (user?.name?.firstName) setFirstName(user.name.firstName);
+        if (user?.name?.lastName) setLastName(user.name.lastName);
+        setMemberCheckData({ oAuthUid: validatedUserInfo.sub, oAuthCategory: 'APPLE' });
+      } catch (error) {
+        console.error('Apple login error:', error);
+      }
+    }
   }, []);
 
+  // 멤버 체크 및 로그인 처리
   useEffect(() => {
     if (!memberCheckData) return;
     checkMember(memberCheckData).then(setIsMember);
