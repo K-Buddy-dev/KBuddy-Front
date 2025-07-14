@@ -13,7 +13,7 @@ const AppleIdTokenSchema = z.object({
   aud: z.string(),
   sub: z.string(),
   email: z.string().email().optional(),
-  email_verified: z.boolean(),
+  email_verified: z.boolean().optional(),
   iat: z.number(),
   exp: z.number(),
   nonce_supported: z.boolean(),
