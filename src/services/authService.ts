@@ -106,4 +106,8 @@ export const authService = {
     });
     return response.data;
   },
+  deleteAccount: async () => {
+    const response = await authClient.delete('/auth/account');
+    return response.data;
+  },
 };
