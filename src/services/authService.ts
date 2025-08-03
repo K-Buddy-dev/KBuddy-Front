@@ -108,6 +108,7 @@ export const authService = {
   },
   deleteAccount: async () => {
     const response = await authClient.delete('/auth/account');
+    authClient.defaults.headers.common['Authorization'] = '';
     return response.data;
   },
 };
