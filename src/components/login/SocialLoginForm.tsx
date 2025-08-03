@@ -37,23 +37,23 @@ export function SocialLoginForm() {
     setoAuthCategory(data.oAuthCategory);
   };
 
-  const handleAppleLogin = async () => {
-    try {
-      const params = new URLSearchParams({
-        client_id: import.meta.env.VITE_APPLE_CLIENT_ID,
-        redirect_uri: import.meta.env.VITE_APPLE_REDIRECT_URI,
-        response_type: 'code id_token',
-        state: state,
-      });
+  const handleAppleLogin = () => {
+    const params = new URLSearchParams({
+      client_id: import.meta.env.VITE_APPLE_CLIENT_ID,
+      redirect_uri: import.meta.env.VITE_APPLE_REDIRECT_URI, // 리다이렉트 페이지 URL
+      response_type: 'code id_token',
+      response_mode: 'form_post',
+      scope: 'name email',
+      state,
+      nonce: generateRandomString(32),
+    });
 
-      const url = `https://appleid.apple.com/auth/authorize?${params}`;
-      if (isNative && window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'Apple', action: 'getSocialLogin' }));
-      } else {
-        window.location.href = url;
-      }
-    } catch (error) {
-      console.error('Apple login error:', error);
+    const url = `https://appleid.apple.com/auth/authorize?${params.toString()}`;
+
+    if (isNative && window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'Apple', action: 'getSocialLogin' }));
+    } else {
+      window.location.href = url;
     }
   };
 
