@@ -20,6 +20,10 @@ export function SettingPage() {
     setShowDeleteDialog(true);
   };
 
+  const onClickBlockUserList = () => {
+    navigate('/block-user');
+  };
+
   const handleConfirmDelete = async () => {
     try {
       await authService.deleteAccount();
@@ -37,13 +41,19 @@ export function SettingPage() {
     <>
       <Topbar title="Settings" type="back" onBack={() => navigate(-1)} />
       <div className="w-full h-[calc(100vh-79px)] flex flex-col items-center justify-start gap-2 bg-border-weak2 pt-16">
-        <div className="w-full flex flex-col gap-2 bg-white px-4">
+        <div className="w-full flex flex-col  bg-white px-4">
           <div className="text-title-200-medium leading-6 font-medium pt-6 pb-4">Other</div>
           <div
             className="text-title-300-light leading-6 font-normal py-4 pl-3 border-t border-border-weak1 bg-bg-highlight-default cursor-pointer"
             onClick={onClickDeleteAccount}
           >
             Delete account
+          </div>
+          <div
+            className="text-title-300-light leading-6 font-normal py-4 pl-3 border-t border-border-weak1 bg-bg-highlight-default cursor-pointer"
+            onClick={onClickBlockUserList}
+          >
+            Block User List
           </div>
         </div>
         <div className="w-full bg-white pt-6 px-4 pb-[72px]">

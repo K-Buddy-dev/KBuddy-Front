@@ -1,6 +1,6 @@
 // hooks/useBlockUser.ts
 import { blogService } from '@/services/blogService';
-import { BlogFilters } from '@/types';
+import { BlockedUsersResponse, BlogFilters } from '@/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { blogQueryKeys } from './blog/blogKeys';
@@ -30,7 +30,6 @@ const buildFiltersFromSearchStrict = (searchParams: URLSearchParams): BlogFilter
   return filters as BlogFilters;
 };
 const buildRedirectSearch = (searchParams: URLSearchParams) => {
-  // 그대로 유지한 채 조립
   const rebuilt = new URLSearchParams();
   for (const key of ['tab', 'sort', 'categoryCode', 'keyword', 'size', 'id']) {
     const val = searchParams.get(key);
@@ -86,6 +85,7 @@ export const useBlockedUsers = () => {
   return useQuery({
     queryKey: ['blockedUsers'],
     queryFn: blogService.getBlockedUsers,
-    staleTime: 1000 * 60, // 1분 캐싱
+    staleTime: 1000 * 60 * 5,
+    select: (res: BlockedUsersResponse) => res.data,
   });
 };
