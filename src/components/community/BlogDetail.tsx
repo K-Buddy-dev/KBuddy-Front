@@ -25,9 +25,16 @@ interface BlogDetailProps {
     | ((event: React.MouseEvent, id: number, isBookmarked: boolean) => void)
     | ((event: React.MouseEvent) => void);
   recommendedData?: Community[];
+  handleBlockUserOpen: () => void;
 }
 
-export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: BlogDetailProps) => {
+export const BlogDetail = ({
+  contentId,
+  onLike,
+  onBookmark,
+  recommendedData,
+  handleBlockUserOpen,
+}: BlogDetailProps) => {
   const { data: blog, isLoading, error } = useBlogDetail(contentId);
   const { mutate: createComment } = useCreateBlogComment(contentId);
   const { mutate: updateComment } = useUpdateBlogComment(contentId);
@@ -91,6 +98,10 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
     [deleteComment]
   );
 
+  // const handleBlockUser = useCallback(() => {
+  //   blockUser(userId);
+  // }, [blockUser, userId]);
+
   if (isLoading)
     return (
       <div className="w-full h-screen flex items-center justify-center">
@@ -109,7 +120,7 @@ export const BlogDetail = ({ contentId, onLike, onBookmark, recommendedData }: B
         <div className="flex items-center gap-2 text-sm text-text-weak mb-4">
           <span>{categoryNames}</span>
         </div>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-4 cursor-pointer" onClick={handleBlockUserOpen}>
           <img
             src={blog.data.writerProfileImageUrl ? blog.data.writerProfileImageUrl : defaultImg}
             alt="Profile"

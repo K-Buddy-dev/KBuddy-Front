@@ -120,4 +120,20 @@ export const blogService = {
   //   reportBlog: async (blogId: number, data: ReportRequest): Promise<void> => {
   //     await authClient.post(`/blog/${blogId}/report`, data);
   //   },
+
+  // 유저 블록 기능
+  blockUser: async (blockedUserId: string): Promise<void> => {
+    await authClient.post('/user/blocks', { blockedUserId });
+  },
+  // 유저 블록 해제 기능
+  unblockUser: async (blockedUserId: string): Promise<void> => {
+    await authClient.delete('/user/blocks', {
+      data: { blockedUserId },
+    });
+  },
+  // 블록된 유저 리스트 조회
+  getBlockedUsers: async (): Promise<CommunityListResponse> => {
+    const response = await authClient.get<CommunityListResponse>('/user/blocks/blocked-by');
+    return response.data;
+  },
 };

@@ -1,102 +1,111 @@
-import { Spinner } from '@/components/shared/spinner';
-import { useMemberCheckHandler, useOauthLoginHandler, useToast } from '@/hooks';
-import { useSocialStore } from '@/store';
-import { OauthRequest } from '@/types';
-import { parseJwt } from '@/utils/utils';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import { parseJwt } from '@/utils/utils';
+import { useMemberCheckHandler, useOauthLoginHandler, useToast } from '@/hooks';
+import { useSocialStore } from '@/store';
+import { Spinner } from '@/components/shared/spinner';
 
 const AppleIdTokenSchema = z.object({
   iss: z.literal('https://appleid.apple.com'),
-  auth_time: z.number(),
   aud: z.string(),
   sub: z.string(),
   email: z.string().email().optional(),
   email_verified: z.boolean().optional(),
   iat: z.number(),
   exp: z.number(),
-  nonce_supported: z.boolean(),
-  c_hash: z.string(),
+  nonce_supported: z.boolean().optional(),
 });
-type AppleUserResponse = z.infer<typeof AppleIdTokenSchema>;
 
 export function AppleRedirectPage() {
   const navigate = useNavigate();
-
-  const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset, setFirstName, setLastName } = useSocialStore();
+  const { setEmail, setoAuthUid, setoAuthCategory, setFirstName, setLastName, socialStoreReset } = useSocialStore();
   const { checkMember, isLoading } = useMemberCheckHandler();
   const { handleLogin } = useOauthLoginHandler();
   const { showToast } = useToast();
 
-  const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
+  const [memberCheckData, setMemberCheckData] = useState<{
+    oAuthUid: string;
+    oAuthCategory: 'KAKAO' | 'GOOGLE' | 'APPLE' | null;
+  } | null>(null);
   const [isMember, setIsMember] = useState<boolean | null>(null);
 
-  const setOauthSignupData = (data: AppleUserResponse) => {
-    setEmail(data.email || '');
-    setoAuthUid(data.sub);
-    setoAuthCategory('APPLE');
-  };
+  useEffect(() => {
+    // 애플에서 POST로 보낸 form 데이터 읽기 (location.search가 아닌 post 방식 시 window.history.state 등에 저장될 수 있음)
+    const params = new URLSearchParams(window.location.search);
 
-  const getAppleUserInfo = async () => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const userString = searchParams.get('user');
-    const user = userString ? JSON.parse(userString) : null;
-    const idToken = searchParams.get('id_token');
+    const idToken = params.get('id_token') || window.history.state?.id_token;
+    const userStr = params.get('user') || window.history.state?.user;
 
     if (!idToken) {
-      console.error('ID token not found');
+      showToast({ message: '애플 로그인에 실패했습니다. 다시 시도해주세요.', type: 'error' });
+      navigate('/');
       return;
     }
 
     try {
-      const validatedUserInfo = AppleIdTokenSchema.parse(parseJwt(idToken));
+      const decoded = parseJwt(idToken);
+      const validated = AppleIdTokenSchema.parse(decoded);
 
-      if (!user?.name?.firstName || !user?.name?.lastName) {
-        showToast({
-          message: 'Name sharing is required to sign up with Apple.',
-          type: 'error',
-          duration: 3000,
-        });
+      let firstName = '';
+      let lastName = '';
+
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user?.name?.firstName) firstName = user.name.firstName;
+        if (user?.name?.lastName) lastName = user.name.lastName;
+      }
+
+      if (!firstName || !lastName) {
+        showToast({ message: '이름 제공이 필요합니다. 애플 로그인 설정을 확인해주세요.', type: 'error' });
         navigate('/');
         return;
       }
 
-      setFirstName(user.name.firstName);
-      setLastName(user.name.lastName);
+      setFirstName(firstName);
+      setLastName(lastName);
 
-      setOauthSignupData(validatedUserInfo);
-      setMemberCheckData({ oAuthUid: validatedUserInfo.sub, oAuthCategory: 'APPLE' });
+      setEmail(validated.email || '');
+      setoAuthUid(validated.sub);
+      setoAuthCategory('APPLE');
+
+      setMemberCheckData({ oAuthUid: validated.sub, oAuthCategory: 'APPLE' as const });
     } catch (error) {
-      console.error('Apple login error:', error instanceof z.ZodError ? error.errors : error);
+      console.error('애플 토큰 파싱 오류:', error);
+      showToast({ message: '애플 로그인 정보가 유효하지 않습니다.', type: 'error' });
+      navigate('/');
     }
-  };
-
-  useEffect(() => {
-    getAppleUserInfo();
   }, []);
 
   useEffect(() => {
     if (!memberCheckData) return;
     checkMember(memberCheckData)
       .then(setIsMember)
-      .catch((error) => console.error('Member check failed:', error));
+      .catch(() => {
+        showToast({ message: '회원 확인 중 오류가 발생했습니다.', type: 'error' });
+        navigate('/');
+      });
   }, [memberCheckData]);
 
   useEffect(() => {
     if (isMember === null) return;
-
     if (isMember) {
-      handleLogin(memberCheckData!);
-      socialStoreReset();
+      if (memberCheckData) {
+        handleLogin(memberCheckData);
+        socialStoreReset();
+      }
     } else {
       navigate('/oauth/signup/form');
     }
-  }, [isMember]);
+  }, [isMember, memberCheckData]);
 
-  return isLoading ? (
-    <div className="w-full h-screen flex items-center justify-center">
-      <Spinner />
-    </div>
-  ) : null;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen w-full">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return null;
 }
