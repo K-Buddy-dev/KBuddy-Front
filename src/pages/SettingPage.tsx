@@ -1,9 +1,11 @@
 import { Topbar } from '@/components/shared';
 import { authService } from '@/services';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export function SettingPage() {
   const navigate = useNavigate();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const onClickLogout = async () => {
     try {
@@ -14,13 +16,21 @@ export function SettingPage() {
     }
   };
 
-  const onClickDeleteAccount = async () => {
+  const onClickDeleteAccount = () => {
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
     try {
       await authService.deleteAccount();
       navigate('/');
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteDialog(false);
   };
 
   return (
@@ -46,6 +56,31 @@ export function SettingPage() {
           <span className="text-text-example font-medium leading-3">Version of the app</span>
         </div>
       </div>
+
+      {showDeleteDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 mx-4 max-w-sm w-full">
+            <h3 className="text-title-200-medium font-medium mb-4">Delete account</h3>
+            <p className="text-body-200-medium text-text-weak mb-6">
+              Are you sure you want to delete your account? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCancelDelete}
+                className="flex-1 py-3 px-4 border border-border-default rounded-lg text-body-200-medium font-medium hover:bg-bg-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="flex-1 py-3 px-4 bg-bg-danger-default text-white rounded-lg text-body-200-medium font-medium hover:bg-bg-danger-hover"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
