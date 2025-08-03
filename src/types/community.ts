@@ -55,7 +55,7 @@ export interface Comment {
 
 export interface CommunityDetail {
   id: number;
-  writerUuid: number;
+  writerUuid: string;
   writerName: string;
   writerProfileImageUrl: string;
   categoryId: number[] | number;

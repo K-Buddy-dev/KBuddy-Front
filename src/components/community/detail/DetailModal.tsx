@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 interface DetailModalProps {
   content: CommunityDetail;
   contentId: number;
-  writerUuid: number;
+  writerUuid: string;
   targetTab: PostFormType;
   deleteMutate: (id: number) => void;
   setShowDetailModal: Dispatch<SetStateAction<boolean>>;

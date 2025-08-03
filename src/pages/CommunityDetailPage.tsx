@@ -16,6 +16,8 @@ import { Spinner } from '@/components/shared/spinner';
 import { DetailModal } from '@/components/community/detail';
 import { useToast } from '@/hooks/useToastContext';
 import { PostFormType } from '@/types';
+import { useBlockUser } from '@/hooks/useBlockUser';
+import { BlockUserModal } from '@/components/community/detail/BlockModal';
 
 export const CommunityDetailPage = () => {
   const { id } = useParams();
@@ -23,6 +25,7 @@ export const CommunityDetailPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
+  const [showBlockUserModal, setShowBlockUserModal] = useState<boolean>(false);
   const { showToast } = useToast();
 
   const currentTab = searchParams.get('tab') || 'Curated blog';
@@ -33,6 +36,7 @@ export const CommunityDetailPage = () => {
   const { data: qna, isLoading: qnaLoading } = useQnaDetail(!isBlogTab ? contentId : null);
   const { mutate: deleteBlog, isSuccess: isBlogDeleteSuccess } = useDeleteBlog();
   const { mutate: deleteQna, isSuccess: isQnaDeleteSuccess } = useDeleteQna();
+  const blockMutate = useBlockUser();
 
   const currentData = currentTab === 'User blog' ? blog?.data : qna?.data;
 
@@ -62,6 +66,10 @@ export const CommunityDetailPage = () => {
 
   const handleBack = () => {
     window.history.back();
+  };
+
+  const handleBlockUserOpen = () => {
+    setShowBlockUserModal(true);
   };
 
   const isLoading = isBlogTab ? blogLoading : qnaLoading;
@@ -104,6 +112,7 @@ export const CommunityDetailPage = () => {
           onLike={handleLike}
           onBookmark={handleBookmark}
           recommendedData={recommendBlog?.data.results.filter((data: any) => data.id !== contentId)}
+          handleBlockUserOpen={handleBlockUserOpen}
         />
       )}
       {currentTab === 'Q&A' && (
@@ -112,6 +121,7 @@ export const CommunityDetailPage = () => {
           onLike={handleLike}
           onBookmark={handleBookmark}
           recommendedData={recommendQna?.data.results.filter((data: any) => data.id !== contentId)}
+          handleBlockUserOpen={handleBlockUserOpen}
         />
       )}
       {showDetailModal && (
@@ -122,6 +132,13 @@ export const CommunityDetailPage = () => {
           targetTab={targetTab}
           deleteMutate={isBlogTab ? deleteBlog : deleteQna}
           setShowDetailModal={setShowDetailModal}
+        />
+      )}
+      {showBlockUserModal && (
+        <BlockUserModal
+          userId={currentData.writerUuid}
+          blockMutate={(id: string) => blockMutate.mutate(id)}
+          setShowBlockUserModal={setShowBlockUserModal}
         />
       )}
     </main>
