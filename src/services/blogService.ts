@@ -1,5 +1,11 @@
 import { authClient } from '@/api/axiosConfig';
-import { BlogRequest, CommentRequest, CommunityDetailResponse, CommunityListResponse } from '@/types/community';
+import {
+  BlockedUsersResponse,
+  BlogRequest,
+  CommentRequest,
+  CommunityDetailResponse,
+  CommunityListResponse,
+} from '@/types/community';
 
 // blogService 정의
 export const blogService = {
@@ -132,8 +138,8 @@ export const blogService = {
     });
   },
   // 블록된 유저 리스트 조회
-  getBlockedUsers: async (): Promise<CommunityListResponse> => {
-    const response = await authClient.get<CommunityListResponse>('/user/blocks/blocked-by');
+  getBlockedUsers: async (): Promise<BlockedUsersResponse> => {
+    const response = await authClient.get<BlockedUsersResponse>('/user/blocks');
     return response.data;
   },
 };
