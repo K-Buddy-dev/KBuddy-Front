@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { HomeIcon, CommunityIcon, ServiceIcon, MessageIcon, ProfileIcon } from './icon';
+import { HomeIcon, CommunityIcon, ProfileIcon } from './icon';
 import { cn } from '@/utils/utils';
 
 interface NavItem {
@@ -27,18 +27,18 @@ export const BottomNavigation = () => {
       icon: <CommunityIcon isActive={false} />,
       activeIcon: <CommunityIcon isActive={true} />,
     },
-    {
-      path: '/service',
-      label: 'Service',
-      icon: <ServiceIcon isActive={false} />,
-      activeIcon: <ServiceIcon isActive={true} />,
-    },
-    {
-      path: '/message',
-      label: 'Message',
-      icon: <MessageIcon isActive={false} />,
-      activeIcon: <MessageIcon isActive={true} />,
-    },
+    // {
+    //   path: '/service',
+    //   label: 'Service',
+    //   icon: <ServiceIcon isActive={false} />,
+    //   activeIcon: <ServiceIcon isActive={true} />,
+    // },
+    // {
+    //   path: '/message',
+    //   label: 'Message',
+    //   icon: <MessageIcon isActive={false} />,
+    //   activeIcon: <MessageIcon isActive={true} />,
+    // },
     {
       path: '/profile',
       label: 'My page',

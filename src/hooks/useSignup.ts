@@ -12,13 +12,21 @@ export const useSignup = () => {
       const {
         birthDate: { year, month, day },
         confirmPassword: _,
+        gender,
         ...rest
       } = data;
 
-      const signupData = {
+      const signupData: any = {
         ...rest,
-        birthDate: `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`,
       };
+
+      if (year && month && day) {
+        signupData.birthDate = `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`;
+      }
+
+      if (gender && gender.trim() !== '') {
+        signupData.gender = gender;
+      }
 
       const result = await authService.signup(signupData);
       setError('');

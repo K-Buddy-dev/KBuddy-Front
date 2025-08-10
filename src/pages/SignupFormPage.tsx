@@ -41,7 +41,7 @@ export function SignupFormPage() {
   const onSubmit = async (data: SignupFormData) => {
     try {
       await signup(data);
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       console.error(error);
     }
@@ -56,21 +56,21 @@ export function SignupFormPage() {
             control={control}
             name="firstName"
             render={({ field }) => (
-              <TextField id="firstName" label="First name" {...field} error={errors.firstName?.message} />
+              <TextField id="firstName" label="First name" {...field} required error={errors.firstName?.message} />
             )}
           />
           <Controller
             control={control}
             name="lastName"
             render={({ field }) => (
-              <TextField id="lastName" label="Last name" {...field} error={errors.lastName?.message} />
+              <TextField id="lastName" label="Last name" {...field} required error={errors.lastName?.message} />
             )}
           />
           <Controller
             control={control}
             name="email"
             render={({ field }) => (
-              <TextField id="email" label="Email" disabled={true} {...field} error={errors.email?.message} />
+              <TextField id="email" label="Email" disabled={true} {...field} required error={errors.email?.message} />
             )}
           />
           <Controller
@@ -83,6 +83,7 @@ export function SignupFormPage() {
                 {...field}
                 error={errors.userId?.message || userIdError}
                 onBlur={onUserIdBlur(field)}
+                required
               />
             )}
           />
@@ -120,7 +121,7 @@ export function SignupFormPage() {
             name="country"
             render={({ field }) => (
               <div className="w-full flex flex-col items-start mb-4">
-                <Label htmlFor={'country'} label={'Nationality'} />
+                <Label htmlFor={'country'} label={'Nationality'} required />
                 <SelectBox
                   size="large"
                   label={'Select your nationality'}
@@ -140,6 +141,7 @@ export function SignupFormPage() {
                 id="gender"
                 label="Gender"
                 options={[
+                  { label: 'Prefer not to say', value: '' },
                   { label: 'Male', value: 'M' },
                   { label: 'Female', value: 'F' },
                 ]}
@@ -159,6 +161,7 @@ export function SignupFormPage() {
                 {...field}
                 error={errors.password?.message}
                 showValidation={true}
+                required
               />
             )}
           />
@@ -172,6 +175,7 @@ export function SignupFormPage() {
                 {...field}
                 error={errors.confirmPassword?.message}
                 showValidation={true}
+                required
               />
             )}
           />
