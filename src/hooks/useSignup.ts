@@ -12,13 +12,23 @@ export const useSignup = () => {
       const {
         birthDate: { year, month, day },
         confirmPassword: _,
+        gender,
         ...rest
       } = data;
 
-      const signupData = {
+      const signupData: any = {
         ...rest,
-        birthDate: `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`,
       };
+
+      // birthDate가 모든 값이 있을 때만 포함
+      if (year && month && day) {
+        signupData.birthDate = `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`;
+      }
+
+      // gender가 빈 문자열이 아닐 때만 포함
+      if (gender && gender.trim() !== '') {
+        signupData.gender = gender;
+      }
 
       const result = await authService.signup(signupData);
       setError('');

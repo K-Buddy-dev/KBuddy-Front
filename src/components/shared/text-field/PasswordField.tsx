@@ -32,6 +32,7 @@ interface PasswordFieldProps extends ComponentProps<'input'> {
   className?: string;
   error?: string;
   showValidation?: boolean;
+  required?: boolean;
 }
 
 const checkState = (disabled: boolean | undefined, isFocus: boolean, error: string | undefined) => {
@@ -50,7 +51,7 @@ const getValidationState = (value: string, ruleValid: boolean) => {
 };
 
 export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
-  ({ id, label, error, value, onChange, showValidation = false, ...props }, ref) => {
+  ({ id, label, error, value, onChange, showValidation = false, required, ...props }, ref) => {
     const [isFocus, setIsFocus] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -60,7 +61,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
 
     return (
       <div className="w-full flex flex-col items-start mb-4">
-        <Label htmlFor={id} label={label} />
+        <Label htmlFor={id} label={label} required={required} />
         <div
           className={cn(
             passwordVariants({
