@@ -2,7 +2,7 @@ export const BIRTH_YEAR_OPTIONS = [
   { label: 'Year', value: '' },
   ...Array.from({ length: 100 }, (_, i) => ({
     label: `${2025 - i}`,
-    value: `${2025 - i}`,
+    value: `${2025 - i}`.slice(-2),
   })),
 ];
 
