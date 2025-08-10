@@ -42,13 +42,15 @@ export const signupSchema = z
       .regex(/^[a-zA-Z]+$/, 'Last name must contain only letters.'),
     email: emailSchema,
     userId: userIdSchema,
-    birthDate: z.object({
-      year: z.string().min(1, 'Year is required.'),
-      month: z.string().min(1, 'Month is required.'),
-      day: z.string().min(1, 'Day is required.'),
-    }),
+    birthDate: z
+      .object({
+        year: z.string().optional(),
+        month: z.string().optional(),
+        day: z.string().optional(),
+      })
+      .optional(),
     country: z.string().min(1, 'Country is required.'),
-    gender: z.string().min(1, 'Gender is required.'),
+    gender: z.string().optional(),
     password: passwordSchema,
     confirmPassword: passwordSchema,
   })

@@ -25,9 +25,9 @@ export interface SignupRequest {
   email: string;
   userId: string;
   password?: string;
-  birthDate: string;
+  birthDate?: string;
   country: string;
-  gender: string;
+  gender?: string;
   oAuthUid?: string | number;
   oAuthCategory?: 'KAKAO' | 'GOOGLE' | 'APPLE' | null;
 }
