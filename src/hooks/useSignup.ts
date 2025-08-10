@@ -20,12 +20,10 @@ export const useSignup = () => {
         ...rest,
       };
 
-      // birthDate가 모든 값이 있을 때만 포함
       if (year && month && day) {
         signupData.birthDate = `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`;
       }
 
-      // gender가 빈 문자열이 아닐 때만 포함
       if (gender && gender.trim() !== '') {
         signupData.gender = gender;
       }

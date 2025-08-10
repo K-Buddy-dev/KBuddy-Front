@@ -41,7 +41,7 @@ export function SignupFormPage() {
   const onSubmit = async (data: SignupFormData) => {
     try {
       await signup(data);
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       console.error(error);
     }
