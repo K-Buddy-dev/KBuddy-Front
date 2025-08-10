@@ -52,7 +52,7 @@ export const TextEditor = () => {
           contentEditable={<ContentEditable className="outline-none" />}
           placeholder={
             <div className="absolute text-gray-400 left-4 pointer-events-none select-none top-14">
-              Start writing a blog or question
+              Inappropriate or offensive content may be subject to sanctions.
             </div>
           }
           ErrorBoundary={LexicalErrorBoundary}
