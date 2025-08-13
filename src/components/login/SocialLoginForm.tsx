@@ -114,17 +114,17 @@ export function SocialLoginForm() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-3">
+      {isIOS && (
+        <div className="w-full" onClick={() => handleAppleLogin()}>
+          <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
+        </div>
+      )}
       <div className="w-full" onClick={() => handleSocialLogin(VITE_KAKAO_AUTH_URL, 'Kakao')}>
         <SocialButton logo={<KakaoLogo />} title="Continue with Kakao" type="kakao" />
       </div>
       <div className="w-full" onClick={() => handleSocialLogin(VITE_GOOGLE_AUTH_URL, 'Google')}>
         <SocialButton logo={<GoogleLogo />} title="Continue with Google" type="google" />
       </div>
-      {isIOS && (
-        <div className="w-full" onClick={() => handleAppleLogin()}>
-          <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
-        </div>
-      )}
     </div>
   );
 }
