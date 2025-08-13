@@ -18,7 +18,7 @@ export function SocialLoginForm() {
 
   const navigate = useNavigate();
 
-  const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset } = useSocialStore();
+  const { setEmail, setoAuthUid, setoAuthCategory, setFirstName, setLastName, socialStoreReset } = useSocialStore();
   const { checkMember } = useMemberCheckHandler();
 
   const { handleLogin } = useOauthLoginHandler();
@@ -35,6 +35,8 @@ export function SocialLoginForm() {
     setEmail(data.oAuthEmail || '');
     setoAuthUid(data.oAuthUid);
     setoAuthCategory(data.oAuthCategory);
+    setFirstName(data.givenName || '');
+    setLastName(data.familyName || '');
   };
 
   const handleAppleLogin = () => {
@@ -62,7 +64,13 @@ export function SocialLoginForm() {
       try {
         const message = JSON.parse(event.data);
         // console.log('message: ', message);
-        if (message.oAuthEmail && message.oAuthUid && message.oAuthCategory) {
+        if (
+          message.oAuthEmail &&
+          message.oAuthUid &&
+          message.oAuthCategory &&
+          message.familyName &&
+          message.givenName
+        ) {
           setOauthSignupData(message);
           setMemberCheckData({ oAuthUid: message.oAuthUid, oAuthCategory: message.oAuthCategory });
         }
@@ -106,17 +114,17 @@ export function SocialLoginForm() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-3">
+      {isIOS && (
+        <div className="w-full" onClick={() => handleAppleLogin()}>
+          <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
+        </div>
+      )}
       <div className="w-full" onClick={() => handleSocialLogin(VITE_KAKAO_AUTH_URL, 'Kakao')}>
         <SocialButton logo={<KakaoLogo />} title="Continue with Kakao" type="kakao" />
       </div>
       <div className="w-full" onClick={() => handleSocialLogin(VITE_GOOGLE_AUTH_URL, 'Google')}>
         <SocialButton logo={<GoogleLogo />} title="Continue with Google" type="google" />
       </div>
-      {isIOS && (
-        <div className="w-full" onClick={() => handleAppleLogin()}>
-          <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
-        </div>
-      )}
     </div>
   );
 }
