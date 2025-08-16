@@ -121,11 +121,11 @@ export function SignupFormPage() {
             name="country"
             render={({ field }) => (
               <div className="w-full flex flex-col items-start mb-4">
-                <Label htmlFor={'country'} label={'Nationality'} required />
+                <Label htmlFor={'country'} label={'Nationality'} />
                 <SelectBox
                   size="large"
                   label={'Select your nationality'}
-                  value={field.value}
+                  value={field.value || ''}
                   options={NATIONALITIES}
                   onChange={field.onChange}
                 />

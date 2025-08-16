@@ -49,7 +49,7 @@ export const signupSchema = z
         day: z.string().optional(),
       })
       .optional(),
-    country: z.string().min(1, 'Country is required.'),
+    country: z.string().optional(),
     gender: z.string().optional(),
     password: passwordSchema,
     confirmPassword: passwordSchema,
