@@ -14,6 +14,7 @@ export const useSignup = () => {
         birthDate: { year, month, day },
         confirmPassword: _,
         gender,
+        country,
         ...rest
       } = data;
 
@@ -27,6 +28,10 @@ export const useSignup = () => {
 
       if (!gender) {
         signupData.gender = null;
+      }
+
+      if (country && country.trim() !== '') {
+        signupData.country = country;
       }
 
       const result = await authService.signup(signupData);
