@@ -136,7 +136,7 @@ export const OauthSignupFormPage = () => {
                 <SelectBox
                   size="large"
                   label={'Select your nationality'}
-                  value={field.value}
+                  value={field.value ?? ''}
                   options={NATIONALITIES}
                   onChange={field.onChange}
                 />
