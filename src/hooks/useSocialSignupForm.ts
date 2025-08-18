@@ -10,6 +10,7 @@ export const useSocialSignupForm = (
 ) => {
   return useForm<SignupFormData>({
     resolver: zodResolver(socialSignupSchema),
+    mode: 'onChange',
     defaultValues: {
       firstName: '',
       lastName: '',
