@@ -49,7 +49,7 @@ export const signupSchema = z
         day: z.string().optional(),
       })
       .optional(),
-    country: z.string().optional(),
+    country: z.string().nullable().optional(),
     gender: z.string().optional(),
     password: passwordSchema,
     confirmPassword: passwordSchema,
@@ -71,7 +71,7 @@ export const socialSignupSchema = z.object({
       day: z.string().optional(),
     })
     .optional(),
-  country: z.string().optional(),
+  country: z.string().nullable().optional(),
   gender: z.string().optional(),
 });
 

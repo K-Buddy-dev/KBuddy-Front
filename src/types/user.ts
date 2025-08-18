@@ -11,7 +11,7 @@ export interface SignupFormData {
   password?: string;
   confirmPassword?: string;
   birthDate: { year: string; month: string; day: string };
-  country?: string;
+  country?: string | null;
   gender: string;
   oAuthUid?: string | number;
   oAuthCategory?: 'KAKAO' | 'GOOGLE' | 'APPLE' | null;
