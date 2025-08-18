@@ -12,7 +12,7 @@ export interface SignupFormData {
   confirmPassword?: string;
   birthDate: { year: string; month: string; day: string };
   country?: string | null;
-  gender: string;
+  gender?: string | null;
   oAuthUid?: string | number;
   oAuthCategory?: 'KAKAO' | 'GOOGLE' | 'APPLE' | null;
 }

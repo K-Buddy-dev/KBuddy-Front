@@ -145,8 +145,8 @@ export function SignupFormPage() {
                   { label: 'Male', value: 'M' },
                   { label: 'Female', value: 'F' },
                 ]}
-                value={field.value}
-                onChange={field.onChange}
+                value={field.value ?? null}
+                onChange={(val) => field.onChange(val || null)}
                 error={errors.gender?.message}
               />
             )}

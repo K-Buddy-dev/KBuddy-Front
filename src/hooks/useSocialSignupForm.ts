@@ -18,7 +18,7 @@ export const useSocialSignupForm = (
       userId: '',
       birthDate: { year: '', month: '', day: '' },
       country: null,
-      gender: '',
+      gender: null,
       oAuthUid: oAuthUid,
       oAuthCategory: oAuthCategory,
     },

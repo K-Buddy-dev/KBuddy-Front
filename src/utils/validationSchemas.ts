@@ -50,7 +50,7 @@ export const signupSchema = z
       })
       .optional(),
     country: z.string().nullable().optional(),
-    gender: z.string().optional(),
+    gender: z.string().nullable().optional(),
     password: passwordSchema,
     confirmPassword: passwordSchema,
   })
@@ -72,7 +72,7 @@ export const socialSignupSchema = z.object({
     })
     .optional(),
   country: z.string().nullable().optional(),
-  gender: z.string().optional(),
+  gender: z.string().nullable().optional(),
 });
 
 export const postFormTitleSchema = z.object({

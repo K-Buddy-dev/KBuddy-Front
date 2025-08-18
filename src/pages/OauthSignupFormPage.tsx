@@ -40,17 +40,17 @@ export const OauthSignupFormPage = () => {
   };
 
   useEffect(() => {
-    if (!email || !oAuthUid || !oAuthCategory) {
-      navigate('/');
-    }
+    // if (!email || !oAuthUid || !oAuthCategory) {
+    //   navigate('/');
+    // }
     resetFrom({
       firstName,
       lastName,
       email,
       userId: '',
       birthDate: { year: '', month: '', day: '' },
-      country: '',
-      gender: '',
+      country: null,
+      gender: null,
       oAuthUid,
       oAuthCategory,
     });
@@ -155,8 +155,8 @@ export const OauthSignupFormPage = () => {
                   { label: 'Male', value: 'M' },
                   { label: 'Female', value: 'F' },
                 ]}
-                value={field.value}
-                onChange={field.onChange}
+                value={field.value ?? null}
+                onChange={(val) => field.onChange(val || null)}
                 error={errors.gender?.message}
               />
             )}
