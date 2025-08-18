@@ -40,9 +40,9 @@ export const OauthSignupFormPage = () => {
   };
 
   useEffect(() => {
-    // if (!email || !oAuthUid || !oAuthCategory) {
-    //   navigate('/');
-    // }
+    if (!email || !oAuthUid || !oAuthCategory) {
+      navigate('/');
+    }
     resetFrom({
       firstName,
       lastName,
