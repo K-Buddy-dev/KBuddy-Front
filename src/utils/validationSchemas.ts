@@ -64,13 +64,11 @@ export const socialSignupSchema = z.object({
   lastName: z.string().min(1, 'Last name is required.'),
   email: z.string().email('Invalid email address.'),
   userId: z.string().min(1, 'User ID is required.'),
-  birthDate: z
-    .object({
-      year: z.string().optional(),
-      month: z.string().optional(),
-      day: z.string().optional(),
-    })
-    .optional(),
+  birthDate: z.object({
+    year: z.string().optional(),
+    month: z.string().optional(),
+    day: z.string().optional(),
+  }),
   country: z.string().nullable().optional(),
   gender: z.string().nullable().optional(),
 });

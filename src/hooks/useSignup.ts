@@ -24,6 +24,8 @@ export const useSignup = () => {
 
       if (year && month && day) {
         signupData.birthDate = `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`;
+      } else {
+        signupData.birthDate = '';
       }
 
       if (!gender) {

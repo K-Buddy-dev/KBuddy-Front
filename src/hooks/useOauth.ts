@@ -72,13 +72,14 @@ export const useOauthRegister = () => {
         oAuthUid,
         oAuthCategory,
       } = data;
+      const birthDate = year && month && day ? `${year.slice(-2)}${month.padStart(2, '0')}${day.padStart(2, '0')}` : '';
 
       const signupData = {
         firstName,
         lastName,
         email,
         userId,
-        birthDate: `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`,
+        birthDate: birthDate,
         country,
         gender,
         oAuthUid,
