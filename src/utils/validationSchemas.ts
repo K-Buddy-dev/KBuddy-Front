@@ -65,12 +65,12 @@ export const socialSignupSchema = z.object({
   email: z.string().email('Invalid email address.'),
   userId: z.string().min(1, 'User ID is required.'),
   birthDate: z.object({
-    year: z.string().min(1, 'Year is required.'),
-    month: z.string().min(1, 'Month is required.'),
-    day: z.string().min(1, 'Day is required.'),
+    year: z.string().optional(),
+    month: z.string().optional(),
+    day: z.string().optional(),
   }),
-  country: z.string().min(1, 'Country is required.'),
-  gender: z.string().min(1, 'Gender is required.'),
+  country: z.string().optional(),
+  gender: z.string().optional(),
 });
 
 export const postFormTitleSchema = z.object({
