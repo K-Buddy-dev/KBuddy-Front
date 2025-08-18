@@ -85,7 +85,8 @@ export function SocialLoginForm() {
     if (!memberCheckData) return;
     checkMember(memberCheckData)
       .then((res) => {
-        setIsMember(res.data.status);
+        console.log('res: ', res);
+        setIsMember(res);
       })
       .catch((error) => {
         console.error('Member check failed:', error);
