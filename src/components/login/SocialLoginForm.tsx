@@ -83,9 +83,14 @@ export function SocialLoginForm() {
 
   useEffect(() => {
     if (!memberCheckData) return;
-    // console.log('memberCheckData: ', memberCheckData);
-    checkMember(memberCheckData).then(setIsMember);
-    // .catch((error) => console.error('Member check failed:', error));
+    checkMember(memberCheckData)
+      .then((res) => {
+        setIsMember(res.data.status);
+      })
+      .catch((error) => {
+        console.error('Member check failed:', error);
+        setIsMember(false);
+      });
   }, [memberCheckData]);
 
   useEffect(() => {
