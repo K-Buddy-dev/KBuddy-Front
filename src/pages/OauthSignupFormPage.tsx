@@ -46,13 +46,13 @@ export const OauthSignupFormPage = () => {
     resetFrom({
       firstName,
       lastName,
-      email: 'ross1222@naver.com',
+      email,
       userId: '',
       birthDate: { year: '', month: '', day: '' },
       country: null,
       gender: null,
-      oAuthUid: 1,
-      oAuthCategory: 'KAKAO',
+      oAuthUid,
+      oAuthCategory,
     });
   }, [email, oAuthUid, oAuthCategory, socialStoreReset]);
 
@@ -107,21 +107,21 @@ export const OauthSignupFormPage = () => {
                 <div className="w-full flex justify-between">
                   <SelectBox
                     label={'Year'}
-                    value={field.value?.year ?? ''}
+                    value={field.value.year}
                     options={BIRTH_YEAR_OPTIONS}
-                    onChange={(value) => field.onChange({ ...field.value, year: value || '' })}
+                    onChange={(value) => field.onChange({ ...field.value, year: value })}
                   />
                   <SelectBox
                     label={'Month'}
-                    value={field.value?.month ?? ''}
+                    value={field.value.month}
                     options={BIRTH_MONTH_OPTIONS}
-                    onChange={(value) => field.onChange({ ...field.value, month: value || '' })}
+                    onChange={(value) => field.onChange({ ...field.value, month: value })}
                   />
                   <SelectBox
                     label={'Day'}
-                    value={field.value?.day ?? ''}
+                    value={field.value.day}
                     options={BIRTH_DAY_OPTIONS}
-                    onChange={(value) => field.onChange({ ...field.value, day: value || '' })}
+                    onChange={(value) => field.onChange({ ...field.value, day: value })}
                   />
                 </div>
               </div>
