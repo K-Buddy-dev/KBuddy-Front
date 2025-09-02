@@ -3,6 +3,7 @@ import { SwiperList } from '@/components/community/swiper';
 import { useContentActions, useFeaturedBlogs } from '@/hooks';
 import { useEffect, useRef } from 'react';
 import { authService } from '@/services';
+import { useSendFcmToken } from '@/hooks/useFcmToken';
 
 export const HomePage = () => {
   const { data: featuredBlog, refetch: refetchFeaturedBlog } = useFeaturedBlogs();
@@ -13,6 +14,7 @@ export const HomePage = () => {
     contentType: 'blog',
     refetchRecommended: refetchFeaturedBlog,
   });
+  const { mutate: sendFcmToken } = useSendFcmToken();
 
   useEffect(() => {
     const getUserProfile = async () => {
@@ -44,6 +46,12 @@ export const HomePage = () => {
           console.log('Received FCM Token:', message.token);
           // FCM 토큰을 localStorage에 저장
           localStorage.setItem('fcmToken', message.token);
+
+          sendFcmToken({
+            token: message.token,
+            title: '알림 설정 완료',
+            body: 'FCM 토큰이 등록되었습니다.(테스트)',
+          });
         }
       } catch (error) {
         console.error('Error parsing message:', error);
@@ -51,7 +59,11 @@ export const HomePage = () => {
     };
 
     window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    document.addEventListener('message', handleMessage as any);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      document.removeEventListener('message', handleMessage as any);
+    };
   }, []);
 
   return (
