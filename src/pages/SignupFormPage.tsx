@@ -3,11 +3,13 @@ import { Spinner } from '@/components/shared/spinner';
 import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
 import { useEmailVerifyStateContext, useSignup, useSignupForm, useUserIdDuplicateCheck } from '@/hooks';
 import { SignupFormData } from '@/types';
+import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export function SignupFormPage() {
   const { email } = useEmailVerifyStateContext();
+  const [agree, setAgree] = useState<boolean>(false);
   const navigate = useNavigate();
   const {
     control,
@@ -20,7 +22,7 @@ export function SignupFormPage() {
     navigate('/');
   };
 
-  const isSubmitDisabled = isLoading || !isValid || !!userIdError;
+  const isSubmitDisabled = isLoading || !isValid || !!userIdError || !agree;
 
   const onUserIdBlur = (field: any) => {
     return async (e: React.FocusEvent<HTMLInputElement>) => {
@@ -179,6 +181,36 @@ export function SignupFormPage() {
               />
             )}
           />
+          <div className="flex flex-col items-start justify-center w-full mb-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+                required
+                className="w-5 h-5 border-gray-300 rounded focus:ring-primary-500"
+                id="agreeTerms"
+              />
+              <Label
+                htmlFor="agreeTerms"
+                label={
+                  <>
+                    I consent to the
+                    <a
+                      href="https://pages.flycricket.io/wallpaper-106/privacy.html#google_vignette"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-600 underline inline-block"
+                    >
+                      Terms and Conditions of Use
+                    </a>
+                  </>
+                }
+                required
+              />
+            </div>
+            {!agree && <span className="text-red-500 text-sm">Please agree to the terms and conditions</span>}
+          </div>
           <Button variant="solid" color="primary" type="submit" className="w-full" disabled={isSubmitDisabled}>
             {isLoading ? <Spinner color="primary" size="sm" /> : 'Create account'}
           </Button>

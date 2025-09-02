@@ -5,13 +5,13 @@ import { useOauthRegister, useSocialSignupForm, useUserIdDuplicateCheck } from '
 import { Label } from '@/components/shared/label/Label';
 import { useSocialStore } from '@/store';
 import { SignupFormData } from '@/types';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export const OauthSignupFormPage = () => {
   const { email, oAuthUid, oAuthCategory, socialStoreReset, firstName, lastName } = useSocialStore();
-
+  const [agree, setAgree] = useState<boolean>(false);
   const navigate = useNavigate();
   const {
     control,
@@ -161,12 +161,42 @@ export const OauthSignupFormPage = () => {
               />
             )}
           />
+          <div className="flex flex-col items-start justify-center w-full mb-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+                required
+                className="w-5 h-5 border-gray-300 rounded focus:ring-primary-500"
+                id="agreeTerms"
+              />
+              <Label
+                htmlFor="agreeTerms"
+                label={
+                  <>
+                    I consent to the
+                    <a
+                      href="https://pages.flycricket.io/wallpaper-106/privacy.html#google_vignette"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-600 underline inline-block"
+                    >
+                      Terms and Conditions of Use
+                    </a>
+                  </>
+                }
+                required
+              />
+            </div>
+            {!agree && <span className="text-red-500 text-sm">Please agree to the terms and conditions</span>}
+          </div>
           <Button
             variant="solid"
             color="primary"
             type="submit"
             className="w-full"
-            disabled={isLoading || !isValid || !!userIdError}
+            disabled={isLoading || !isValid || !!userIdError || !agree}
           >
             {isLoading ? 'Creating account...' : 'Create account'}
           </Button>
