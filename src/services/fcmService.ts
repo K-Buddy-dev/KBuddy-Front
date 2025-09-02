@@ -8,10 +8,12 @@ interface FcmTokenRequest {
 export const fcmService = {
   // FCM 알림 전송
   sendFcmToken: async (data: FcmTokenRequest): Promise<void> => {
-    const response = await authClient.post('https://api.k-buddy.kr/api/v1/notifications/send', {
-      token: data.token,
-      title: data.title,
-      body: data.body,
+    const response = await authClient.post('https://api.k-buddy.kr/api/v1/notifications/send', null, {
+      params: {
+        token: data.token,
+        title: data.title,
+        body: data.body,
+      },
     });
     return response.data;
   },
