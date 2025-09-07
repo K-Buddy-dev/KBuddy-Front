@@ -3,6 +3,7 @@ import { authService } from '@/services';
 import { OauthRequest, SignupFormData } from '@/types';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from './useToastContext';
 
 const useOauthCheck = () => {
   const [error, setError] = useState({ oAuthCategory: '', oAuthUid: '' });
@@ -32,6 +33,8 @@ const useOauthCheck = () => {
 const useOauthLogin = () => {
   const [error, setError] = useState({ oAuthCategory: '', oAuthUid: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const oauthLogin = async (data: OauthRequest) => {
     setIsLoading(true);
@@ -42,6 +45,16 @@ const useOauthLogin = () => {
     } catch (error: any) {
       const errorMessage = error.response.data as string;
       console.log('errorMessage: ', errorMessage);
+      if (error.response?.status === 422) {
+        showToast({
+          message: 'This account has been withdrawn. If you want to recover,\nplease contact our customer center.',
+          type: 'error',
+          duration: 3000,
+        });
+        navigate('/');
+
+        return;
+      }
       setError({
         oAuthCategory: errorMessage,
         oAuthUid: errorMessage,
