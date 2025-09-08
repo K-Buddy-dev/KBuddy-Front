@@ -43,9 +43,9 @@ const useOauthLogin = () => {
       setError({ oAuthCategory: '', oAuthUid: '' });
       return result;
     } catch (error: any) {
-      const errorMessage = error.response.data as string;
+      const errorMessage = error.response.data;
       console.log('errorMessage: ', errorMessage);
-      if (error.response?.status === 422) {
+      if (errorMessage.status === 422) {
         showToast({
           message: 'This account has been withdrawn. If you want to recover,\nplease contact our customer center.',
           type: 'error',
