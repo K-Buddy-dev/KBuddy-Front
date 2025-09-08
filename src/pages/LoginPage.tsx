@@ -8,6 +8,7 @@ export function LoginPage() {
 
   useEffect(() => {
     const toastData = localStorage.getItem('toastMessage');
+    console.log('toastData: ', toastData);
     if (toastData) {
       const parsedToast = JSON.parse(toastData);
       showToast({
