@@ -7,7 +7,7 @@ export function LoginPage() {
   const { toast, showToast, hideToast } = useToast();
 
   useEffect(() => {
-    const toastData = sessionStorage.getItem('toastMessage');
+    const toastData = localStorage.getItem('toastMessage');
     if (toastData) {
       const parsedToast = JSON.parse(toastData);
       showToast({
@@ -16,7 +16,7 @@ export function LoginPage() {
         duration: parsedToast.duration,
       });
       // 토스트 표시 후 데이터 삭제
-      sessionStorage.removeItem('toastMessage');
+      localStorage.removeItem('toastMessage');
     }
   }, [showToast]);
   return (

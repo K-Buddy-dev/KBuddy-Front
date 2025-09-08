@@ -48,7 +48,7 @@ const useOauthLogin = () => {
           type: 'error',
           duration: 3000,
         };
-        sessionStorage.setItem('toastMessage', JSON.stringify(toastData));
+        localStorage.setItem('toastMessage', JSON.stringify(toastData));
         navigate('/');
         return;
       }
