@@ -1,25 +1,11 @@
 import { Accordion, AccordionItem, Toast, Topbar } from '@/components/shared';
 import { EmailVerifyForm, LoginForm, SocialLoginForm } from '@/components';
 import { useToast } from '@/hooks';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 
 export function LoginPage() {
-  const { toast, showToast, hideToast } = useToast();
+  const { toast, hideToast } = useToast();
 
-  useEffect(() => {
-    const toastData = localStorage.getItem('toastMessage');
-    console.log('toastData: ', toastData);
-    if (toastData) {
-      const parsedToast = JSON.parse(toastData);
-      showToast({
-        message: parsedToast.message,
-        type: parsedToast.type,
-        duration: parsedToast.duration,
-      });
-      // 토스트 표시 후 데이터 삭제
-      localStorage.removeItem('toastMessage');
-    }
-  }, [showToast]);
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} duration={toast.duration} onClose={hideToast} />}
