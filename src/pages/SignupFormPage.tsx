@@ -191,23 +191,17 @@ export function SignupFormPage() {
                 className="w-5 h-5 border-gray-300 rounded focus:ring-primary-500"
                 id="agreeTerms"
               />
-              <Label
-                htmlFor="agreeTerms"
-                label={
-                  <>
-                    I consent to the
-                    <a
-                      href="https://pages.flycricket.io/wallpaper-106/privacy.html#google_vignette"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary-600 underline inline-block"
-                    >
-                      Terms and Conditions of Use
-                    </a>
-                  </>
-                }
-                required
-              />
+              <label htmlFor="agreeTerms" className="text-primary-600 break-words max-w-prose ">
+                I consent to the{' '}
+                <a
+                  href="https://pages.flycricket.io/wallpaper-106/privacy.html#google_vignette"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-600 underline"
+                >
+                  Terms and Conditions of Use
+                </a>
+              </label>
             </div>
             {!agree && <span className="text-red-500 text-sm">Please agree to the terms and conditions</span>}
           </div>

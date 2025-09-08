@@ -87,7 +87,7 @@ export const Toast: React.FC<ToastProps> = ({ message, type = 'success', duratio
       >
         <div className="flex items-center">
           <span className={getIconColor()}>{getIcon()}</span>
-          <span className="ml-2 text-sm font-normal text-text-default">{message}</span>
+          <span className="ml-2 text-sm font-normal text-text-default whitespace-pre-line">{message}</span>
         </div>
         <button
           type="button"

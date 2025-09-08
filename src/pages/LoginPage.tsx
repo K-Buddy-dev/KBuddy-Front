@@ -1,9 +1,27 @@
-import { Accordion, AccordionItem, Topbar } from '@/components/shared';
+import { Accordion, AccordionItem, Toast, Topbar } from '@/components/shared';
 import { EmailVerifyForm, LoginForm, SocialLoginForm } from '@/components';
+import { useToast } from '@/hooks';
+import { useEffect } from 'react';
 
 export function LoginPage() {
+  const { toast, showToast, hideToast } = useToast();
+
+  useEffect(() => {
+    const toastData = sessionStorage.getItem('toastMessage');
+    if (toastData) {
+      const parsedToast = JSON.parse(toastData);
+      showToast({
+        message: parsedToast.message,
+        type: parsedToast.type,
+        duration: parsedToast.duration,
+      });
+      // 토스트 표시 후 데이터 삭제
+      sessionStorage.removeItem('toastMessage');
+    }
+  }, [showToast]);
   return (
     <>
+      {toast && <Toast message={toast.message} type={toast.type} duration={toast.duration} onClose={hideToast} />}
       <Topbar title="Log in or sign up" type="cancel" />
       <div className="mt-[72px]">
         <Accordion defaultSelectedId="signup">
