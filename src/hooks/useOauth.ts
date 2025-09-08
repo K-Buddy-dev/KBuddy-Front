@@ -44,12 +44,12 @@ const useOauthLogin = () => {
       return result;
     } catch (error: any) {
       const errorMessage = error.response.data;
-      console.log('errorMessage: ', errorMessage);
+
       if (errorMessage.status === 422) {
         showToast({
-          message: 'This account has been withdrawn. If you want to recover,\nplease contact our customer center.',
+          message: 'This account has been withdrawn.\n If you want to recover, please contact our customer center.',
           type: 'error',
-          duration: 3000,
+          duration: 5000,
         });
         navigate('/');
 
