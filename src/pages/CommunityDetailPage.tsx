@@ -39,6 +39,7 @@ export const CommunityDetailPage = () => {
   const blockMutate = useBlockUser();
 
   const currentData = currentTab === 'User blog' ? blog?.data : qna?.data;
+  console.log('currentData: ', currentData);
 
   const isBookmarked = currentData?.isBookmarked || false;
 
@@ -98,6 +99,8 @@ export const CommunityDetailPage = () => {
     <main className="relative min-h-screen pb-24 font-roboto">
       <DetailTopbar
         title={currentData.title}
+        url={window.location.href}
+        imageUrl={currentData.images[0].url}
         type="back"
         onBack={handleBack}
         isBookmarked={isBookmarked}

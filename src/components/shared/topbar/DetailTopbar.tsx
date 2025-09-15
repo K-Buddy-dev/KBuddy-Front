@@ -4,6 +4,8 @@ import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 
 interface DetailTopbarProps {
   title: string;
+  imageUrl: string;
+  url: string;
   type: 'cancel' | 'back';
   isBookmarked?: boolean;
   showDetailModal: boolean;
@@ -27,6 +29,8 @@ function PageTitle({ children }: { children: React.ReactNode }) {
 
 export function DetailTopbar({
   title,
+  url,
+  imageUrl,
   type,
   isBookmarked,
   showDetailModal,
@@ -35,6 +39,20 @@ export function DetailTopbar({
   onBookmark,
   setShowDetailModal,
 }: DetailTopbarProps) {
+  const handleShare = () => {
+    // 공유하기 네이티브 전송
+    if (typeof window !== 'undefined' && window.ReactNativeWebView) {
+      const shareData = {
+        title: title,
+        url: url,
+        imageUrl: imageUrl,
+      };
+      window.ReactNativeWebView.postMessage(JSON.stringify(shareData));
+    } else {
+      // 공유하기 웹 이벤트
+    }
+  };
+
   return (
     <DetailTopbarWrapper>
       <div className="flex items-center justify-start gap-2">
@@ -66,7 +84,7 @@ export function DetailTopbar({
           )}
         </button>
         {/* 공유하기 */}
-        <button className="w-12 h-12 flex items-center justify-center">
+        <button className="w-12 h-12 flex items-center justify-center" onClick={handleShare}>
           <span className="sr-only">share icon</span>
           <ShareIcon />
         </button>
