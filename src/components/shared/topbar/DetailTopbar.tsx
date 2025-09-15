@@ -43,6 +43,7 @@ export function DetailTopbar({
     // 공유하기 네이티브 전송
     if (typeof window !== 'undefined' && window.ReactNativeWebView) {
       const shareData = {
+        action: 'shareContent',
         title: title,
         url: url,
         imageUrl: imageUrl,
