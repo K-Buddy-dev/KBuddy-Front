@@ -1,5 +1,5 @@
 import { authService } from '@/services';
-import axios from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
 export const apiClient = axios.create({
   baseURL: 'https://api.k-buddy.kr/kbuddy/v1',
@@ -16,21 +16,46 @@ export const authClient = axios.create({
   withCredentials: true,
 });
 
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    _retry?: boolean;
+  }
+}
+
+let inflightRefresh: Promise<string> | null = null;
+const getFreshAccessToken = async () => {
+  if (!inflightRefresh) {
+    inflightRefresh = authService
+      .refreshAccessToken()
+      .then(({ data }) => data.accessToken)
+      .finally(() => {
+        inflightRefresh = null;
+      });
+  }
+  return inflightRefresh;
+};
+
 authClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originRequest = error.config;
-    if (error.response?.status === 401 && !originRequest._retry) {
-      originRequest._retry = true;
+  (res) => res,
+  async (error: AxiosError) => {
+    const original = error.config as AxiosRequestConfig | undefined;
+    const status = error.response?.status;
+
+    if (!original || original._retry || original.url?.includes('/accessToken')) {
+      return Promise.reject(error);
+    }
+
+    if (status === 401) {
+      original._retry = true;
       try {
-        const { data } = await authService.refreshAccessToken();
-        const { accessToken } = data;
-        authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-        return authClient(originRequest);
-      } catch (refreshError) {
-        return Promise.reject(refreshError);
+        const token = await getFreshAccessToken();
+        original.headers = { ...(original.headers ?? {}), Authorization: `Bearer ${token}` };
+        return authClient(original);
+      } catch (e) {
+        return Promise.reject(e);
       }
     }
+
     return Promise.reject(error);
   }
 );
