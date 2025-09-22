@@ -1,5 +1,5 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { DetailTopbar } from '@/components/shared';
 import { BlogDetail, QnaDetail } from '@/components/community';
@@ -28,7 +28,7 @@ export const CommunityDetailPage = () => {
   const [showBlockUserModal, setShowBlockUserModal] = useState<boolean>(false);
   const { showToast } = useToast();
 
-  const currentTab = searchParams.get('tab') || 'Curated blog';
+  const currentTab = searchParams.get('tab') || 'Curatedblog';
   const isBlogTab = currentTab === 'Userblog';
   const targetTab: PostFormType = isBlogTab ? 'Blog' : 'Q&A';
 
@@ -38,7 +38,9 @@ export const CommunityDetailPage = () => {
   const { mutate: deleteQna, isSuccess: isQnaDeleteSuccess } = useDeleteQna();
   const blockMutate = useBlockUser();
 
-  const currentData = currentTab === 'Userblog' ? blog?.data : qna?.data;
+  const currentData = useMemo(() => {
+    return currentTab === 'Userblog' ? blog?.data : qna?.data;
+  }, [blog?.data, qna?.data, currentTab]);
 
   const isBookmarked = currentData?.isBookmarked || false;
 
@@ -85,14 +87,16 @@ export const CommunityDetailPage = () => {
     }
   }, [isBlogDeleteSuccess, isQnaDeleteSuccess, isBlogTab, navigate, showToast]);
 
-  if (isLoading)
+  if (isLoading || !currentData) {
     return (
       <div className="w-full h-screen flex items-center justify-center">
         <Spinner />
       </div>
     );
+  }
 
-  if (!currentData) return <div className="w-full h-screen flex items-center justify-center">No data found</div>;
+  if (!currentData && !isLoading)
+    return <div className="w-full h-screen flex items-center justify-center">No data found</div>;
 
   return (
     <main className="relative min-h-screen pb-24 font-roboto">

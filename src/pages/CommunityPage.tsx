@@ -16,7 +16,7 @@ export const CommunityPage = () => {
   });
   const { toast, hideToast } = useToast();
 
-  const currentTab = searchParams.get('tab') || 'Curated blog';
+  const currentTab = searchParams.get('tab') || 'Curatedblog';
   const prevTabRef = useRef<string>(currentTab);
 
   useEffect(() => {

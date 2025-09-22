@@ -16,7 +16,7 @@ export function CommunityTab() {
   };
 
   const currentTabParam = searchParams.get('tab') || 'Curatedblog';
-  const currentTab = menuArr.find((menu) => getCleanTabName(menu.name) === currentTabParam)?.name || 'Curated blog';
+  const currentTab = menuArr.find((menu) => getCleanTabName(menu.name) === currentTabParam)?.name || 'Curatedblog';
 
   // 탭 변경 시 URL 업데이트 (공백 제거)
   const handleTabChange = (tabName: string) => {
