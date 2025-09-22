@@ -3,13 +3,12 @@ import { useToast } from '@/hooks';
 import { getBaseUrl } from '@/utils';
 import { Dispatch, SetStateAction } from 'react';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Toast } from '../toast';
 
 interface DetailTopbarProps {
   title: string;
   imageUrl: string;
-  url: string;
   type: 'cancel' | 'back';
   isBookmarked?: boolean;
   showDetailModal: boolean;
@@ -33,7 +32,6 @@ function PageTitle({ children }: { children: React.ReactNode }) {
 
 export function DetailTopbar({
   title,
-  url,
   imageUrl,
   type,
   isBookmarked,
@@ -44,6 +42,7 @@ export function DetailTopbar({
   setShowDetailModal,
 }: DetailTopbarProps) {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { toast, showToast, hideToast } = useToast();
 
   const clipUrl = async (url: string) => {
@@ -55,20 +54,36 @@ export function DetailTopbar({
     }
   };
 
+  const getCleanShareUrl = () => {
+    const baseUrl = getBaseUrl();
+    const path = location.pathname;
+
+    const normalizedPath = path.endsWith('/') ? path : `${path}/`;
+
+    const tabParam = searchParams.get('tab');
+    const cleanTab = tabParam?.replace(/\s+/g, '') || '';
+
+    let queryString = '';
+    if (cleanTab) {
+      queryString = `?tab=${encodeURIComponent(cleanTab)}`;
+    }
+
+    return `${baseUrl}${normalizedPath}${queryString}`;
+  };
+
   const handleShare = () => {
     // 공유하기 네이티브 전송
     if (typeof window !== 'undefined' && window.ReactNativeWebView) {
       const shareData = {
         action: 'shareContent',
         title: title,
-        url: url,
+        url: getCleanShareUrl(),
         imageUrl: imageUrl,
       };
       window.ReactNativeWebView.postMessage(JSON.stringify(shareData));
     } else {
       // 공유하기 웹 이벤트
-      const currentUrl = getBaseUrl() + location.pathname + location.search;
-      clipUrl(currentUrl);
+      clipUrl(getCleanShareUrl());
     }
   };
 
