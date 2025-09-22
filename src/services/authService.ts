@@ -1,5 +1,6 @@
 import { apiClient, authClient } from '@/api/axiosConfig';
 import { OauthRequest, ProfileEditFormData } from '@/types';
+import axios from 'axios';
 
 export interface LoginRequest {
   emailOrUserId: string;
@@ -42,9 +43,26 @@ export const authService = {
     return response.data;
   },
   logout: async () => {
-    const response = await authClient.post('/auth/logout');
-    authClient.defaults.headers.common['Authorization'] = '';
-    return response.data;
+    try {
+      const { data } = await authService.refreshAccessToken();
+      const accessToken = data?.accessToken as string | undefined;
+
+      if (accessToken) {
+        await authClient.post('/auth/logout', null, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          withCredentials: true,
+        });
+      }
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response?.status === 400) {
+        // no-op: best-effort logout
+      } else {
+        console.error('logout flow error:', e);
+      }
+    } finally {
+      // 4) 항상 클라이언트 상태 정리
+      delete authClient.defaults.headers.common.Authorization; // 빈 문자열보다 delete가 안전
+    }
   },
   emailVerify: async (data: EmailVerifyRequest) => {
     const response = await apiClient.post('/auth/email/check', data);
