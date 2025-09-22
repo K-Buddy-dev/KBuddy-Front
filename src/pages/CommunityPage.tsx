@@ -43,7 +43,7 @@ export const CommunityPage = () => {
     setSearchParams(newSearchParams, { replace: true });
   }, [searchKeyword, searchParams]);
 
-  const contentType = currentTab === 'User blog' ? 'blog' : 'qna';
+  const contentType = currentTab === 'Userblog' ? 'blog' : 'qna';
   const { handleLike: listHandleLike, handleBookmark: listHandleBookmark } = useContentActions({
     contentType,
   });
@@ -72,7 +72,7 @@ export const CommunityPage = () => {
       <Link to="/community/post" className="fixed right-4 bottom-[92px] cursor-pointer sm:right-[calc(50%-260px-16px)]">
         <FloatPostAction />
       </Link>
-      {currentTab === 'User blog' && <BlogList onLike={listHandleLike} onBookmark={listHandleBookmark} />}
+      {currentTab === 'Userblog' && <BlogList onLike={listHandleLike} onBookmark={listHandleBookmark} />}
       {currentTab === 'Q&A' && <QnaList onLike={listHandleLike} onBookmark={listHandleBookmark} />}
     </>
   );

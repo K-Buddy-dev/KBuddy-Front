@@ -29,7 +29,7 @@ export const CommunityDetailPage = () => {
   const { showToast } = useToast();
 
   const currentTab = searchParams.get('tab') || 'Curated blog';
-  const isBlogTab = currentTab === 'User blog';
+  const isBlogTab = currentTab === 'Userblog';
   const targetTab: PostFormType = isBlogTab ? 'Blog' : 'Q&A';
 
   const { data: blog, isLoading: blogLoading } = useBlogDetail(isBlogTab ? contentId : null);
@@ -38,7 +38,7 @@ export const CommunityDetailPage = () => {
   const { mutate: deleteQna, isSuccess: isQnaDeleteSuccess } = useDeleteQna();
   const blockMutate = useBlockUser();
 
-  const currentData = currentTab === 'User blog' ? blog?.data : qna?.data;
+  const currentData = currentTab === 'Userblog' ? blog?.data : qna?.data;
 
   const isBookmarked = currentData?.isBookmarked || false;
 
@@ -50,7 +50,7 @@ export const CommunityDetailPage = () => {
 
   const { data: recommendBlog, refetch: refetchRecommendedBlog } = useRecommendedBlogs({
     size: 6,
-    categoryCode: currentTab === 'User blog' ? categoryCode : undefined,
+    categoryCode: currentTab === 'Userblog' ? categoryCode : undefined,
   });
 
   const { data: recommendQna, refetch: refetchRecommendedQna } = useRecommendedQnas({
@@ -58,7 +58,7 @@ export const CommunityDetailPage = () => {
     categoryCode: currentTab === 'Q&A' ? categoryCode : undefined,
   });
 
-  const contentType = currentTab === 'User blog' ? 'blog' : 'qna';
+  const contentType = currentTab === 'Userblog' ? 'blog' : 'qna';
   const { handleLike, handleBookmark } = useContentActions({
     contentType,
     refetchRecommended: contentType === 'blog' ? refetchRecommendedBlog : refetchRecommendedQna,
@@ -108,7 +108,7 @@ export const CommunityDetailPage = () => {
         setShowDetailModal={setShowDetailModal}
       />
 
-      {currentTab === 'User blog' && (
+      {currentTab === 'Userblog' && (
         <BlogDetail
           contentId={contentId}
           onLike={handleLike}

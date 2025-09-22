@@ -21,7 +21,7 @@ export const BookmarkList = () => {
 
   const handleDetail = (item: any) => {
     sessionStorage.setItem('scrollY', String(window.scrollY));
-    const tab = item.postType === 'BLOG' ? 'User blog' : 'Q&A';
+    const tab = item.postType === 'BLOG' ? 'Userblog' : 'Q&A';
     navigate(`/community/detail/${item.id}?tab=${encodeURIComponent(tab)}`);
   };
 

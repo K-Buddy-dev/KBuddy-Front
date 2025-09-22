@@ -11,11 +11,17 @@ export function CommunityTab() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const currentTab = searchParams.get('tab') || 'Curated blog';
+  const getCleanTabName = (tabName: string) => {
+    return tabName.replace(/\s+/g, '');
+  };
 
-  // 탭 변경 시 URL 업데이트
+  const currentTabParam = searchParams.get('tab') || 'Curatedblog';
+  const currentTab = menuArr.find((menu) => getCleanTabName(menu.name) === currentTabParam)?.name || 'Curated blog';
+
+  // 탭 변경 시 URL 업데이트 (공백 제거)
   const handleTabChange = (tabName: string) => {
-    navigate(`/community?tab=${encodeURIComponent(tabName)}`, { replace: true });
+    const cleanTabName = getCleanTabName(tabName);
+    navigate(`/community?tab=${encodeURIComponent(cleanTabName)}`, { replace: true });
   };
 
   return (
