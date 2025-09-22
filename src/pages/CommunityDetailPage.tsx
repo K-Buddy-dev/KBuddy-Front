@@ -39,7 +39,6 @@ export const CommunityDetailPage = () => {
   const blockMutate = useBlockUser();
 
   const currentData = currentTab === 'User blog' ? blog?.data : qna?.data;
-  console.log('currentData: ', currentData);
 
   const isBookmarked = currentData?.isBookmarked || false;
 
