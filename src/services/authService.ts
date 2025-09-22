@@ -42,26 +42,37 @@ export const authService = {
     const response = await authClient.post('/auth/login', data);
     return response.data;
   },
-  logout: async () => {
+  refreshAccessToken: async () => {
+    const response = await authClient.get('/auth/accessToken');
+    return response.data;
+  },
+  logout: async (): Promise<void> => {
     try {
+      // 1) 로그아웃 직전에 1회 토큰 발급 시도 (쿠키 없으면 여기서 실패)
       const { data } = await authService.refreshAccessToken();
       const accessToken = data?.accessToken as string | undefined;
 
       if (accessToken) {
+        // 2) 전역 저장 없이 "이 요청에만" Authorization 부착하여 서버 로그아웃
         await authClient.post('/auth/logout', null, {
           headers: { Authorization: `Bearer ${accessToken}` },
           withCredentials: true,
         });
       }
+      // accessToken 없으면 서버엔 보낼 게 없음 → 클라 정리로 진행
     } catch (e) {
+      // refresh 쿠키가 없을 때 서버가 400을 주는 환경: 이미 로그아웃 상태로 간주하고 무시
       if (axios.isAxiosError(e) && e.response?.status === 400) {
-        // no-op: best-effort logout
+        // no-op (best-effort logout)
       } else {
+        // 그 외 에러만 로깅
         console.error('logout flow error:', e);
       }
     } finally {
-      // 4) 항상 클라이언트 상태 정리
-      delete authClient.defaults.headers.common.Authorization; // 빈 문자열보다 delete가 안전
+      // 3) 항상 클라이언트 상태 정리 (빈 문자열 대신 delete)
+      delete authClient.defaults.headers.common.Authorization;
+      // 필요 시 여기에 전역 상태/캐시 초기화 추가
+      // queryClient.clear(); resetStores(); 등
     }
   },
   emailVerify: async (data: EmailVerifyRequest) => {
@@ -93,10 +104,6 @@ export const authService = {
   },
   oauthLogin: async (data: OauthRequest) => {
     const response = await authClient.post('/auth/oauth/login', data);
-    return response.data;
-  },
-  refreshAccessToken: async () => {
-    const response = await authClient.get('/auth/accessToken');
     return response.data;
   },
   getUserDrafts: async () => {
