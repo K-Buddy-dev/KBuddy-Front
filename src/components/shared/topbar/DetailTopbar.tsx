@@ -73,11 +73,12 @@ export function DetailTopbar({
 
   const handleShare = () => {
     // 공유하기 네이티브 전송
+    console.log(getCleanShareUrl().replace(/\/\/www\./g, '//'));
     if (typeof window !== 'undefined' && window.ReactNativeWebView) {
       const shareData = {
         action: 'shareContent',
         title: title,
-        url: getCleanShareUrl(),
+        url: getCleanShareUrl().replace(/\/\/www\./g, '//'),
         imageUrl: imageUrl,
       };
       window.ReactNativeWebView.postMessage(JSON.stringify(shareData));

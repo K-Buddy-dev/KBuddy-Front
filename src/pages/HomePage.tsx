@@ -3,7 +3,7 @@ import { SwiperList } from '@/components/community/swiper';
 import { useContentActions, useFeaturedBlogs } from '@/hooks';
 import { useEffect, useRef } from 'react';
 import { authService } from '@/services';
-import { useSendFcmToken } from '@/hooks/useFcmToken';
+import { useSendFcmTokenToServer } from '@/hooks/useFcmToken';
 
 export const HomePage = () => {
   const { data: featuredBlog, refetch: refetchFeaturedBlog } = useFeaturedBlogs();
@@ -14,7 +14,8 @@ export const HomePage = () => {
     contentType: 'blog',
     refetchRecommended: refetchFeaturedBlog,
   });
-  const { mutate: sendFcmToken } = useSendFcmToken();
+
+  const { mutate: sendFcmTokenToServer } = useSendFcmTokenToServer();
 
   useEffect(() => {
     const getUserProfile = async () => {
@@ -43,14 +44,9 @@ export const HomePage = () => {
       try {
         const message = JSON.parse(event.data);
         if (message.type === 'fcmTokenReady' && message.token) {
-          console.log('Received FCM Token:', message.token);
-          // FCM 토큰을 localStorage에 저장
           localStorage.setItem('fcmToken', message.token);
-
-          sendFcmToken({
+          sendFcmTokenToServer({
             token: message.token,
-            title: '알림 설정 완료',
-            body: 'FCM 토큰이 등록되었습니다.(테스트)',
           });
         }
       } catch (error) {
