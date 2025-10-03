@@ -27,7 +27,11 @@ function DetailTopbarWrapper({ children }: { children: React.ReactNode }) {
 }
 
 function PageTitle({ children }: { children: React.ReactNode }) {
-  return <h1 className="flex-1 font-roboto font-normal text-text-default text-[22px] leading-7">{children}</h1>;
+  return (
+    <h1 className="flex-1 min-w-0 font-roboto font-normal text-text-default text-[22px] leading-7 truncate">
+      {children}
+    </h1>
+  );
 }
 
 export function DetailTopbar({
@@ -57,7 +61,6 @@ export function DetailTopbar({
   const getCleanShareUrl = () => {
     const baseUrl = getBaseUrl();
     const path = location.pathname;
-
     const normalizedPath = path.endsWith('/') ? path : `${path}/`;
 
     const tabParam = searchParams.get('tab');
@@ -72,8 +75,6 @@ export function DetailTopbar({
   };
 
   const handleShare = () => {
-    // 공유하기 네이티브 전송
-    console.log(getCleanShareUrl().replace(/\/\/www\./g, '//'));
     if (typeof window !== 'undefined' && window.ReactNativeWebView) {
       const shareData = {
         action: 'shareContent',
@@ -83,7 +84,6 @@ export function DetailTopbar({
       };
       window.ReactNativeWebView.postMessage(JSON.stringify(shareData));
     } else {
-      // 공유하기 웹 이벤트
       clipUrl(getCleanShareUrl());
     }
   };
@@ -92,7 +92,7 @@ export function DetailTopbar({
     <>
       {toast && <Toast message={toast.message} type={toast.type} duration={toast.duration} onClose={hideToast} />}
       <DetailTopbarWrapper>
-        <div className="flex items-center justify-start gap-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           {type === 'cancel' && (
             <button type="button" onClick={onCancle}>
               <div className="w-12 flex items-center gap-2 p-2 h-[30px] justify-center relative">
@@ -107,7 +107,8 @@ export function DetailTopbar({
           )}
           <PageTitle>{title}</PageTitle>
         </div>
-        <div className="flex items-center justify-center gap-2">
+
+        <div className="flex items-center justify-center gap-2 w-[160px]">
           {/* 북마크 */}
           <button
             onClick={onBookmark}
