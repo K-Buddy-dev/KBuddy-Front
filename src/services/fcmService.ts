@@ -25,7 +25,7 @@ export const fcmService = {
   // FCM 토큰 서버 전송
   sendFcmTokenToServer: async (data: FcmTokenToServerRequest): Promise<void> => {
     const response = await authClient.post('https://api.k-buddy.kr/api/v1/fcm-tokens', {
-      data: {
+      params: {
         token: data.token,
         deviceInfo: data.deviceInfo,
       },
