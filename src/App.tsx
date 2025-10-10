@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 
 import {
   LoginPage,
@@ -31,8 +31,35 @@ import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyCon
 import { ToastProvider } from './hooks/useToastContext.tsx';
 import { MobileEnvProvider } from './components/contexts/MobileEnvContextProvider.tsx';
 import { BlockUserPage } from './pages/BlockUserPage.tsx';
+import { useEffect } from 'react';
+import { APP_PUSH_TYPE, getAppRoute } from './constants/enum.ts';
 
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.type === APP_PUSH_TYPE.PUSH_NOTIFICATION) {
+          const { postID, postPart } = data;
+          const targetUrl = getAppRoute(postPart, postID);
+          navigate(targetUrl);
+        }
+      } catch (err) {
+        console.error('Invalid message data:', err);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    document.addEventListener('message', handleMessage as any);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      document.removeEventListener('message', handleMessage as any);
+    };
+  }, [navigate]);
+
   return (
     <MobileEnvProvider>
       <ToastProvider>
