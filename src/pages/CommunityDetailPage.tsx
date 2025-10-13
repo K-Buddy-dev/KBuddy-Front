@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 
 import { DetailTopbar } from '@/components/shared';
@@ -28,6 +28,7 @@ type TabKey = (typeof TAB)[keyof typeof TAB];
 
 export const CommunityDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const contentId = Number(id);
   const [searchParams] = useSearchParams();
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
@@ -80,7 +81,11 @@ export const CommunityDetailPage = () => {
   });
 
   const handleBack = () => {
-    window.history.back();
+    if (window.history.state && window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/home', { replace: true });
+    }
   };
 
   const handleBlockUserOpen = () => {
