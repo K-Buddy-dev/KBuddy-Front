@@ -41,6 +41,7 @@ function AppRouter() {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
+        console.log('🚀 ~ handleMessage ~ data:', data);
 
         if (data.type === APP_PUSH_TYPE.PUSH_NOTIFICATION) {
           const { postID, postPart } = data;
