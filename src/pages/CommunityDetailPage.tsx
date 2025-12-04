@@ -123,7 +123,6 @@ export const CommunityDetailPage = () => {
     <main className="relative min-h-screen pb-24 font-roboto">
       <DetailTopbar
         title={currentData.title}
-        description={currentData.description}
         type="back"
         onBack={handleBack}
         isBookmarked={isBookmarked}
