@@ -20,12 +20,17 @@ import {
   TypeCategoryPage,
   TitleImageDescriptionPage,
   CommunityCompletePage,
+  AdminDashboardPage,
+  UserManagementPage,
+  AdminLoginPage,
+  ReportsManagementPage,
 } from './pages';
 
 import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
 import 'swiper/css';
 import { EmailVerifyGuard } from './components/routes/EmailVerifyGuard.tsx';
 import { AuthGuard } from './components/routes/AuthGuard.tsx';
+import { AdminAuthGuard } from './components/routes/AdminAuthGuard.tsx';
 import { CommunityFormContextProvider } from './components/contexts/CommunityFormContextProvider.tsx';
 import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 import { ToastProvider } from './hooks/useToastContext.tsx';
@@ -33,8 +38,8 @@ import { MobileEnvProvider } from './components/contexts/MobileEnvContextProvide
 import { APP_PUSH_TYPE, getAppRoute } from './constants/enum.ts';
 import { BlockUserPage } from './pages/BlockUserPage.tsx';
 
-// ✅ BrowserRouter 내부에서 navigate 사용
-function AppRouter() {
+// AppRoutes component - inside BrowserRouter context
+function AppRoutes() {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,6 +69,16 @@ function AppRouter() {
 
   return (
     <Routes>
+      {/* Admin Login Route - Public */}
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+
+      {/* Admin Routes - Protected with AdminAuthGuard */}
+      <Route element={<AdminAuthGuard />}>
+        <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/admin/users" element={<UserManagementPage />} />
+        <Route path="/admin/reports" element={<ReportsManagementPage />} />
+      </Route>
+
       <Route element={<DefaultLayout />}>
         <Route element={<AuthGuard />}>
           <Route element={<EmailVerifyContextProvider />}>
@@ -79,6 +94,7 @@ function AppRouter() {
           <Route path="/oauth/callback/kakao" element={<KakaoRedirectPage />} />
           <Route path="/oauth2/code/google" element={<GoogleRedirectPage />} />
           <Route path="/oauth/apple-redirect" element={<AppleRedirectPage />} />
+
           <Route path="/oauth/signup/form" element={<OauthSignupFormPage />} />
 
           <Route path="/community" element={<CommunityPage />} />
@@ -104,13 +120,12 @@ function AppRouter() {
   );
 }
 
-// ✅ BrowserRouter는 App 컴포넌트 안에만 존재
 function App() {
   return (
     <MobileEnvProvider>
       <ToastProvider>
         <BrowserRouter>
-          <AppRouter />
+          <AppRoutes />
         </BrowserRouter>
       </ToastProvider>
     </MobileEnvProvider>
