@@ -8,7 +8,6 @@ import { Toast } from '../toast';
 
 interface DetailTopbarProps {
   title: string;
-  imageUrl: string;
   type: 'cancel' | 'back';
   isBookmarked?: boolean;
   showDetailModal: boolean;
@@ -36,7 +35,6 @@ function PageTitle({ children }: { children: React.ReactNode }) {
 
 export function DetailTopbar({
   title,
-  imageUrl,
   type,
   isBookmarked,
   showDetailModal,
@@ -80,7 +78,6 @@ export function DetailTopbar({
         action: 'shareContent',
         title: title,
         url: getCleanShareUrl().replace(/\/\/www\./g, '//'),
-        imageUrl: imageUrl,
       };
       window.ReactNativeWebView.postMessage(JSON.stringify(shareData));
     } else {

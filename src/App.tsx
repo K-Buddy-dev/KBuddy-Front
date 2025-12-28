@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
-
+import { useEffect } from 'react';
 import {
   LoginPage,
   KakaoRedirectPage,
@@ -35,9 +35,8 @@ import { CommunityFormContextProvider } from './components/contexts/CommunityFor
 import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 import { ToastProvider } from './hooks/useToastContext.tsx';
 import { MobileEnvProvider } from './components/contexts/MobileEnvContextProvider.tsx';
-import { BlockUserPage } from './pages/BlockUserPage.tsx';
-import { useEffect } from 'react';
 import { APP_PUSH_TYPE, getAppRoute } from './constants/enum.ts';
+import { BlockUserPage } from './pages/BlockUserPage.tsx';
 
 // AppRoutes component - inside BrowserRouter context
 function AppRoutes() {
@@ -47,6 +46,7 @@ function AppRoutes() {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
+        console.log('🚀 ~ handleMessage ~ data:', data);
 
         if (data.type === APP_PUSH_TYPE.PUSH_NOTIFICATION) {
           const { postID, postPart } = data;
@@ -60,6 +60,7 @@ function AppRoutes() {
 
     window.addEventListener('message', handleMessage);
     document.addEventListener('message', handleMessage as any);
+
     return () => {
       window.removeEventListener('message', handleMessage);
       document.removeEventListener('message', handleMessage as any);
