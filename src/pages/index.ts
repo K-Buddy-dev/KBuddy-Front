@@ -19,3 +19,4 @@ export { HomePage } from './HomePage';
 export * from './TypeCategoryPage';
 export * from './TitleImageDescriptionPage';
 export * from './CommunityCompletePage';
+export * from './admin';
