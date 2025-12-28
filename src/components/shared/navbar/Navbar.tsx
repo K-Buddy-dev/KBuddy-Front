@@ -56,7 +56,7 @@ function NavWrapper({ children }: { children: React.ReactNode }) {
 function NavbarWithSearch({ setSearchKeyword }: NavbarWithSearchProps) {
   return (
     <NavWrapper>
-      <Logo className="mr-2" />
+      <Logo className="mr-2 text-white" />
       <NavSearch setSearchKeyword={setSearchKeyword} />
       <AlarmIcon />
     </NavWrapper>
@@ -72,7 +72,7 @@ function NavbarWithoutSearch({ onClickAlarm, onClickSettings }: NavbarWithoutSea
   return (
     <NavWrapper>
       <div className="flex justify-between w-full">
-        <Logo />
+        <Logo className="text-white" />
         <div className="flex">
           <AlarmIcon className="cursor-pointer" onClick={onClickAlarm} />
           <SettingsIcon primary={false} className="cursor-pointer" onClick={onClickSettings} />
