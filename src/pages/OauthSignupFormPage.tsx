@@ -29,8 +29,6 @@ export const OauthSignupFormPage = () => {
     const sumbitData = {
       ...data,
       email: email,
-      firstName: firstName || '',
-      lastName: lastName || '',
       oAuthUid: String(oAuthUid),
       oAuthCategory: oAuthCategory,
     };
