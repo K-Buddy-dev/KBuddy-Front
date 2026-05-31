@@ -81,5 +81,31 @@ export const postFormDescriptionSchema = z.object({
   description: z.string().min(1, 'Description is required'),
 });
 
+export const requestLiveChatSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  dateOfBirth: z
+    .string()
+    .min(1, 'Date of birth is required')
+    .refine(isValidSlashDate, 'Use a valid date in MM/DD/YYYY format'),
+  selectedDate: z.date({ required_error: 'Please select a date' }),
+  timeSlots: z.array(z.string()).min(1, 'Please select at least one time slot'),
+  topic: z.string().min(1, 'Live chat topic is required').max(300, 'Topic must be at most 300 characters'),
+});
+
+function isValidSlashDate(value: string) {
+  const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!match) return false;
+
+  const [, monthText, dayText, yearText] = match;
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const year = Number(yearText);
+  const date = new Date(year, month - 1, day);
+
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+}
+
 export type PostFormTitleData = z.infer<typeof postFormTitleSchema>;
 export type PostFormDescriptionData = z.infer<typeof postFormDescriptionSchema>;
+export type RequestLiveChatData = z.infer<typeof requestLiveChatSchema>;

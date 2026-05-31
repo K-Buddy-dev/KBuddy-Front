@@ -83,3 +83,71 @@ export interface UserReportsData {
 
 // User Reports Response
 export type UserReportsResponse = AdminApiResponse<UserReportsData>;
+
+export type AdminPaymentStatus =
+  | 'DEPOSIT_REPORTED'
+  | 'AWAITING_DEPOSIT'
+  | 'PENDING'
+  | 'PAID'
+  | 'CANCELED'
+  | 'CANCELLED'
+  | 'REFUNDED'
+  | string;
+
+export interface AdminPayment {
+  paymentId: number;
+  bookingId: number;
+  customerId?: number;
+  counselorId?: number;
+  method?: string;
+  customerName?: string;
+  customerUsername?: string;
+  counselorName?: string;
+  counselorUsername?: string;
+  totalAmount: number;
+  platformFeeRate?: number;
+  platformFeeAmount?: number;
+  counselorSettlementAmount?: number;
+  bankName?: string;
+  accountNumber?: string;
+  accountHolder?: string;
+  depositorName?: string | null;
+  status: AdminPaymentStatus;
+  createdAt?: string;
+  createdDate?: string;
+  depositDeadlineAt?: string;
+  depositDueAt?: string;
+  depositReportedAt?: string | null;
+  confirmedAmount?: number | null;
+  paidAt?: string;
+  cancelledAt?: string | null;
+  cancelReason?: string | null;
+  customerMemo?: string | null;
+  adminMemo?: string | null;
+}
+
+export interface PaymentListData {
+  payments: AdminPayment[];
+  totalElements: number;
+  page?: number;
+  size?: number;
+}
+
+export interface PaymentPageData {
+  content: AdminPayment[];
+  totalElements: number;
+  totalPages?: number;
+  number?: number;
+  size?: number;
+}
+
+export type PaymentListResponse = AdminApiResponse<PaymentListData | PaymentPageData>;
+
+export interface ConfirmDepositRequest {
+  adminMemo?: string;
+  confirmedAmount?: number;
+}
+
+export interface CancelPaymentRequest {
+  reason: string;
+}

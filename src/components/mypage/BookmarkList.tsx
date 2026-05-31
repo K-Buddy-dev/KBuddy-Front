@@ -3,7 +3,6 @@ import { useBookmarkBlogs } from '@/hooks';
 import { CommunityCard } from '../community';
 import { SkeletonCard } from '../community';
 import { formatDate } from '@/utils';
-import { NoContent } from '../community/detail';
 import { useContentActions } from '@/hooks';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -40,7 +39,14 @@ export const BookmarkList = () => {
   }
 
   if (!data || data.data.length === 0) {
-    return <NoContent type="blog" />;
+    return (
+      <section className="mx-4 rounded-lg bg-bg-medium px-4 py-5 text-center font-roboto text-text-default">
+        <p className="text-[14px] font-medium leading-5">There aren&apos;t any saved posts yet.</p>
+        <p className="mt-1 text-[12px] font-normal leading-4 text-text-weak">
+          Save posts you want to revisit, and they will appear here.
+        </p>
+      </section>
+    );
   }
 
   return (

@@ -6,6 +6,8 @@ import { SignupFormData } from '@/types';
 import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { analyticsService } from '@/services/analyticsService';
+import { analyticsEvents } from '@/services/analyticsEvents';
 
 export function SignupFormPage() {
   const { email } = useEmailVerifyStateContext();
@@ -43,6 +45,9 @@ export function SignupFormPage() {
   const onSubmit = async (data: SignupFormData) => {
     try {
       await signup(data);
+      analyticsService.trackEvent(analyticsEvents.signUpCompleted, {
+        method: 'email',
+      });
       navigate('/home');
     } catch (error) {
       console.error(error);

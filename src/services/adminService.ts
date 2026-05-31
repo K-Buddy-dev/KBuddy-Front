@@ -4,6 +4,9 @@ import {
   UserListResponse,
   UserStatsResponse,
   PostReportsResponse,
+  PaymentListResponse,
+  ConfirmDepositRequest,
+  CancelPaymentRequest,
   UserReportsResponse,
 } from '@/types/admin';
 
@@ -65,6 +68,24 @@ export const adminService = {
   // Get user reports
   getUserReports: () => {
     return adminClient.get<UserReportsResponse>('/admin/reports/users');
+  },
+
+  getPayments: ({ page = 0, size = 50, status }: { page?: number; size?: number; status?: string } = {}) => {
+    return adminClient.get<PaymentListResponse>('/admin/payments', {
+      params: {
+        page,
+        size,
+        ...(status ? { status } : {}),
+      },
+    });
+  },
+
+  confirmDeposit: (paymentId: number, data?: ConfirmDepositRequest) => {
+    return adminClient.patch(`/admin/payments/${paymentId}/confirm-deposit`, data);
+  },
+
+  cancelPayment: (paymentId: number, data: CancelPaymentRequest) => {
+    return adminClient.patch(`/admin/payments/${paymentId}/cancel`, data);
   },
 
   // TODO: Add more admin services

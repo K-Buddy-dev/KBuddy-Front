@@ -24,6 +24,10 @@ export interface ProfileEditFormData {
 }
 
 export interface BasicUserData {
+  uuid?: string | number;
+  birthDate?: string | null;
+  firstName?: string;
+  lastName?: string;
   userId: string;
   profileImageUrl: string | null;
   bio: string | null;
@@ -34,6 +38,7 @@ export interface User extends BasicUserData {
   createdDate: string;
   email: string;
   firstName: string;
+  birthDate?: string | null;
   gender: string;
   id: number;
   isActive: boolean;

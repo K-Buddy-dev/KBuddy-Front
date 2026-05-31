@@ -1,6 +1,6 @@
 import { AlarmIcon, Logo, SearchIcon, SettingsIcon } from '@/components/shared/icon';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface NavbarWithSearchProps {
   setSearchKeyword?: Dispatch<SetStateAction<string>>;
@@ -53,10 +53,25 @@ function NavWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
+function HomeLogoButton({ className }: { className?: string }) {
+  const navigate = useNavigate();
+
+  return (
+    <button
+      type="button"
+      aria-label="Go to home"
+      className="flex h-9 w-9 items-center justify-center xs:h-12 xs:w-12"
+      onClick={() => navigate('/home')}
+    >
+      <Logo className={className} />
+    </button>
+  );
+}
+
 function NavbarWithSearch({ setSearchKeyword }: NavbarWithSearchProps) {
   return (
     <NavWrapper>
-      <Logo className="mr-2 text-white" />
+      <HomeLogoButton className="mr-2 text-white" />
       <NavSearch setSearchKeyword={setSearchKeyword} />
       <AlarmIcon />
     </NavWrapper>
@@ -72,10 +87,19 @@ function NavbarWithoutSearch({ onClickAlarm, onClickSettings }: NavbarWithoutSea
   return (
     <NavWrapper>
       <div className="flex justify-between w-full">
-        <Logo className="text-white" />
+        <HomeLogoButton className="text-white" />
         <div className="flex">
           <AlarmIcon className="cursor-pointer" onClick={onClickAlarm} />
-          <SettingsIcon primary={false} className="cursor-pointer" onClick={onClickSettings} />
+          {onClickSettings && (
+            <button
+              type="button"
+              aria-label="Open settings"
+              className="flex h-9 w-9 items-center justify-center xs:h-12 xs:w-12"
+              onClick={onClickSettings}
+            >
+              <SettingsIcon primary={false} />
+            </button>
+          )}
         </div>
       </div>
     </NavWrapper>

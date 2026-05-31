@@ -29,6 +29,11 @@ const menuItems: MenuItemConfig[] = [
     icon: <CommunityIcon />,
   },
   {
+    id: 'payments',
+    label: '결제 관리',
+    icon: <AlarmIcon />,
+  },
+  {
     id: 'reports',
     label: '신고 관리',
     icon: <AlarmIcon />,
