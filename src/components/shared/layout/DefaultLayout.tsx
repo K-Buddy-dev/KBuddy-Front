@@ -7,6 +7,7 @@ export function DefaultLayout() {
     location.pathname.includes('/community') ||
     location.pathname.includes('/home') ||
     location.pathname.includes('/message') ||
+    location.pathname.includes('/notifications') ||
     location.pathname.includes('/service') ||
     location.pathname.includes('/profile') ||
     location.pathname.includes('/settings');

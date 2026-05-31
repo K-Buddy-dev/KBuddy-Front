@@ -61,24 +61,33 @@ export function SettingPage() {
       </div>
 
       {showDeleteDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 mx-4 max-w-sm w-full">
-            <h3 className="text-title-200-medium font-medium mb-4">Delete account</h3>
-            <p className="text-body-200-medium text-text-weak mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-dialog-title"
+            className="w-full max-w-sm rounded-lg bg-white p-6"
+          >
+            <h3 id="delete-account-dialog-title" className="mb-4 text-title-200-medium font-medium">
+              Delete account
+            </h3>
+            <p className="mb-6 text-body-200-medium text-text-weak">
               Are you sure you want to delete your account? This action cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
+                type="button"
                 onClick={handleCancelDelete}
                 className="flex-1 py-3 px-4 border border-border-default rounded-lg text-body-200-medium font-medium hover:bg-bg-medium"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleConfirmDelete}
                 className="flex-1 py-3 px-4 bg-bg-danger-default text-white rounded-lg text-body-200-medium font-medium hover:bg-bg-danger-hover"
               >
-                Delete
+                Yes, delete account
               </button>
             </div>
           </div>

@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import render from '@/utils/test/render';
 import { SettingPage } from './SettingPage';
+import { authService } from '@/services';
 
 vi.mock('@/services', () => ({
   authService: {
@@ -70,4 +71,37 @@ it('navigates to the block user list', async () => {
   await user.click(screen.getByRole('button', { name: 'Block user list' }));
 
   expect(screen.getByText('Block user route')).toBeInTheDocument();
+});
+
+it('asks for confirmation before deleting an account', async () => {
+  const { user } = await render(
+    <MemoryRouter initialEntries={['/settings']}>
+      <SettingPage />
+    </MemoryRouter>
+  );
+
+  await user.click(screen.getByRole('button', { name: 'Delete account' }));
+
+  expect(authService.deleteAccount).not.toHaveBeenCalled();
+  expect(screen.getByRole('dialog', { name: 'Delete account' })).toBeInTheDocument();
+
+  await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+  expect(screen.queryByRole('dialog', { name: 'Delete account' })).not.toBeInTheDocument();
+  expect(authService.deleteAccount).not.toHaveBeenCalled();
+});
+
+it('deletes an account only after confirming in the dialog', async () => {
+  vi.mocked(authService.deleteAccount).mockResolvedValue({});
+
+  const { user } = await render(
+    <MemoryRouter initialEntries={['/settings']}>
+      <SettingPage />
+    </MemoryRouter>
+  );
+
+  await user.click(screen.getByRole('button', { name: 'Delete account' }));
+  await user.click(screen.getByRole('button', { name: 'Yes, delete account' }));
+
+  expect(authService.deleteAccount).toHaveBeenCalledTimes(1);
 });

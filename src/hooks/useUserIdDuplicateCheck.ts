@@ -2,6 +2,8 @@ import { authService } from '@/services';
 import { userIdSchema } from '@/utils/validationSchemas';
 import { useState } from 'react';
 
+const DUPLICATE_USER_ID_MESSAGE = 'This user ID is already taken.';
+
 export const useUserIdDuplicateCheck = () => {
   const [error, setError] = useState<string>('');
 
@@ -16,8 +18,7 @@ export const useUserIdDuplicateCheck = () => {
       if (error.name === 'ZodError') {
         setError(error.errors[0].message);
       } else {
-        const errorMessage = error.response.data.data as string;
-        setError(errorMessage);
+        setError(DUPLICATE_USER_ID_MESSAGE);
       }
       throw error;
     }

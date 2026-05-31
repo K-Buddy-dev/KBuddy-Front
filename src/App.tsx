@@ -33,6 +33,7 @@ import {
   RequestLiveChatPage,
   LiveChatOrderPlacedPage,
   BookingDetailPage,
+  NotificationPage,
 } from './pages';
 
 import { DefaultLayout } from './components/shared/layout/DefaultLayout.tsx';
@@ -129,6 +130,7 @@ function AppRoutes() {
             <Route path="/service/:id/request/placed" element={<LiveChatOrderPlacedPage />} />
             <Route path="/message" element={<MessagePage />} />
             <Route path="/message/:roomId" element={<ChatRoomPage />} />
+            <Route path="/notifications" element={<NotificationPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/bookings/:bookingId" element={<BookingDetailPage />} />
             <Route path="/profile/edit" element={<EditProfilePage />} />
