@@ -51,7 +51,7 @@ export function SwiperCard({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const NAVIGATION_CARD = location.search ? location.search : '?tab=User%20blog';
+  const NAVIGATION_CARD = location.search ? location.search : '?tab=Userblog';
 
   const categoryNames = getCategoryNames(categoryId);
 

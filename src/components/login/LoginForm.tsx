@@ -4,6 +4,8 @@ import { LoginFormData } from '@/types';
 import { useLoginForm, useLogin } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '../shared/spinner';
+import { analyticsService } from '@/services/analyticsService';
+import { analyticsEvents } from '@/services/analyticsEvents';
 
 export function LoginForm() {
   const {
@@ -21,6 +23,9 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data);
+      analyticsService.trackEvent(analyticsEvents.loginCompleted, {
+        method: 'password',
+      });
       navigate('/home');
     } catch (error) {
       console.error(error);

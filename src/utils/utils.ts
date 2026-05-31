@@ -65,3 +65,14 @@ export function getCategoryNames(categoryId: number | number[]): string {
   }
   return CATEGORIES.find((cat) => cat.id === categoryId)?.name || '';
 }
+
+// 환경에 따른 Base URL 반환
+export const getBaseUrl = () => {
+  if (typeof window === 'undefined') return '';
+
+  if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
+    return `http://localhost:5173`;
+  }
+
+  return `https://${window.location.hostname}`;
+};

@@ -19,6 +19,7 @@ export function AuthGuard() {
   const location = useLocation();
   const { pathname } = location;
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isChecking, setIsChecking] = useState<boolean>(true);
 
   const isOAuthCallback = OAUTH_CALLBACK_PATHS.some((path) => pathname.startsWith(path));
 
@@ -31,17 +32,28 @@ export function AuthGuard() {
     const refreshToken = async () => {
       try {
         if (!authClient.defaults.headers.common['Authorization']) {
-          const { accessToken } = await authService.refreshAccessToken();
-          authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-          setIsAuthenticated(true);
+          const { data } = await authService.refreshAccessToken();
+          const accessToken = data?.accessToken as string | undefined;
+          if (accessToken) {
+            authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+          }
         }
       } catch {
         setIsAuthenticated(false);
+      } finally {
+        setIsChecking(false);
       }
     };
 
     refreshToken();
   }, []);
+
+  if (isChecking && !isAuthenticated) {
+    return null;
+  }
 
   if (isOAuthCallback) {
     return <Outlet />;

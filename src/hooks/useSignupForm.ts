@@ -14,8 +14,8 @@ export const useSignupForm = (email: string) => {
       password: '',
       confirmPassword: '',
       birthDate: { year: '', month: '', day: '' },
-      country: '',
-      gender: '',
+      country: null,
+      gender: null,
     },
   });
 };

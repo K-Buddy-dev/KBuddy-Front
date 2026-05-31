@@ -25,9 +25,10 @@ interface QnaDetailProps {
     | ((event: React.MouseEvent, id: number, isBookmarked: boolean) => void)
     | ((event: React.MouseEvent) => void);
   recommendedData?: Community[];
+  handleBlockUserOpen: () => void;
 }
 
-export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData }: QnaDetailProps) => {
+export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData, handleBlockUserOpen }: QnaDetailProps) => {
   const { data: qna, isLoading, error } = useQnaDetail(contentId);
   const { mutate: createComment } = useCreateQnaComment(contentId);
   const { mutate: updateComment } = useUpdateQnaComment(contentId);
@@ -109,8 +110,12 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData }: Qn
         <div className="flex items-center gap-2 text-sm text-text-weak mb-4">
           <span>{categoryNames}</span>
         </div>
-        <div className="flex items-center gap-2 mb-4">
-          <img src={defaultImg} alt="Profile" className="w-10 h-10 rounded-full" />
+        <div className="flex items-center gap-2 mb-4" onClick={handleBlockUserOpen}>
+          <img
+            src={qna.data.writerProfileImageUrl ? qna.data.writerProfileImageUrl : defaultImg}
+            alt="Profile"
+            className="w-10 h-10 rounded-full"
+          />
           <div className="flex flex-col items-start gap-1">
             <span className="text-sm font-medium text-text-default">@{qna.data.writerName}</span>
             <span className="text-sm font-medium text-text-weak">{formatDate(qna.data.createdAt)}</span>

@@ -55,7 +55,7 @@ export interface Comment {
 
 export interface CommunityDetail {
   id: number;
-  writerUuid: number;
+  writerUuid: string;
   writerName: string;
   writerProfileImageUrl: string;
   categoryId: number[] | number;
@@ -150,3 +150,23 @@ export interface UseRecommendedBlogsProps {
   categoryCode?: number;
   sort?: string;
 }
+
+export interface BlockRecord {
+  id: number;
+  blockerId: number;
+  blockerUsername: string;
+  blockedId: number;
+  blockedUsername: string;
+  blockedAt: string;
+}
+
+export interface ApiResponseWithData<T> {
+  timestamp: string;
+  status: number;
+  code: string | null;
+  path: string | null;
+  data: T;
+  details: unknown[];
+}
+
+export type BlockedUsersResponse = ApiResponseWithData<BlockRecord[]>;

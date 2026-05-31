@@ -34,7 +34,7 @@ const checkState = (disabled: boolean | undefined, isFocus: boolean, error: stri
 };
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  ({ id, name, label, error, value, onChange, onBlur, ...props }, ref) => {
+  ({ id, name, label, error, value, onChange, onBlur, required, ...props }, ref) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [isFocus, setIsFocus] = useState(false);
 
@@ -55,7 +55,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 
     return (
       <div className="w-full flex flex-col items-start mb-4">
-        <Label htmlFor={id} label={label} />
+        <Label htmlFor={id} label={label} required={required} />
         <div
           className={cn(
             textFieldVariants({

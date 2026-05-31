@@ -6,6 +6,8 @@ export function DefaultLayout() {
   const isPaddingDisabled =
     location.pathname.includes('/community') ||
     location.pathname.includes('/home') ||
+    location.pathname.includes('/message') ||
+    location.pathname.includes('/service') ||
     location.pathname.includes('/profile') ||
     location.pathname.includes('/settings');
   const isBottomNavigationDisabled =
@@ -13,7 +15,10 @@ export function DefaultLayout() {
     location.pathname.includes('/signup') ||
     location.pathname.includes('/oauth') ||
     location.pathname.includes('/community/post') ||
-    location.pathname.includes('/community/detail');
+    location.pathname.includes('/community/detail') ||
+    location.pathname.startsWith('/service/') ||
+    location.pathname.startsWith('/message/') ||
+    location.pathname.startsWith('/profile/counselor/create');
 
   return (
     <div className="w-full h-full min-h-screen flex items-start justify-center bg-slate-200">

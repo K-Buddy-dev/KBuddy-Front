@@ -5,13 +5,13 @@ import { useOauthRegister, useSocialSignupForm, useUserIdDuplicateCheck } from '
 import { Label } from '@/components/shared/label/Label';
 import { useSocialStore } from '@/store';
 import { SignupFormData } from '@/types';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 export const OauthSignupFormPage = () => {
-  const { email, oAuthUid, oAuthCategory, socialStoreReset } = useSocialStore();
-
+  const { email, oAuthUid, oAuthCategory, socialStoreReset, firstName, lastName } = useSocialStore();
+  const [agree, setAgree] = useState<boolean>(false);
   const navigate = useNavigate();
   const {
     control,
@@ -29,12 +29,14 @@ export const OauthSignupFormPage = () => {
     const sumbitData = {
       ...data,
       email: email,
+      firstName: firstName || '',
+      lastName: lastName || '',
       oAuthUid: String(oAuthUid),
       oAuthCategory: oAuthCategory,
     };
     await oauthRegister(sumbitData);
     socialStoreReset();
-    navigate('/');
+    navigate('/home');
   };
 
   useEffect(() => {
@@ -42,13 +44,13 @@ export const OauthSignupFormPage = () => {
       navigate('/');
     }
     resetFrom({
-      firstName: '',
-      lastName: '',
+      firstName,
+      lastName,
       email,
       userId: '',
       birthDate: { year: '', month: '', day: '' },
-      country: '',
-      gender: '',
+      country: null,
+      gender: null,
       oAuthUid,
       oAuthCategory,
     });
@@ -134,9 +136,9 @@ export const OauthSignupFormPage = () => {
                 <SelectBox
                   size="large"
                   label={'Select your nationality'}
-                  value={field.value}
+                  value={field.value ?? null}
                   options={NATIONALITIES}
-                  onChange={field.onChange}
+                  onChange={(val) => field.onChange(val || null)}
                 />
                 {errors.country && <span>{errors.country.message}</span>}
               </div>
@@ -153,13 +155,43 @@ export const OauthSignupFormPage = () => {
                   { label: 'Male', value: 'M' },
                   { label: 'Female', value: 'F' },
                 ]}
-                value={field.value}
-                onChange={field.onChange}
+                value={field.value ?? null}
+                onChange={(val) => field.onChange(val || null)}
                 error={errors.gender?.message}
               />
             )}
           />
-          <Button variant="solid" color="primary" className="w-full" disabled={isLoading || !isValid || !!userIdError}>
+          <div className="flex flex-col items-start justify-center w-full mb-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+                required
+                className="w-5 h-5 border-gray-300 rounded focus:ring-primary-500"
+                id="agreeTerms"
+              />
+              <label htmlFor="agreeTerms" className="text-primary-600 break-words max-w-prose ">
+                I consent to the{' '}
+                <a
+                  href="https://pages.flycricket.io/wallpaper-106/privacy.html#google_vignette"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-600 underline"
+                >
+                  Terms and Conditions of Use
+                </a>
+              </label>
+            </div>
+            {!agree && <span className="text-red-500 text-sm">Please agree to the terms and conditions</span>}
+          </div>
+          <Button
+            variant="solid"
+            color="primary"
+            type="submit"
+            className="w-full"
+            disabled={isLoading || !isValid || !!userIdError || !agree}
+          >
             {isLoading ? 'Creating account...' : 'Create account'}
           </Button>
         </form>

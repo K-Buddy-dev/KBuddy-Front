@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { HomeIcon, CommunityIcon, ServiceIcon, MessageIcon, ProfileIcon } from './icon';
+import { HomeIcon, CommunityIcon, ProfileIcon, ServiceIcon, MessageIcon } from './icon';
 import { cn } from '@/utils/utils';
 
 interface NavItem {

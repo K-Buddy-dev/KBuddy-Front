@@ -1,6 +1,11 @@
+import { authClient } from '@/api/axiosConfig';
 import { authService } from '@/services';
 import { SignupFormData } from '@/types';
 import { useState } from 'react';
+
+function getAccessToken(result: any) {
+  return result?.accessToken ?? result?.data?.accessToken ?? result?.data?.data?.accessToken;
+}
 
 export const useSignup = () => {
   const [error, setError] = useState<string>('');
@@ -12,15 +17,39 @@ export const useSignup = () => {
       const {
         birthDate: { year, month, day },
         confirmPassword: _,
+        gender,
+        country,
         ...rest
       } = data;
 
-      const signupData = {
+      const signupData: any = {
         ...rest,
-        birthDate: `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`,
       };
 
+      if (year && month && day) {
+        signupData.birthDate = `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`;
+      } else {
+        signupData.birthDate = '';
+      }
+
+      if (!gender) {
+        signupData.gender = null;
+      }
+
+      if (country && country.trim() !== '') {
+        signupData.country = country;
+      }
+
       const result = await authService.signup(signupData);
+      let accessToken = getAccessToken(result);
+      if (!accessToken && data.password) {
+        const loginResult = await authService.login({ emailOrUserId: data.userId, password: data.password });
+        accessToken = getAccessToken(loginResult);
+      }
+      if (accessToken) {
+        authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      }
+      localStorage.setItem('kBuddyId', data.userId);
       setError('');
       return result;
     } catch (error: any) {

@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 interface DetailModalProps {
   content: CommunityDetail;
   contentId: number;
-  writerUuid: number;
+  writerUuid: string;
   targetTab: PostFormType;
   deleteMutate: (id: number) => void;
   setShowDetailModal: Dispatch<SetStateAction<boolean>>;
@@ -49,7 +49,7 @@ export const DetailModal = ({
   const isMyPost = userInfo.uuid === writerUuid;
 
   const handleReport = () => {
-    alert('신고가 접수되었습니다.(임시)');
+    alert('신고가 접수되었습니다.');
     setShowDetailModal(false);
   };
 

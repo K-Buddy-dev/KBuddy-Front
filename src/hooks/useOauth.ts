@@ -3,6 +3,13 @@ import { authService } from '@/services';
 import { OauthRequest, SignupFormData } from '@/types';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from './useToastContext';
+import { analyticsService } from '@/services/analyticsService';
+import { analyticsEvents } from '@/services/analyticsEvents';
+
+function getAccessToken(result: any) {
+  return result?.accessToken ?? result?.data?.accessToken ?? result?.data?.data?.accessToken;
+}
 
 const useOauthCheck = () => {
   const [error, setError] = useState({ oAuthCategory: '', oAuthUid: '' });
@@ -32,6 +39,8 @@ const useOauthCheck = () => {
 const useOauthLogin = () => {
   const [error, setError] = useState({ oAuthCategory: '', oAuthUid: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const oauthLogin = async (data: OauthRequest) => {
     setIsLoading(true);
@@ -40,8 +49,18 @@ const useOauthLogin = () => {
       setError({ oAuthCategory: '', oAuthUid: '' });
       return result;
     } catch (error: any) {
-      const errorMessage = error.response.data as string;
-      console.log('errorMessage: ', errorMessage);
+      const errorMessage = error.response.data;
+
+      if (errorMessage.status === 422) {
+        showToast({
+          message: 'This account has been withdrawn.\n If you want to recover, please contact our customer center.',
+          type: 'error',
+          duration: 5000,
+        });
+        navigate('/');
+
+        return;
+      }
       setError({
         oAuthCategory: errorMessage,
         oAuthUid: errorMessage,
@@ -72,24 +91,38 @@ export const useOauthRegister = () => {
         oAuthUid,
         oAuthCategory,
       } = data;
+      const birthDate = year && month && day ? `${year.slice(-2)}${month.padStart(2, '0')}${day.padStart(2, '0')}` : '';
 
       const signupData = {
         firstName,
         lastName,
         email,
         userId,
-        birthDate: `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}`,
+        birthDate: birthDate,
         country,
         gender,
         oAuthUid,
         oAuthCategory,
       };
       const result = await authService.oauthRegister(signupData);
+      let accessToken = getAccessToken(result);
+      if (!accessToken && oAuthUid && oAuthCategory) {
+        const loginResult = await authService.oauthLogin({ oAuthUid, oAuthCategory });
+        accessToken = getAccessToken(loginResult);
+      }
+      if (accessToken) {
+        authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      }
+      localStorage.setItem('kBuddyId', userId);
+      analyticsService.trackEvent(analyticsEvents.signUpCompleted, {
+        method: oAuthCategory || 'oauth',
+      });
       setError('');
       return result;
     } catch (error: any) {
       const errorMessage = error.response.data.data as string;
       setError(errorMessage);
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -131,6 +164,9 @@ export const useOauthLoginHandler = () => {
       const result = await oauthLogin(data);
       const { accessToken } = result.data;
       authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      analyticsService.trackEvent(analyticsEvents.loginCompleted, {
+        method: data.oAuthCategory || 'oauth',
+      });
       navigate('/home');
     } catch (err: any) {
       console.error('로그인 실패:', err);

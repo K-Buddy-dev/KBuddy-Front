@@ -1,9 +1,8 @@
 import { authService } from '@/services';
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Draft } from './Draft';
 import { PostDraft } from '@/types';
 import { DraftsController } from './DraftsController';
-import { useStackNavigation } from 'j-react-stack';
 
 interface DraftPostsProps {
   onNext: () => void;
@@ -14,7 +13,6 @@ export const DraftPosts = ({ onNext }: DraftPostsProps) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedDrafts, setSelectedDrafts] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { stack } = useStackNavigation();
 
   const isAllSelected = selectedDrafts.length === drafts.length && drafts.length > 0;
 
@@ -40,11 +38,8 @@ export const DraftPosts = ({ onNext }: DraftPostsProps) => {
   }, []);
 
   useEffect(() => {
-    const currentStack = stack[stack.length - 1];
-    if (currentStack.key === 'write') {
-      refreshDrafts();
-    }
-  }, [stack.length]);
+    refreshDrafts();
+  }, []);
 
   return (
     <>

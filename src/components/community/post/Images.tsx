@@ -120,9 +120,11 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
     }
 
     window.addEventListener('message', handleAlbumDataFromRN);
+    document.addEventListener('message', handleAlbumDataFromRN as EventListener);
 
     return () => {
       window.removeEventListener('message', handleAlbumDataFromRN);
+      document.removeEventListener('message', handleAlbumDataFromRN as EventListener);
     };
   }, []);
 

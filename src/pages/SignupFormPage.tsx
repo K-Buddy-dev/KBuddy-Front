@@ -3,11 +3,15 @@ import { Spinner } from '@/components/shared/spinner';
 import { BIRTH_DAY_OPTIONS, BIRTH_MONTH_OPTIONS, BIRTH_YEAR_OPTIONS, NATIONALITIES } from '@/constants';
 import { useEmailVerifyStateContext, useSignup, useSignupForm, useUserIdDuplicateCheck } from '@/hooks';
 import { SignupFormData } from '@/types';
+import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { analyticsService } from '@/services/analyticsService';
+import { analyticsEvents } from '@/services/analyticsEvents';
 
 export function SignupFormPage() {
   const { email } = useEmailVerifyStateContext();
+  const [agree, setAgree] = useState<boolean>(false);
   const navigate = useNavigate();
   const {
     control,
@@ -20,7 +24,7 @@ export function SignupFormPage() {
     navigate('/');
   };
 
-  const isSubmitDisabled = isLoading || !isValid || !!userIdError;
+  const isSubmitDisabled = isLoading || !isValid || !!userIdError || !agree;
 
   const onUserIdBlur = (field: any) => {
     return async (e: React.FocusEvent<HTMLInputElement>) => {
@@ -41,7 +45,10 @@ export function SignupFormPage() {
   const onSubmit = async (data: SignupFormData) => {
     try {
       await signup(data);
-      navigate('/');
+      analyticsService.trackEvent(analyticsEvents.signUpCompleted, {
+        method: 'email',
+      });
+      navigate('/home');
     } catch (error) {
       console.error(error);
     }
@@ -56,21 +63,21 @@ export function SignupFormPage() {
             control={control}
             name="firstName"
             render={({ field }) => (
-              <TextField id="firstName" label="First name" {...field} error={errors.firstName?.message} />
+              <TextField id="firstName" label="First name" {...field} required error={errors.firstName?.message} />
             )}
           />
           <Controller
             control={control}
             name="lastName"
             render={({ field }) => (
-              <TextField id="lastName" label="Last name" {...field} error={errors.lastName?.message} />
+              <TextField id="lastName" label="Last name" {...field} required error={errors.lastName?.message} />
             )}
           />
           <Controller
             control={control}
             name="email"
             render={({ field }) => (
-              <TextField id="email" label="Email" disabled={true} {...field} error={errors.email?.message} />
+              <TextField id="email" label="Email" disabled={true} {...field} required error={errors.email?.message} />
             )}
           />
           <Controller
@@ -83,6 +90,7 @@ export function SignupFormPage() {
                 {...field}
                 error={errors.userId?.message || userIdError}
                 onBlur={onUserIdBlur(field)}
+                required
               />
             )}
           />
@@ -124,9 +132,9 @@ export function SignupFormPage() {
                 <SelectBox
                   size="large"
                   label={'Select your nationality'}
-                  value={field.value}
+                  value={field.value ?? null}
                   options={NATIONALITIES}
-                  onChange={field.onChange}
+                  onChange={(val) => field.onChange(val || null)}
                 />
                 {errors.country && <span>{errors.country.message}</span>}
               </div>
@@ -140,11 +148,12 @@ export function SignupFormPage() {
                 id="gender"
                 label="Gender"
                 options={[
+                  { label: 'Prefer not to say', value: '' },
                   { label: 'Male', value: 'M' },
                   { label: 'Female', value: 'F' },
                 ]}
-                value={field.value}
-                onChange={field.onChange}
+                value={field.value ?? null}
+                onChange={(val) => field.onChange(val || null)}
                 error={errors.gender?.message}
               />
             )}
@@ -159,6 +168,7 @@ export function SignupFormPage() {
                 {...field}
                 error={errors.password?.message}
                 showValidation={true}
+                required
               />
             )}
           />
@@ -172,9 +182,34 @@ export function SignupFormPage() {
                 {...field}
                 error={errors.confirmPassword?.message}
                 showValidation={true}
+                required
               />
             )}
           />
+          <div className="flex flex-col items-start justify-center w-full mb-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+                required
+                className="w-5 h-5 border-gray-300 rounded focus:ring-primary-500"
+                id="agreeTerms"
+              />
+              <label htmlFor="agreeTerms" className="text-primary-600 break-words max-w-prose ">
+                I consent to the{' '}
+                <a
+                  href="https://pages.flycricket.io/wallpaper-106/privacy.html#google_vignette"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-600 underline"
+                >
+                  Terms and Conditions of Use
+                </a>
+              </label>
+            </div>
+            {!agree && <span className="text-red-500 text-sm">Please agree to the terms and conditions</span>}
+          </div>
           <Button variant="solid" color="primary" type="submit" className="w-full" disabled={isSubmitDisabled}>
             {isLoading ? <Spinner color="primary" size="sm" /> : 'Create account'}
           </Button>

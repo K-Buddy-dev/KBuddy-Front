@@ -10,14 +10,15 @@ export const useSocialSignupForm = (
 ) => {
   return useForm<SignupFormData>({
     resolver: zodResolver(socialSignupSchema),
+    mode: 'onChange',
     defaultValues: {
       firstName: '',
       lastName: '',
       email: email,
       userId: '',
       birthDate: { year: '', month: '', day: '' },
-      country: '',
-      gender: '',
+      country: null,
+      gender: null,
       oAuthUid: oAuthUid,
       oAuthCategory: oAuthCategory,
     },

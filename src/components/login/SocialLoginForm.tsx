@@ -18,7 +18,7 @@ export function SocialLoginForm() {
 
   const navigate = useNavigate();
 
-  const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset } = useSocialStore();
+  const { setEmail, setoAuthUid, setoAuthCategory, setFirstName, setLastName, socialStoreReset } = useSocialStore();
   const { checkMember } = useMemberCheckHandler();
 
   const { handleLogin } = useOauthLoginHandler();
@@ -35,25 +35,27 @@ export function SocialLoginForm() {
     setEmail(data.oAuthEmail || '');
     setoAuthUid(data.oAuthUid);
     setoAuthCategory(data.oAuthCategory);
+    setFirstName(data.givenName || '');
+    setLastName(data.familyName || '');
   };
 
-  const handleAppleLogin = async () => {
-    try {
-      const params = new URLSearchParams({
-        client_id: import.meta.env.VITE_APPLE_CLIENT_ID,
-        redirect_uri: import.meta.env.VITE_APPLE_REDIRECT_URI,
-        response_type: 'code id_token',
-        state: state,
-      });
+  const handleAppleLogin = () => {
+    const params = new URLSearchParams({
+      client_id: import.meta.env.VITE_APPLE_CLIENT_ID,
+      redirect_uri: import.meta.env.VITE_APPLE_REDIRECT_URI, // 리다이렉트 페이지 URL
+      response_type: 'code id_token',
+      response_mode: 'form_post',
+      scope: 'name email',
+      state,
+      nonce: generateRandomString(32),
+    });
 
-      const url = `https://appleid.apple.com/auth/authorize?${params}`;
-      if (isNative && window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'Apple', action: 'getSocialLogin' }));
-      } else {
-        window.location.href = url;
-      }
-    } catch (error) {
-      console.error('Apple login error:', error);
+    const url = `https://appleid.apple.com/auth/authorize?${params.toString()}`;
+
+    if (isNative && window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'Apple', action: 'getSocialLogin' }));
+    } else {
+      window.location.href = url;
     }
   };
 
@@ -72,16 +74,24 @@ export function SocialLoginForm() {
     };
 
     window.addEventListener('message', handleMessage);
+    document.addEventListener('message', handleMessage as any);
     return () => {
       window.removeEventListener('message', handleMessage);
+      document.removeEventListener('message', handleMessage as any);
     };
   }, []);
 
   useEffect(() => {
     if (!memberCheckData) return;
-    // console.log('memberCheckData: ', memberCheckData);
-    checkMember(memberCheckData).then(setIsMember);
-    // .catch((error) => console.error('Member check failed:', error));
+    checkMember(memberCheckData)
+      .then((res) => {
+        console.log('res: ', res);
+        setIsMember(res);
+      })
+      .catch((error) => {
+        console.error('Member check failed:', error);
+        setIsMember(false);
+      });
   }, [memberCheckData]);
 
   useEffect(() => {
@@ -104,17 +114,17 @@ export function SocialLoginForm() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-3">
+      {isIOS && (
+        <div className="w-full" onClick={() => handleAppleLogin()}>
+          <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
+        </div>
+      )}
       <div className="w-full" onClick={() => handleSocialLogin(VITE_KAKAO_AUTH_URL, 'Kakao')}>
         <SocialButton logo={<KakaoLogo />} title="Continue with Kakao" type="kakao" />
       </div>
       <div className="w-full" onClick={() => handleSocialLogin(VITE_GOOGLE_AUTH_URL, 'Google')}>
         <SocialButton logo={<GoogleLogo />} title="Continue with Google" type="google" />
       </div>
-      {isIOS && (
-        <div className="w-full" onClick={() => handleAppleLogin()}>
-          <SocialButton logo={<AppleLogo />} title="Continue with Apple" type="apple" />
-        </div>
-      )}
     </div>
   );
 }

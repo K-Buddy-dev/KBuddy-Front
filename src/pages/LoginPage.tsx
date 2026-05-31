@@ -1,9 +1,14 @@
-import { Accordion, AccordionItem, Topbar } from '@/components/shared';
+import { Accordion, AccordionItem, Toast, Topbar } from '@/components/shared';
 import { EmailVerifyForm, LoginForm, SocialLoginForm } from '@/components';
+import { useToast } from '@/hooks';
+// import { useEffect } from 'react';
 
 export function LoginPage() {
+  const { toast, hideToast } = useToast();
+
   return (
     <>
+      {toast && <Toast message={toast.message} type={toast.type} duration={toast.duration} onClose={hideToast} />}
       <Topbar title="Log in or sign up" type="cancel" />
       <div className="mt-[72px]">
         <Accordion defaultSelectedId="signup">

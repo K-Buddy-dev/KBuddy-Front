@@ -1,83 +1,60 @@
-import { Spinner } from '@/components/shared/spinner';
-import { useMemberCheckHandler, useOauthLoginHandler } from '@/hooks';
-import { useSocialStore } from '@/store';
-import { OauthRequest } from '@/types';
-import { parseJwt } from '@/utils/utils';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-
-const AppleIdTokenSchema = z.object({
-  iss: z.literal('https://appleid.apple.com'),
-  auth_time: z.number(),
-  aud: z.string(),
-  sub: z.string(),
-  email: z.string().email().optional(),
-  email_verified: z.boolean(),
-  iat: z.number(),
-  exp: z.number(),
-  nonce_supported: z.boolean(),
-  c_hash: z.string(),
-});
-type AppleUserResponse = z.infer<typeof AppleIdTokenSchema>;
+import { useOauthLoginHandler, useToast } from '@/hooks';
+import { useSocialStore } from '@/store';
+import { Spinner } from '@/components/shared/spinner';
 
 export function AppleRedirectPage() {
   const navigate = useNavigate();
-
-  const { setEmail, setoAuthUid, setoAuthCategory, socialStoreReset } = useSocialStore();
-  const { checkMember, isLoading } = useMemberCheckHandler();
+  const { showToast } = useToast();
+  const { setEmail, setoAuthUid, setoAuthCategory, setFirstName, setLastName, socialStoreReset } = useSocialStore();
   const { handleLogin } = useOauthLoginHandler();
 
-  const [memberCheckData, setMemberCheckData] = useState<OauthRequest | null>(null);
-  const [isMember, setIsMember] = useState<boolean | null>(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get('accessToken');
+    const isNew = params.get('isNew') === 'true';
+    const email = params.get('email');
+    const firstName = params.get('firstName');
+    const lastName = params.get('lastName');
+    const oAuthUid = params.get('oAuthUid');
 
-  const setOauthSignupData = (data: AppleUserResponse) => {
-    setEmail(data.email || '');
-    setoAuthUid(data.sub);
-    setoAuthCategory('APPLE');
-  };
-
-  const getAppleUserInfo = async () => {
-    const idToken = new URL(window.location.href).searchParams.get('id_token');
-
-    if (!idToken) {
-      console.error('ID token not found');
+    if (!oAuthUid) {
+      showToast({ message: 'Apple 로그인 정보가 부족합니다.', type: 'error' });
+      navigate('/');
       return;
     }
-    try {
-      const validatedUserInfo = AppleIdTokenSchema.parse(parseJwt(idToken));
-      setOauthSignupData(validatedUserInfo);
-      setMemberCheckData({ oAuthUid: validatedUserInfo.sub, oAuthCategory: 'APPLE' });
-    } catch (error) {
-      console.error('Apple login error:', error instanceof z.ZodError ? error.errors : error);
-    }
-  };
 
-  useEffect(() => {
-    getAppleUserInfo();
+    setoAuthCategory('APPLE');
+    setoAuthUid(oAuthUid);
+
+    if (isNew) {
+      if (!email || !firstName || !lastName) {
+        showToast({ message: 'Apple에서 이름 또는 이메일 정보를 제공하지 않았습니다.', type: 'error' });
+        navigate('/');
+        return;
+      }
+
+      setEmail(email);
+      setFirstName(firstName);
+      setLastName(lastName);
+
+      navigate('/oauth/signup/form');
+    } else {
+      if (!accessToken) {
+        showToast({ message: '로그인에 실패했습니다. 다시 시도해주세요.', type: 'error' });
+        navigate('/');
+        return;
+      }
+
+      handleLogin({ oAuthUid, oAuthCategory: 'APPLE' });
+      socialStoreReset();
+    }
   }, []);
 
-  useEffect(() => {
-    if (!memberCheckData) return;
-    checkMember(memberCheckData)
-      .then(setIsMember)
-      .catch((error) => console.error('Member check failed:', error));
-  }, [memberCheckData]);
-
-  useEffect(() => {
-    if (isMember === null) return;
-
-    if (isMember) {
-      handleLogin(memberCheckData!);
-      socialStoreReset();
-    } else {
-      navigate('/oauth/signup/form');
-    }
-  }, [isMember]);
-
-  return isLoading ? (
-    <div className="w-full h-screen flex items-center justify-center">
+  return (
+    <div className="flex items-center justify-center h-screen w-full">
       <Spinner />
     </div>
-  ) : null;
+  );
 }

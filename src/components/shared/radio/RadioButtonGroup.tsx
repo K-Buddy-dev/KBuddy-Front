@@ -7,12 +7,12 @@ interface RadioButtonOption {
   value: string;
 }
 
-interface RadioButtonGroupProps extends ComponentProps<'input'> {
+interface RadioButtonGroupProps extends Omit<ComponentProps<'input'>, 'value' | 'onChange'> {
   id: string;
   label: string;
   options: RadioButtonOption[];
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string | null;
+  onChange: (value: string | null) => void;
   error?: string;
 }
 
@@ -29,7 +29,7 @@ export const RadioButtonGroup = forwardRef<HTMLInputElement, RadioButtonGroupPro
                 name={id}
                 value={option.value}
                 checked={value === option.value}
-                onChange={onChange}
+                onChange={(e) => onChange(e.target.value || null)}
                 ref={ref}
                 className="hidden"
                 {...props}

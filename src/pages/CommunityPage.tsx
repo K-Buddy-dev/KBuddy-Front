@@ -1,7 +1,6 @@
 import { Navbar } from '@/components/shared/navbar/Navbar';
 import { Link, useSearchParams } from 'react-router-dom';
-
-import { Tab } from '@/components/community/tab';
+import { CommunityTab } from '@/components/community/tab';
 
 import { BlogList, FloatPostAction, Toast } from '@/components';
 import { QnaList } from '@/components/community';
@@ -17,7 +16,7 @@ export const CommunityPage = () => {
   });
   const { toast, hideToast } = useToast();
 
-  const currentTab = searchParams.get('tab') || 'Curated blog';
+  const currentTab = searchParams.get('tab') || 'Curatedblog';
   const prevTabRef = useRef<string>(currentTab);
 
   useEffect(() => {
@@ -44,7 +43,7 @@ export const CommunityPage = () => {
     setSearchParams(newSearchParams, { replace: true });
   }, [searchKeyword, searchParams]);
 
-  const contentType = currentTab === 'User blog' ? 'blog' : 'qna';
+  const contentType = currentTab === 'Userblog' ? 'blog' : 'qna';
   const { handleLike: listHandleLike, handleBookmark: listHandleBookmark } = useContentActions({
     contentType,
   });
@@ -68,12 +67,12 @@ export const CommunityPage = () => {
             onBookmark={featuredHandleBookmark}
           />
         )}
-        <Tab />
+        <CommunityTab />
       </div>
       <Link to="/community/post" className="fixed right-4 bottom-[92px] cursor-pointer sm:right-[calc(50%-260px-16px)]">
         <FloatPostAction />
       </Link>
-      {currentTab === 'User blog' && <BlogList onLike={listHandleLike} onBookmark={listHandleBookmark} />}
+      {currentTab === 'Userblog' && <BlogList onLike={listHandleLike} onBookmark={listHandleBookmark} />}
       {currentTab === 'Q&A' && <QnaList onLike={listHandleLike} onBookmark={listHandleBookmark} />}
     </>
   );
