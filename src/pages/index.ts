@@ -9,6 +9,7 @@ export * from './TitleImageDescriptionPage';
 export * from './HomePage';
 export * from './MessagePage';
 export * from './ChatRoomPage';
+export * from './NotificationPage';
 export * from './ProfilePage';
 export * from './BookingDetailPage';
 export * from './EditProfilePage';

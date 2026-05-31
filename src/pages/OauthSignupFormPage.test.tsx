@@ -71,3 +71,17 @@ it('sends first and last name entered in the OAuth signup form', async () => {
     );
   });
 });
+
+it('renders OAuth signup form in readable sections without showing a terms error upfront', async () => {
+  await render(
+    <MemoryRouter initialEntries={['/oauth/signup/form']}>
+      <OauthSignupFormPage />
+    </MemoryRouter>
+  );
+
+  expect(screen.getByRole('heading', { name: 'Personal information' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Account details' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Preferences' })).toBeInTheDocument();
+  expect(screen.queryByRole('radio', { name: 'Prefer not to say' })).not.toBeInTheDocument();
+  expect(screen.queryByText('Please agree to the terms and conditions')).not.toBeInTheDocument();
+});
