@@ -57,6 +57,8 @@ it('renders notification list items', async () => {
   expect(screen.getByText('New Message')).toBeInTheDocument();
   expect(screen.getByText('John: Hello there!')).toBeInTheDocument();
   expect(screen.getByText('Unread')).toBeInTheDocument();
+  expect(screen.queryByTestId('notification-page-intro')).not.toBeInTheDocument();
+  expect(screen.queryByText('Stay updated on messages and bookings.')).not.toBeInTheDocument();
 });
 
 it('shows a service-focused empty notification state', async () => {
@@ -98,4 +100,38 @@ it('marks a chat notification as read and opens the chat room', async () => {
 
   await waitFor(() => expect(mutateAsync).toHaveBeenCalledWith(1));
   expect(screen.getByText('Chat room route')).toBeInTheDocument();
+});
+
+it('opens a free notification target path when targetId is a route', async () => {
+  vi.mocked(useNotifications).mockReturnValue({
+    data: {
+      content: [
+        {
+          id: 2,
+          isRead: true,
+          title: 'New Feature Available',
+          message: 'Check out our latest update!',
+          targetId: '/service',
+          type: 'FREE_NOTIFICATION',
+          createdAt: '2026-06-03T10:00:00Z',
+        },
+      ],
+    },
+    isLoading: false,
+    isError: false,
+    error: null,
+  } as ReturnType<typeof useNotifications>);
+
+  const { user } = await render(
+    <MemoryRouter initialEntries={['/notifications']}>
+      <Routes>
+        <Route path="/notifications" element={<NotificationPage />} />
+        <Route path="/service" element={<div>Service route</div>} />
+      </Routes>
+    </MemoryRouter>
+  );
+
+  await user.click(screen.getByRole('button', { name: /New Feature Available/ }));
+
+  expect(screen.getByText('Service route')).toBeInTheDocument();
 });

@@ -20,6 +20,7 @@ vi.mock('@/services/counselorService', () => ({
   counselorService: {
     getCounselorAvailability: vi.fn(),
     getCounselorDetail: vi.fn(),
+    getMyProfile: vi.fn(),
     registerProfile: vi.fn(),
     updateProfile: vi.fn(),
   },
@@ -582,7 +583,55 @@ it('submits counselor profile multipart data with slots grouped by date', async 
     { date: expectedStartDate, times: ['10:00'] },
     { date: expectedEndDate, times: ['10:00'] },
   ]);
-  expect(navigateMock).toHaveBeenCalledWith('/profile');
+  expect(navigateMock).toHaveBeenCalledWith('/service/99', {
+    replace: true,
+    state: { backTo: '/profile?tab=My%20sale' },
+  });
+});
+
+it('loads my counselor profile and redirects when create response has no counselor id', async () => {
+  useStableCalendarDate();
+  vi.mocked(counselorService.registerProfile).mockResolvedValue(null as never);
+  vi.mocked(counselorService.getMyProfile).mockResolvedValue({
+    categories: ['RESTAURANT'],
+    counselorId: 'created-counselor',
+    coverImageUrl: 'https://example.com/cover.jpg',
+    detail: 'Created detail',
+    id: 'created-counselor',
+    name: 'Created counselor',
+    photoUrls: [],
+    ratingAvg: 0,
+    recentInquiries: [],
+    recentReviews: [],
+    regularPrice: 25000,
+    reviewCount: 0,
+    sessionMinutes: 45,
+    timezone: 'Asia/Seoul',
+    title: 'Created title',
+  });
+
+  const { user } = await render(
+    <MemoryRouter>
+      <CounselorProfileCreatePage />
+    </MemoryRouter>
+  );
+
+  await user.click(screen.getByRole('button', { name: 'Next' }));
+  await user.click(screen.getByRole('button', { name: 'Add date & time' }));
+  await user.click(screen.getByRole('button', { name: '20' }));
+  await user.click(screen.getByRole('button', { name: '10:00 AM' }));
+  await user.click(screen.getByRole('button', { name: 'Add' }));
+  await user.type(screen.getByLabelText('Price'), '25000');
+  await user.type(screen.getByLabelText('Session minutes'), '45');
+  await user.click(screen.getByRole('button', { name: 'Next' }));
+  await user.click(screen.getByLabelText('Restaurant'));
+  await user.click(screen.getByRole('button', { name: 'Submit' }));
+
+  expect(counselorService.getMyProfile).toHaveBeenCalledTimes(1);
+  expect(navigateMock).toHaveBeenCalledWith('/service/created-counselor', {
+    replace: true,
+    state: { backTo: '/profile?tab=My%20sale' },
+  });
 });
 
 it('preserves different selected times for each availability date', async () => {

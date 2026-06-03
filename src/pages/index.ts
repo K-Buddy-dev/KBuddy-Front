@@ -34,4 +34,5 @@ export * from './admin/AdminDashboardPage';
 export * from './admin/AdminLoginPage';
 export * from './admin/UserManagementPage';
 export * from './admin/PaymentsManagementPage';
+export * from './admin/AdminNotificationsPage';
 export * from './admin/ReportsManagementPage';

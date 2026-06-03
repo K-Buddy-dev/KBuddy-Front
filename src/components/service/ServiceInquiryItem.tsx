@@ -30,18 +30,19 @@ export const ServiceInquiryItem: React.FC<ServiceInquiryItemProps> = ({
   isSubmittingReply = false,
 }) => {
   const isReplying = replyingTo === inquiry.inquiryId;
+  const hasReply = Boolean(inquiry.hasReply || (inquiry.replyCount ?? 0) > 0 || (detail?.replies.length ?? 0) > 0);
 
   return (
     <div className="flex w-full flex-col gap-3 rounded-lg bg-bg-default p-3">
       <button
         type="button"
-        aria-label={inquiry.isSecret ? 'Private inquiry' : inquiry.title}
+        aria-label={inquiry.title}
         className="flex w-full flex-col items-start gap-2 text-left"
         onClick={() => onSelect(inquiry.inquiryId)}
       >
         <div className="flex w-full items-center justify-between gap-2">
           <span className="text-text-default font-roboto text-body-100-medium font-medium leading-6">
-            {inquiry.isSecret ? 'Private inquiry' : inquiry.title}
+            {inquiry.title}
           </span>
           <span className="shrink-0 text-text-weak font-roboto text-label-300-heavy font-medium leading-3">
             {formatInquiryDate(inquiry.createdAt)}
@@ -56,6 +57,11 @@ export const ServiceInquiryItem: React.FC<ServiceInquiryItemProps> = ({
               Secret
             </span>
           )}
+          {hasReply && (
+            <span className="rounded bg-bg-brand-weak px-2 py-0.5 text-text-brand-default font-roboto text-label-300-heavy leading-3">
+              Answered
+            </span>
+          )}
         </div>
       </button>
 
@@ -66,7 +72,7 @@ export const ServiceInquiryItem: React.FC<ServiceInquiryItemProps> = ({
           ) : detail ? (
             <>
               <p className="whitespace-pre-line text-text-default font-roboto text-body-200-light leading-5">
-                {detail.isSecret ? 'Private comment' : detail.content}
+                {detail.content}
               </p>
 
               {detail.replies.length > 0 && (

@@ -37,7 +37,9 @@ export const ServicePhotoGallery: React.FC<ServicePhotoGalleryProps> = ({ photoU
 
       {/* Photo Gallery */}
       <div className="w-full pb-6">
-        {photos.length > 0 ? (
+        {photos.length === 1 ? (
+          <img src={photos[0]} alt="Gallery 1" className="w-full rounded-lg object-cover" />
+        ) : photos.length > 0 ? (
           <div className="w-full h-[504px] relative">
             {photos.slice(0, 6).map((photoUrl, index) => (
               <img

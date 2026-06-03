@@ -27,6 +27,7 @@ import {
   UserManagementPage,
   AdminLoginPage,
   PaymentsManagementPage,
+  AdminNotificationsPage,
   ReportsManagementPage,
   MessagePage,
   ChatRoomPage,
@@ -91,6 +92,7 @@ function AppRoutes() {
           <Route path="/admin" element={<AdminDashboardPage />} />
           <Route path="/admin/users" element={<UserManagementPage />} />
           <Route path="/admin/payments" element={<PaymentsManagementPage />} />
+          <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
           <Route path="/admin/reports" element={<ReportsManagementPage />} />
         </Route>
 
