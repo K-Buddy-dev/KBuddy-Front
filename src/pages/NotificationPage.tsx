@@ -12,6 +12,7 @@ export function NotificationPage() {
   const markAllAsRead = useMarkAllNotificationsAsRead();
   const notifications = data?.content ?? [];
   const hasUnread = notifications.some((notification) => !notification.isRead);
+  const shouldShowIntro = isLoading || isError || notifications.length === 0;
 
   const handleNotificationClick = async (notification: NotificationItem) => {
     if (!notification.isRead) {
@@ -32,12 +33,26 @@ export function NotificationPage() {
     <>
       <Navbar withSearch={false} />
       <main className="pb-24">
-        <header className="flex items-center justify-between px-4 py-5">
-          <div>
-            <h1 className="text-title-100-heavy font-bold text-text-default">Notifications</h1>
-            <p className="mt-1 text-body-200-medium text-text-weak">Stay updated on messages and bookings.</p>
-          </div>
-          {hasUnread && (
+        {shouldShowIntro && (
+          <header data-testid="notification-page-intro" className="flex items-center justify-between px-4 py-5">
+            <div>
+              <h1 className="text-title-100-heavy font-bold text-text-default">Notifications</h1>
+              <p className="mt-1 text-body-200-medium text-text-weak">Stay updated on messages and bookings.</p>
+            </div>
+            {hasUnread && (
+              <button
+                type="button"
+                className="text-button-200-regular font-semibold text-text-brand-default"
+                onClick={handleReadAll}
+              >
+                Mark all read
+              </button>
+            )}
+          </header>
+        )}
+
+        {!shouldShowIntro && hasUnread && (
+          <div className="flex justify-end px-4 py-3">
             <button
               type="button"
               className="text-button-200-regular font-semibold text-text-brand-default"
@@ -45,9 +60,8 @@ export function NotificationPage() {
             >
               Mark all read
             </button>
-          )}
-        </header>
-
+          </div>
+        )}
         {isLoading && (
           <div className="flex h-64 items-center justify-center text-text-weak">Loading notifications...</div>
         )}
@@ -145,6 +159,10 @@ function EmptyNotificationState() {
 
 function getNotificationTargetPath(notification: NotificationItem) {
   if (!notification.targetId) return null;
+
+  if (notification.targetId.startsWith('/')) {
+    return notification.targetId;
+  }
 
   if (notification.type === 'CHAT_MESSAGE_NOTIFICATION') {
     return `/message/${notification.targetId}`;

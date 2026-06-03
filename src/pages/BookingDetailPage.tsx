@@ -3,8 +3,8 @@ import defaultProfileImage from '@/assets/images/default-profile.png';
 import { Button } from '@/components/shared/button/Button';
 import { Topbar } from '@/components/shared/topbar/Topbar';
 import { chatService } from '@/services/chatService';
-import type { CounselorBooking, MyBooking } from '@/services/bookingService';
-import { useState } from 'react';
+import { bookingService, type CounselorBooking, type MyBooking } from '@/services/bookingService';
+import { useEffect, useState } from 'react';
 
 type BookingDetailState =
   | {
@@ -23,9 +23,53 @@ export function BookingDetailPage() {
   const state = location.state as BookingDetailState | null;
   const [chatError, setChatError] = useState('');
   const [isOpeningChat, setIsOpeningChat] = useState(false);
+  const [loadedState, setLoadedState] = useState<BookingDetailState | null>(state);
+  const [isLoadingBooking, setIsLoadingBooking] = useState(!state && Boolean(bookingId));
 
-  const booking = state?.booking;
-  const viewer = state?.viewer;
+  useEffect(() => {
+    if (state || !bookingId) return;
+
+    let isMounted = true;
+
+    const loadBooking = async () => {
+      setIsLoadingBooking(true);
+
+      try {
+        const [counselorBookings, myBookings] = await Promise.all([
+          bookingService.getCounselorBookings({ page: 0, size: 50 }),
+          bookingService.getMyBookings({ page: 0, size: 50 }),
+        ]);
+        const counselorBooking = counselorBookings.find((item) => String(item.bookingId) === bookingId);
+        const myBooking = myBookings.find((item) => String(item.bookingId) === bookingId);
+
+        if (!isMounted) return;
+
+        if (counselorBooking) {
+          setLoadedState({ booking: counselorBooking, viewer: 'counselor' });
+          return;
+        }
+
+        if (myBooking) {
+          setLoadedState({ booking: myBooking, viewer: 'customer' });
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        if (isMounted) {
+          setIsLoadingBooking(false);
+        }
+      }
+    };
+
+    loadBooking();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [bookingId, state]);
+
+  const booking = loadedState?.booking;
+  const viewer = loadedState?.viewer;
 
   const handleBack = () => {
     navigate(-1);
@@ -57,6 +101,17 @@ export function BookingDetailPage() {
       setIsOpeningChat(false);
     }
   };
+
+  if (isLoadingBooking) {
+    return (
+      <div className="min-h-screen bg-bg-default pb-10">
+        <Topbar title="Order detail" type="back" onBack={handleBack} />
+        <main className="mt-[72px] px-4">
+          <div className="flex h-64 items-center justify-center text-text-weak">Loading order...</div>
+        </main>
+      </div>
+    );
+  }
 
   if (!booking || !viewer) {
     return (

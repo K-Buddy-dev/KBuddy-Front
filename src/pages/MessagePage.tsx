@@ -6,7 +6,7 @@ import { Message } from '@/types/message';
 import { useChatRooms } from '@/hooks/useChatRooms';
 import defaultProfileImage from '@/assets/images/default-profile.png';
 
-const emptyPreviewText = '아직 메시지가 없습니다';
+const emptyPreviewText = 'No messages yet';
 
 export function MessagePage() {
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -53,10 +53,10 @@ export function MessagePage() {
       <Navbar withSearch setSearchKeyword={setSearchKeyword} />
 
       <div className="pb-20">
-        {isLoading && <div className="flex items-center justify-center h-64 text-text-weak">불러오는 중...</div>}
+        {isLoading && <div className="flex items-center justify-center h-64 text-text-weak">Loading messages...</div>}
         {isError && (
           <div className="flex items-center justify-center h-64 text-text-weak">
-            {error?.message || '채팅방 목록을 불러오지 못했습니다.'}
+            {error?.message || 'Unable to load chat rooms.'}
           </div>
         )}
         {!isLoading && !isError && filteredMessages.length > 0 ? (
@@ -64,7 +64,7 @@ export function MessagePage() {
             <MessageListItem key={message.id} message={message} onClick={() => handleMessageClick(message.id)} />
           ))
         ) : !isLoading && !isError ? (
-          <div className="flex items-center justify-center h-64 text-text-weak">검색 결과가 없습니다</div>
+          <div className="flex items-center justify-center h-64 text-text-weak">No chat rooms found.</div>
         ) : null}
       </div>
     </>

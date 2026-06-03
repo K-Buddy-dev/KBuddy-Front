@@ -13,7 +13,7 @@ export interface RegisterCounselorProfileResponse {
   data?: {
     id?: number | string;
     counselorId?: number | string;
-  };
+  } | null;
 }
 
 export interface MyCounselorPromotion {
@@ -112,8 +112,10 @@ export interface CounselorReviewListResponse {
 
 export interface CounselorInquiryListItem {
   createdAt: string;
+  hasReply?: boolean;
   inquiryId: number;
   isSecret: boolean;
+  replyCount?: number;
   title: string;
   writerName: string;
 }
@@ -304,21 +306,17 @@ export const counselorService = {
     await authClient.delete('/counselor');
   },
 
-  registerProfile: async (formData: FormData): Promise<number | string> => {
+  registerProfile: async (formData: FormData): Promise<number | string | null> => {
     const response = await authClient.post<RegisterCounselorProfileResponse>('/counselor', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
 
-    const counselorId =
-      response.data.id ?? response.data.counselorId ?? response.data.data?.id ?? response.data.data?.counselorId;
+    const nestedData = response.data.data && typeof response.data.data === 'object' ? response.data.data : undefined;
+    const counselorId = response.data.id ?? response.data.counselorId ?? nestedData?.id ?? nestedData?.counselorId;
 
-    if (!counselorId) {
-      throw new Error('Counselor id was not returned.');
-    }
-
-    return counselorId;
+    return counselorId ?? null;
   },
 
   updateProfile: async (formData: FormData): Promise<void> => {

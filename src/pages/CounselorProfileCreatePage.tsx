@@ -9,6 +9,7 @@ import { counselorService, CounselorAvailabilitySlot, MyCounselorProfile } from 
 import { parseUtcDateTime } from '@/utils/utcDateTime';
 
 const steps = [{ label: 'Basic info' }, { label: 'Details of service' }, { label: 'Review & submit' }];
+const mySaleBackPath = '/profile?tab=My%20sale';
 
 const categoryOptions = [
   'Restaurant',
@@ -185,10 +186,15 @@ export function CounselorProfileCreatePage() {
 
       if (isEditMode) {
         await counselorService.updateProfile(formData);
+        navigate('/profile');
       } else {
-        await counselorService.registerProfile(formData);
+        const createdCounselorId = await counselorService.registerProfile(formData);
+        const counselorId = createdCounselorId || (await counselorService.getMyProfile()).id;
+        navigate(`/service/${counselorId}`, {
+          replace: true,
+          state: { backTo: mySaleBackPath },
+        });
       }
-      navigate('/profile');
     } finally {
       setIsSubmitting(false);
     }
@@ -210,7 +216,7 @@ export function CounselorProfileCreatePage() {
         <div className="flex h-12 items-center justify-between px-3">
           <button
             type="button"
-            onClick={() => navigate('/profile?tab=My%20sale')}
+            onClick={() => navigate(mySaleBackPath)}
             className="rounded-full border border-border-default px-3 py-1 text-[12px] font-medium"
           >
             Save & exit

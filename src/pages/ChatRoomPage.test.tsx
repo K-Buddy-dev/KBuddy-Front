@@ -136,6 +136,31 @@ it('sends chat messages without role so the server can resolve it', async () => 
   });
 });
 
+it('does not send while Korean IME composition is being confirmed with Enter', async () => {
+  await renderChatRoom();
+  const input = screen.getByPlaceholderText('Type a message');
+
+  fireEvent.compositionStart(input);
+  fireEvent.change(input, { target: { value: '테스트' } });
+  fireEvent.keyDown(input, {
+    key: 'Enter',
+  });
+
+  expect(publishMock).not.toHaveBeenCalled();
+
+  fireEvent.compositionEnd(input);
+  fireEvent.keyDown(input, {
+    key: 'Enter',
+  });
+
+  await waitFor(() => expect(publishMock).toHaveBeenCalledTimes(1));
+  expect(JSON.parse(publishMock.mock.calls[0][0].body)).toEqual(
+    expect.objectContaining({
+      message: '테스트',
+    })
+  );
+});
+
 it('shows my sent message immediately before the websocket echo arrives', async () => {
   const { user } = await renderChatRoom();
 

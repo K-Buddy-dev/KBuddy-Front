@@ -31,6 +31,16 @@ export interface AdminLoginResponse {
   details: string[];
 }
 
+export interface AdminNotificationRequest {
+  message: string;
+  targetId?: string | null;
+  title: string;
+}
+
+export interface AdminNotificationResponse {
+  sentCount: number;
+}
+
 export const adminService = {
   // Admin login (use adminClient for cookie support)
   login: async (data: AdminLoginRequest) => {
@@ -86,6 +96,11 @@ export const adminService = {
 
   cancelPayment: (paymentId: number, data: CancelPaymentRequest) => {
     return adminClient.patch(`/admin/payments/${paymentId}/cancel`, data);
+  },
+
+  sendNotification: async (data: AdminNotificationRequest): Promise<AdminNotificationResponse> => {
+    const response = await adminClient.post<AdminNotificationResponse>('/admin/notifications', data);
+    return response.data;
   },
 
   // TODO: Add more admin services

@@ -43,6 +43,7 @@ export function ChatRoomPage() {
   const [isLeavingRoom, setIsLeavingRoom] = useState(false);
   const [leaveRoomError, setLeaveRoomError] = useState('');
   const clientRef = useRef<Client | null>(null);
+  const isComposingRef = useRef(false);
   const currentUserIdentifiers = useMemo(() => getCurrentUserIdentifiers(), []);
   const currentUserId = currentUserIdentifiers[0] || '';
 
@@ -350,8 +351,17 @@ export function ChatRoomPage() {
             className="flex-1 h-10 rounded-full border border-border-weak2 px-4 text-sm outline-none"
             value={inputValue}
             onChange={(event) => setInputValue(event.target.value)}
+            onCompositionStart={() => {
+              isComposingRef.current = true;
+            }}
+            onCompositionEnd={() => {
+              isComposingRef.current = false;
+            }}
             onKeyDown={(event) => {
-              if (event.key === 'Enter') handleSend();
+              if (event.key !== 'Enter') return;
+              if (isComposingRef.current || event.nativeEvent.isComposing || event.keyCode === 229) return;
+              event.preventDefault();
+              handleSend();
             }}
           />
           <button

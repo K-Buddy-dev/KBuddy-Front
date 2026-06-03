@@ -17,13 +17,21 @@ beforeEach(() => {
 it('loads paged notifications from the notification API', async () => {
   vi.mocked(authClient.get).mockResolvedValue({
     data: {
-      content: [],
-      totalElements: 0,
-      totalPages: 0,
+      content: [
+        {
+          createdAt: '2026-06-02T22:47:24',
+          id: 33,
+          isRead: false,
+          message: '상담 예약이 확정되었습니다.',
+          targetId: 'abc-123',
+          title: '예약 확정',
+          type: 'BOOKING_CONFIRMED',
+        },
+      ],
     },
   });
 
-  await notificationService.getNotifications({ page: 0, size: 20 });
+  const result = await notificationService.getNotifications({ page: 0, size: 20 });
 
   expect(authClient.get).toHaveBeenCalledWith(expect.stringContaining('/api/v1/notifications'), {
     params: {
@@ -31,6 +39,16 @@ it('loads paged notifications from the notification API', async () => {
       size: 20,
       sort: 'createdAt,desc',
     },
+  });
+  expect(result.content).toHaveLength(1);
+  expect(result.content[0]).toEqual({
+    createdAt: '2026-06-02T22:47:24',
+    id: 33,
+    isRead: false,
+    message: '상담 예약이 확정되었습니다.',
+    targetId: 'abc-123',
+    title: '예약 확정',
+    type: 'BOOKING_CONFIRMED',
   });
 });
 

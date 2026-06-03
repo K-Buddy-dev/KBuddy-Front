@@ -34,6 +34,11 @@ const menuItems: MenuItemConfig[] = [
     icon: <AlarmIcon />,
   },
   {
+    id: 'notifications',
+    label: '알림 발송',
+    icon: <AlarmIcon />,
+  },
+  {
     id: 'reports',
     label: '신고 관리',
     icon: <AlarmIcon />,

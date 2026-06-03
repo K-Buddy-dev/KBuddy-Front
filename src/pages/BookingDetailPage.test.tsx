@@ -2,11 +2,19 @@ import { act, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import render from '@/utils/test/render';
 import { chatService } from '@/services/chatService';
+import { bookingService } from '@/services/bookingService';
 import { BookingDetailPage } from './BookingDetailPage';
 
 vi.mock('@/services/chatService', () => ({
   chatService: {
     getRoomByBooking: vi.fn(),
+  },
+}));
+
+vi.mock('@/services/bookingService', () => ({
+  bookingService: {
+    getCounselorBookings: vi.fn(),
+    getMyBookings: vi.fn(),
   },
 }));
 
@@ -16,6 +24,8 @@ beforeEach(() => {
     name: 'Chat room',
     roomId: 'room-1',
   });
+  vi.mocked(bookingService.getCounselorBookings).mockResolvedValue([]);
+  vi.mocked(bookingService.getMyBookings).mockResolvedValue([]);
 });
 
 it('shows counselor-side booking details before opening chat', async () => {
@@ -115,5 +125,35 @@ it('explains when a booking detail is opened without state', async () => {
     </MemoryRouter>
   );
 
-  expect(screen.getByText('Order information is unavailable.')).toBeInTheDocument();
+  expect(await screen.findByText('Order information is unavailable.')).toBeInTheDocument();
+});
+
+it('loads counselor booking details by route id when opened from a booking notification', async () => {
+  vi.mocked(bookingService.getCounselorBookings).mockResolvedValue([
+    {
+      birthDate: '2000-07-24',
+      bookingEndUtc: '2026-06-03T08:30:00Z',
+      bookingId: 1,
+      bookingStartUtc: '2026-06-03T08:00:00Z',
+      customerName: 'yongmin choi',
+      customerUsername: 'yongmin',
+      status: 'PENDING',
+      topic: 'test',
+      totalPrice: 100000,
+    },
+  ]);
+
+  await render(
+    <MemoryRouter initialEntries={['/profile/bookings/1']}>
+      <Routes>
+        <Route path="/profile/bookings/:bookingId" element={<BookingDetailPage />} />
+      </Routes>
+    </MemoryRouter>
+  );
+
+  expect(await screen.findByText('Booking #1')).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'test' })).toBeInTheDocument();
+  expect(screen.getByText('yongmin choi')).toBeInTheDocument();
+  expect(screen.getByText('@yongmin')).toBeInTheDocument();
+  expect(bookingService.getCounselorBookings).toHaveBeenCalledWith({ page: 0, size: 50 });
 });
