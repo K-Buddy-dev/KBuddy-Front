@@ -204,12 +204,14 @@ export function getProfileInquiries(profile: CounselorDetail | MyCounselorProfil
 
 export const counselorService = {
   getCounselors: async ({
+    category,
     page = 0,
     size = 20,
     sort,
-  }: { page?: number; size?: number; sort?: string } = {}): Promise<CounselorListResponse> => {
+  }: { category?: string; page?: number; size?: number; sort?: string } = {}): Promise<CounselorListResponse> => {
     const response = await authClient.get<CounselorListApiResponse>('/counselor', {
       params: {
+        ...(category ? { category } : {}),
         page,
         size,
         ...(sort ? { sort } : {}),

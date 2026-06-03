@@ -7,39 +7,21 @@ import { LeftArrowTriangle, RightArrowTriangle, XIcon } from '@/components/share
 import { TimeSlotPicker } from '@/components/shared/time-slot-picker/TimeSlotPicker';
 import { counselorService, CounselorAvailabilitySlot, MyCounselorProfile } from '@/services/counselorService';
 import { parseUtcDateTime } from '@/utils/utcDateTime';
+import { serviceCategories } from '@/constants/serviceCategories';
 
 const steps = [{ label: 'Basic info' }, { label: 'Details of service' }, { label: 'Review & submit' }];
 const mySaleBackPath = '/profile?tab=My%20sale';
 
-const categoryOptions = [
-  'Restaurant',
-  'Cafe/Dessert',
-  'Shopping',
-  'Attraction',
-  'Lodging',
-  'Nature',
-  'Art',
-  'Beauty/Spa',
-  'Transportation',
-  'Health',
-  'Daily Life',
-  'Others',
-];
+const counselorCategories = serviceCategories.filter((category) => category.code !== '');
+const categoryOptions: string[] = counselorCategories.map((category) => category.label);
 
-const categoryCodeByLabel: Record<string, string> = {
-  Art: 'ART',
-  Attraction: 'ATTRACTION',
-  'Beauty/Spa': 'BEAUTY_SPA',
-  'Cafe/Dessert': 'CAFE_DESSERT',
-  'Daily Life': 'DAILY_LIFE',
-  Health: 'HEALTH',
-  Lodging: 'LODGING',
-  Nature: 'NATURE',
-  Others: 'OTHERS',
-  Restaurant: 'RESTAURANT',
-  Shopping: 'SHOPPING',
-  Transportation: 'TRANSPORTATION',
-};
+const categoryCodeByLabel = counselorCategories.reduce<Record<string, string>>(
+  (codesByLabel, category) => ({
+    ...codesByLabel,
+    [category.label]: category.code,
+  }),
+  {}
+);
 
 const categoryLabelByCode = Object.entries(categoryCodeByLabel).reduce<Record<string, string>>(
   (labelsByCode, [label, code]) => ({
@@ -255,7 +237,10 @@ export function CounselorProfileCreatePage() {
         />
       )}
 
-      <div className="fixed bottom-0 left-0 right-0 flex h-20 w-full items-start border-t border-border-weak1 bg-white">
+      <div
+        data-testid="counselor-create-action-bar"
+        className="fixed bottom-0 left-1/2 flex h-20 min-w-[280px] w-full -translate-x-1/2 items-start border-t border-border-weak1 bg-white sm:w-[600px]"
+      >
         <div className="mx-auto flex w-full max-w-[600px] items-center justify-between px-4 pt-3">
           <Button variant="link" color="secondary" size="medium" onClick={handleBack} className="h-10 px-2 underline">
             Back

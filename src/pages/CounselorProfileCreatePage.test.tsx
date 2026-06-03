@@ -54,6 +54,22 @@ it('renders the first counselor listing creation step', async () => {
   expect(screen.getByRole('button', { name: 'Add photo' })).toBeInTheDocument();
 });
 
+it('keeps the counselor profile creation action bar constrained to the mobile app width', async () => {
+  await render(
+    <MemoryRouter>
+      <CounselorProfileCreatePage />
+    </MemoryRouter>
+  );
+
+  const bottomActionBar = screen
+    .getByRole('button', { name: 'Next' })
+    .closest('[data-testid="counselor-create-action-bar"]');
+
+  expect(bottomActionBar).toHaveClass('left-1/2');
+  expect(bottomActionBar).toHaveClass('-translate-x-1/2');
+  expect(bottomActionBar).toHaveClass('sm:w-[600px]');
+});
+
 it('loads existing counselor content when opened in edit mode', async () => {
   const slotStart = new Date(2026, 5, 1, 10, 0, 0);
   const slotDateLabel = `${slotStart.toLocaleString('en-US', { month: 'long' })} ${slotStart.getDate()}, ${slotStart.getFullYear()}`;
@@ -64,7 +80,7 @@ it('loads existing counselor content when opened in edit mode', async () => {
   }).format(slotStart);
 
   vi.mocked(counselorService.getCounselorDetail).mockResolvedValue({
-    categories: ['RESTAURANT', 'CAFE_DESSERT'],
+    categories: ['VISA_IMMIGRATION', 'KOREAN_LANGUAGE'],
     counselorId: 'seller-uuid',
     coverImageUrl: 'https://example.com/existing-cover.jpg',
     detail: 'Existing live chat detail.',
@@ -145,8 +161,8 @@ it('loads existing counselor content when opened in edit mode', async () => {
   await user.click(screen.getByLabelText('Close add date and time'));
   await user.click(screen.getByRole('button', { name: 'Next' }));
 
-  expect(screen.getByLabelText('Restaurant')).toBeChecked();
-  expect(screen.getByLabelText('Cafe/Dessert')).toBeChecked();
+  expect(screen.getByLabelText('Visa')).toBeChecked();
+  expect(screen.getByLabelText('Korean')).toBeChecked();
 });
 
 it('keeps multiple editable availability times even when availability ids are missing', async () => {
@@ -165,7 +181,7 @@ it('keeps multiple editable availability times even when availability ids are mi
   }).format(secondSlotStart);
 
   vi.mocked(counselorService.getCounselorDetail).mockResolvedValue({
-    categories: ['RESTAURANT'],
+    categories: ['VISA_IMMIGRATION'],
     counselorId: 'seller-uuid',
     detail: 'Existing live chat detail.',
     id: 'seller-uuid',
@@ -234,7 +250,7 @@ it('treats timezone-less slotStartUtc values as UTC when restoring editable avai
   }).format(new Date('2026-05-27T12:30:00Z'));
 
   vi.mocked(counselorService.getCounselorDetail).mockResolvedValue({
-    categories: ['RESTAURANT'],
+    categories: ['VISA_IMMIGRATION'],
     counselorId: 'seller-uuid',
     detail: 'Existing live chat detail.',
     id: 'seller-uuid',
@@ -431,7 +447,7 @@ it('renders the review and submit step after clicking next from service details'
   expect(screen.getByText('Review & submit')).toBeInTheDocument();
   expect(screen.getByText('Sale listing preview')).toBeInTheDocument();
   expect(screen.getByText('Select all categories')).toBeInTheDocument();
-  expect(screen.getByLabelText('Restaurant')).toBeInTheDocument();
+  expect(screen.getByLabelText('Visa')).toBeInTheDocument();
   expect(screen.getByText('Listing detail')).toBeInTheDocument();
   expect(screen.getByText('Available hours')).toBeInTheDocument();
   expect(screen.getByText('Service price')).toBeInTheDocument();
@@ -564,7 +580,7 @@ it('submits counselor profile multipart data with slots grouped by date', async 
   await user.type(screen.getByLabelText('Start date'), '01012026');
   await user.type(screen.getByLabelText('End date'), '01312026');
   await user.click(screen.getByRole('button', { name: 'Next' }));
-  await user.click(screen.getByLabelText('Restaurant'));
+  await user.click(screen.getByLabelText('Visa'));
 
   const submitButton = screen.getByRole('button', { name: 'Submit' });
   expect(submitButton).toBeEnabled();
@@ -593,7 +609,7 @@ it('loads my counselor profile and redirects when create response has no counsel
   useStableCalendarDate();
   vi.mocked(counselorService.registerProfile).mockResolvedValue(null as never);
   vi.mocked(counselorService.getMyProfile).mockResolvedValue({
-    categories: ['RESTAURANT'],
+    categories: ['VISA_IMMIGRATION'],
     counselorId: 'created-counselor',
     coverImageUrl: 'https://example.com/cover.jpg',
     detail: 'Created detail',
@@ -624,7 +640,7 @@ it('loads my counselor profile and redirects when create response has no counsel
   await user.type(screen.getByLabelText('Price'), '25000');
   await user.type(screen.getByLabelText('Session minutes'), '45');
   await user.click(screen.getByRole('button', { name: 'Next' }));
-  await user.click(screen.getByLabelText('Restaurant'));
+  await user.click(screen.getByLabelText('Visa'));
   await user.click(screen.getByRole('button', { name: 'Submit' }));
 
   expect(counselorService.getMyProfile).toHaveBeenCalledTimes(1);
@@ -668,7 +684,7 @@ it('preserves different selected times for each availability date', async () => 
   await user.type(screen.getByLabelText('Price'), '25000');
   await user.type(screen.getByLabelText('Session minutes'), '45');
   await user.click(screen.getByRole('button', { name: 'Next' }));
-  await user.click(screen.getByLabelText('Restaurant'));
+  await user.click(screen.getByLabelText('Visa'));
   await user.click(screen.getByRole('button', { name: 'Submit' }));
 
   const formData = vi.mocked(counselorService.registerProfile).mock.calls[0][0] as FormData;
@@ -711,7 +727,7 @@ it('applies a time to a date range and preserves a single-date exception time', 
   await user.type(screen.getByLabelText('Price'), '25000');
   await user.type(screen.getByLabelText('Session minutes'), '45');
   await user.click(screen.getByRole('button', { name: 'Next' }));
-  await user.click(screen.getByLabelText('Restaurant'));
+  await user.click(screen.getByLabelText('Visa'));
   await user.click(screen.getByRole('button', { name: 'Submit' }));
 
   const formData = vi.mocked(counselorService.registerProfile).mock.calls[0][0] as FormData;
@@ -755,7 +771,7 @@ it('shares draft selections when switching between single-date and date-range mo
 
 it('updates counselor profile with PATCH in edit mode instead of creating a new profile', async () => {
   vi.mocked(counselorService.getCounselorDetail).mockResolvedValue({
-    categories: ['RESTAURANT'],
+    categories: ['VISA_IMMIGRATION'],
     counselorId: 'seller-uuid',
     coverImageUrl: 'https://example.com/existing-cover.jpg',
     detail: 'Existing live chat detail.',
@@ -899,7 +915,7 @@ it('blocks submit when promotion duration dates are invalid', async () => {
   await user.type(screen.getByLabelText('Session minutes'), '45');
   await user.type(screen.getByLabelText('Start date'), '22112025');
   await user.click(screen.getByRole('button', { name: 'Next' }));
-  await user.click(screen.getByLabelText('Restaurant'));
+  await user.click(screen.getByLabelText('Visa'));
 
   expect(screen.getByRole('button', { name: 'Submit' })).toBeDisabled();
   expect(screen.getByText('Enter promotion dates as valid MM/DD/YYYY dates.')).toBeInTheDocument();

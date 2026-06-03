@@ -7,6 +7,7 @@ export * from './CommunityDetailPage';
 export * from './TypeCategoryPage';
 export * from './TitleImageDescriptionPage';
 export * from './HomePage';
+export * from './DiscoveryDetailPage';
 export * from './MessagePage';
 export * from './ChatRoomPage';
 export * from './NotificationPage';

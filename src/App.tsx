@@ -15,6 +15,7 @@ import {
   CounselorProfileCreatePage,
   SettingPage,
   HomePage,
+  DiscoveryDetailPage,
   CommunityPage,
   CommunityPostPage,
   SignupVerifyPage,
@@ -125,6 +126,7 @@ function AppRoutes() {
             </Route>
 
             <Route path="/home" element={<HomePage />} />
+            <Route path="/discovery/:id" element={<DiscoveryDetailPage />} />
             <Route path="/service" element={<ServicePage />} />
             <Route path="/service/:id" element={<ServiceDetailPage />} />
             <Route path="/service/:id/request" element={<RequestLiveChatPage />} />
