@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import render from '@/utils/test/render';
 import { counselorService } from '@/services/counselorService';
 import { ServicePage } from './ServicePage';
+import { notificationService } from '@/services/notificationService';
 
 vi.mock('@/services/counselorService', () => ({
   counselorService: {
@@ -10,8 +11,15 @@ vi.mock('@/services/counselorService', () => ({
   },
 }));
 
+vi.mock('@/services/notificationService', () => ({
+  notificationService: {
+    getUnreadCount: vi.fn(),
+  },
+}));
+
 beforeEach(() => {
   localStorage.clear();
+  vi.mocked(notificationService.getUnreadCount).mockResolvedValue(0);
   vi.mocked(counselorService.getCounselors).mockResolvedValue({
     content: [
       {
@@ -45,7 +53,55 @@ it('renders counselors from the counselor list API', async () => {
   expect(screen.getByText('@홍길동')).toBeInTheDocument();
   expect(screen.getByText('생활 | 비자')).toBeInTheDocument();
   expect(screen.getByText('30,000 won')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'true');
   expect(counselorService.getCounselors).toHaveBeenCalledWith({ page: 0, size: 20 });
+});
+
+it('loads counselors with the category query parameter', async () => {
+  await render(
+    <MemoryRouter initialEntries={['/service?category=VISA_IMMIGRATION']}>
+      <Routes>
+        <Route path="/service" element={<ServicePage />} />
+      </Routes>
+    </MemoryRouter>
+  );
+  await act(async () => {});
+
+  expect(counselorService.getCounselors).toHaveBeenCalledWith({ category: 'VISA_IMMIGRATION', page: 0, size: 20 });
+  expect(screen.getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'false');
+  expect(screen.getByRole('button', { name: 'Visa' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+it('clears the category filter when All is clicked', async () => {
+  const { user } = await render(
+    <MemoryRouter initialEntries={['/service?category=HEALTHCARE']}>
+      <Routes>
+        <Route path="/service" element={<ServicePage />} />
+      </Routes>
+    </MemoryRouter>
+  );
+  await act(async () => {});
+
+  await user.click(screen.getByRole('button', { name: 'All' }));
+
+  expect(counselorService.getCounselors).toHaveBeenLastCalledWith({ page: 0, size: 20 });
+  expect(screen.getByRole('button', { name: 'All' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+it('updates the selected category when a service category filter is clicked', async () => {
+  const { user } = await render(
+    <MemoryRouter initialEntries={['/service']}>
+      <Routes>
+        <Route path="/service" element={<ServicePage />} />
+      </Routes>
+    </MemoryRouter>
+  );
+  await act(async () => {});
+
+  await user.click(screen.getByRole('button', { name: 'Healthcare' }));
+
+  expect(counselorService.getCounselors).toHaveBeenLastCalledWith({ category: 'HEALTHCARE', page: 0, size: 20 });
+  expect(screen.getByRole('button', { name: 'Healthcare' })).toHaveAttribute('aria-pressed', 'true');
 });
 
 it('hides the filters and KRW controls', async () => {
