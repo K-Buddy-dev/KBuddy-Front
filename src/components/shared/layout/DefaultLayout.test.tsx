@@ -32,3 +32,19 @@ it('keeps bottom navigation on discovery detail route', async () => {
   expect(screen.getByText('Discovery detail')).toBeInTheDocument();
   expect(screen.getByText('My page')).toBeInTheDocument();
 });
+
+it('keeps bottom navigation above page content', async () => {
+  await render(
+    <MemoryRouter initialEntries={['/home']}>
+      <Routes>
+        <Route element={<DefaultLayout />}>
+          <Route path="/home" element={<div>Home content</div>} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  );
+
+  const bottomNavigationLayer = screen.getByText('My page').closest('[data-testid="bottom-navigation-layer"]');
+
+  expect(bottomNavigationLayer).toHaveClass('z-30');
+});

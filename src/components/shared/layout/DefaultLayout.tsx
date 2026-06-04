@@ -29,7 +29,7 @@ export function DefaultLayout() {
       >
         <Outlet />
         {!isBottomNavigationDisabled && (
-          <div className="fixed bottom-0 left-0 w-full">
+          <div data-testid="bottom-navigation-layer" className="fixed bottom-0 left-0 z-30 w-full">
             <BottomNavigation />
           </div>
         )}
