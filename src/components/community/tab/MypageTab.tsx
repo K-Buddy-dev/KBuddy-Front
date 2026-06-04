@@ -2,16 +2,17 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { TabList, TabWrapper } from './Tab';
 
 const menuArr = [
-  { name: 'Saved', id: 1 },
-  { name: 'My post', id: 2 },
-  { name: 'Orders', id: 3 },
+  { name: 'My sale', id: 1 },
+  { name: 'Saved', id: 2 },
+  { name: 'My post', id: 3 },
+  { name: 'Orders', id: 4 },
 ];
 
 export function MypageTab() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const currentTab = searchParams.get('tab') || 'Saved';
+  const currentTab = searchParams.get('tab') || 'My sale';
 
   // 탭 변경 시 URL 업데이트
   const handleTabChange = (tabName: string) => {

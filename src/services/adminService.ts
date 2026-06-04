@@ -4,6 +4,9 @@ import {
   UserListResponse,
   UserStatsResponse,
   PostReportsResponse,
+  PaymentListResponse,
+  ConfirmDepositRequest,
+  CancelPaymentRequest,
   UserReportsResponse,
 } from '@/types/admin';
 
@@ -26,6 +29,16 @@ export interface AdminLoginResponse {
   path: string;
   data: AdminLoginData;
   details: string[];
+}
+
+export interface AdminNotificationRequest {
+  message: string;
+  targetId?: string | null;
+  title: string;
+}
+
+export interface AdminNotificationResponse {
+  sentCount: number;
 }
 
 export const adminService = {
@@ -65,6 +78,29 @@ export const adminService = {
   // Get user reports
   getUserReports: () => {
     return adminClient.get<UserReportsResponse>('/admin/reports/users');
+  },
+
+  getPayments: ({ page = 0, size = 50, status }: { page?: number; size?: number; status?: string } = {}) => {
+    return adminClient.get<PaymentListResponse>('/admin/payments', {
+      params: {
+        page,
+        size,
+        ...(status ? { status } : {}),
+      },
+    });
+  },
+
+  confirmDeposit: (paymentId: number, data?: ConfirmDepositRequest) => {
+    return adminClient.patch(`/admin/payments/${paymentId}/confirm-deposit`, data);
+  },
+
+  cancelPayment: (paymentId: number, data: CancelPaymentRequest) => {
+    return adminClient.patch(`/admin/payments/${paymentId}/cancel`, data);
+  },
+
+  sendNotification: async (data: AdminNotificationRequest): Promise<AdminNotificationResponse> => {
+    const response = await adminClient.post<AdminNotificationResponse>('/admin/notifications', data);
+    return response.data;
   },
 
   // TODO: Add more admin services

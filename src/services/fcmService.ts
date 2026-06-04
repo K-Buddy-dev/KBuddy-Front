@@ -1,4 +1,5 @@
 import { authClient } from '@/api/axiosConfig';
+import { notificationService } from './notificationService';
 
 export interface FcmTokenRequest {
   token: string;
@@ -24,12 +25,6 @@ export const fcmService = {
   },
   // FCM 토큰 서버 전송
   sendFcmTokenToServer: async (data: FcmTokenToServerRequest): Promise<void> => {
-    const response = await authClient.post('https://api.k-buddy.kr/api/v1/fcm-tokens', null, {
-      params: {
-        token: data.token,
-        deviceInfo: data.deviceInfo,
-      },
-    });
-    return response.data;
+    return notificationService.registerFcmToken(data.token);
   },
 };

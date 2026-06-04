@@ -1,6 +1,7 @@
 import { cva } from 'class-variance-authority';
 import { ComponentProps, forwardRef, useEffect, useRef, useState } from 'react';
 import { DownArrow, UpArrow } from '../icon';
+import { cn } from '@/utils/utils';
 
 const selectBoxVariants = cva('w-[100px] flex flex-col items-start relative', {
   variants: {
@@ -21,7 +22,7 @@ interface SelectBoxProps extends Omit<ComponentProps<'div'>, 'size' | 'onChange'
 }
 
 export const SelectBox = forwardRef<HTMLDivElement, SelectBoxProps>(
-  ({ size = 'small', label, options, onChange, value, ...props }, _) => {
+  ({ size = 'small', label, options, onChange, value, className, ...props }, _) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectBoxRef = useRef<HTMLDivElement>(null);
     const selectedOption = options.find((option) => option.value === value);
@@ -41,7 +42,12 @@ export const SelectBox = forwardRef<HTMLDivElement, SelectBoxProps>(
     }, []);
 
     return (
-      <div className={selectBoxVariants({ size })} ref={selectBoxRef} {...props} onClick={() => setIsOpen(!isOpen)}>
+      <div
+        className={cn(selectBoxVariants({ size }), className)}
+        ref={selectBoxRef}
+        {...props}
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <div
           className={`flex justify-between items-center w-full border border-solid border-border-default bg-white box-border text-gray-900 placeholder-gray-400 py-3 px-4 cursor-pointer relative ${
             isOpen ? 'border-b-0 rounded-t-[8px]' : 'rounded-[8px]'
@@ -51,7 +57,7 @@ export const SelectBox = forwardRef<HTMLDivElement, SelectBoxProps>(
           <div>{isOpen ? <UpArrow /> : <DownArrow />}</div>
         </div>
         {isOpen && (
-          <ul className="absolute top-full left-0 w-full h-[160px] overflow-y-scroll border border-solid border-border-default border-t-0 rounded-b-[8px] bg-white z-10">
+          <ul className="absolute top-full left-0 z-10 max-h-60 w-full overflow-y-auto border border-solid border-border-default border-t-0 rounded-b-[8px] bg-white">
             {options.map((option) => (
               <li
                 key={option.value}

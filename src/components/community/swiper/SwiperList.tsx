@@ -15,6 +15,7 @@ import defaultImg from '@/assets/images/default-profile.png';
 
 export interface SwiperWrapperProps {
   cards: Community[];
+  layout?: 'default' | 'home';
   onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
   onBookmark: (event: React.MouseEvent, id: number, isBookmarked: boolean) => void;
 }
@@ -123,7 +124,24 @@ export function SwiperCard({
   );
 }
 
-export function SwiperListWrapper({ children }: { children: React.ReactNode }) {
+export function SwiperListWrapper({
+  children,
+  layout = 'default',
+}: {
+  children: React.ReactNode;
+  layout?: 'default' | 'home';
+}) {
+  if (layout === 'home') {
+    return (
+      <section aria-label="Featured posts" className="px-5">
+        <div className="relative h-[250px] w-full rounded-lg bg-gradient-to-r from-bg-brand-light to-bg-brand-default pb-6 pl-4">
+          <h2 className="pb-4 pt-6 text-[18px] leading-[24px] text-white">Featured posts</h2>
+          {children}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <div className="relative min-w-[280px] w-full sm:w-[600px] h-[250px] bg-gradient-to-r from-bg-brand-light to-bg-brand-default pb-6 pl-4">
       <h1 className="pt-6 pb-4 text-[18px] leading-[24px] text-white">Featured posts</h1>
@@ -141,7 +159,7 @@ const styles = `
   }
 `;
 
-export const SwiperList = ({ cards, onLike, onBookmark }: SwiperWrapperProps) => {
+export const SwiperList = ({ cards, layout = 'default', onLike, onBookmark }: SwiperWrapperProps) => {
   const [, setSwiperIndex] = useState<number>(0);
   const [swiper, setSwiper] = useState<SwiperClass>();
   const [isBeginning, setIsBeginning] = useState<boolean>(true);
@@ -155,7 +173,7 @@ export const SwiperList = ({ cards, onLike, onBookmark }: SwiperWrapperProps) =>
   };
 
   return (
-    <SwiperListWrapper>
+    <SwiperListWrapper layout={layout}>
       <style>{styles}</style>
       <Swiper
         onSlideChange={(e: SwiperClass) => {
