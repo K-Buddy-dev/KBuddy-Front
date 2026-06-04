@@ -208,7 +208,7 @@ export function ServiceDetailPage() {
   const handleRequest = () => {
     if (!service) return;
 
-    if (isMyServiceProfile(service.id, currentUserUuid, passedIsMyProfile)) {
+    if (isMyServiceProfile(service.counselorUserUuid, currentUserUuid, passedIsMyProfile)) {
       setRequestBlockedMessage('You cannot request your own counselor profile.');
       return;
     }
@@ -410,7 +410,7 @@ export function ServiceDetailPage() {
 
       {showDetailModal && (
         <ServiceDetailMenuModal
-          isMyProfile={isMyServiceProfile(service.id, currentUserUuid, passedIsMyProfile)}
+          isMyProfile={isMyServiceProfile(service.counselorUserUuid, currentUserUuid, passedIsMyProfile)}
           onDelete={handleDeleteService}
           onEdit={handleEditService}
           onClose={() => setShowDetailModal(false)}
@@ -674,9 +674,9 @@ function InquiryFormModal({
   );
 }
 
-function isMyServiceProfile(counselorUuid: string, currentUserUuid: string, passedIsMyProfile?: boolean) {
+function isMyServiceProfile(counselorUserUuid: string, currentUserUuid: string, passedIsMyProfile?: boolean) {
   if (passedIsMyProfile !== undefined) return passedIsMyProfile;
-  return Boolean(currentUserUuid && String(counselorUuid) === String(currentUserUuid));
+  return Boolean(currentUserUuid && String(counselorUserUuid) === String(currentUserUuid));
 }
 
 function OwnProfileRequestBlockedModal({ message, onClose }: { message: string; onClose: () => void }) {
@@ -765,6 +765,8 @@ function mapCounselorProfileToServiceDetail(profile: MyCounselorProfile) {
     categoryType: '1:1 Chat' as const,
     description: profile.detail,
     duration: `${sessionMinutes} min`,
+    counselorId: profile.counselorId ? String(profile.counselorId) : '',
+    counselorUserUuid: profile.counselorUserUuid ? String(profile.counselorUserUuid) : '',
     id: profile.id,
     imageUrl: profile.coverImageUrl || profile.profileImageUrl || defaultProfileImage,
     inquiries: inquiries.items,
