@@ -53,6 +53,7 @@ export interface CounselorReview {
 export interface CounselorListItem {
   categories: string[];
   counselorId: string | number;
+  counselorUserUuid?: string | number;
   coverImageUrl?: string;
   hasPromotion: boolean;
   name: string;
@@ -71,6 +72,7 @@ export interface CounselorListResponse {
 export interface CounselorDetail {
   categories: string[];
   counselorId?: string | number;
+  counselorUserUuid?: string | number;
   coverImageUrl?: string;
   detail: string;
   inquiries?: CounselorInquiryListItem[];
@@ -167,6 +169,7 @@ function normalizeCounselorDetail(profile: CounselorDetail | MyCounselorProfile)
     ...profile,
     id: counselorId,
     counselorId,
+    counselorUserUuid: profile.counselorUserUuid ? String(profile.counselorUserUuid) : undefined,
     categories: Array.isArray(profile.categories) ? profile.categories : [],
     inquiries: getProfileInquiries(profile).items,
     inquiryCount: getProfileInquiries(profile).totalCount,
@@ -224,6 +227,7 @@ export const counselorService = {
         ? result.content.map((item) => ({
             ...item,
             counselorId: String(item.counselorId),
+            counselorUserUuid: item.counselorUserUuid ? String(item.counselorUserUuid) : undefined,
           }))
         : [],
       totalElements: typeof result.totalElements === 'number' ? result.totalElements : 0,
