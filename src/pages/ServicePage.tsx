@@ -50,12 +50,13 @@ export function ServicePage() {
     setSearchParams(nextSearchParams);
   };
 
-  const handleCardClick = (id: string | number) => {
+  const handleCardClick = (id: string | number, counselorUserUuid?: string | number) => {
     const counselorUuid = String(id);
+    const ownerUserUuid = counselorUserUuid ? String(counselorUserUuid) : '';
 
     navigate(`/service/${counselorUuid}`, {
       state: {
-        isMyProfile: counselorUuid === getCurrentUserUuid(),
+        isMyProfile: Boolean(ownerUserUuid && ownerUserUuid === getCurrentUserUuid()),
       },
     });
   };
@@ -103,7 +104,7 @@ export function ServicePage() {
                 <ServiceCard
                   key={service.counselorId}
                   {...viewModel}
-                  onClick={() => handleCardClick(service.counselorId)}
+                  onClick={() => handleCardClick(service.counselorId, service.counselorUserUuid)}
                 />
               );
             })}
