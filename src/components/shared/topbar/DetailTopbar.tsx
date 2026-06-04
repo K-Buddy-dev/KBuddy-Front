@@ -98,7 +98,7 @@ export function DetailTopbar({
             </button>
           )}
           {type === 'back' && (
-            <button type="button" onClick={onBack}>
+            <button type="button" aria-label="Back" onClick={onBack}>
               <PreviewBackIcon />
             </button>
           )}

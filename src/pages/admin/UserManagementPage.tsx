@@ -2,6 +2,7 @@ import { AdminLayout } from '@/components/admin';
 import { useAdminUsers, useAdminUserStats } from '@/hooks/admin';
 import { useState } from 'react';
 import { AdminUser } from '@/types/admin';
+import { formatKstDate } from '@/utils/adminDateTime';
 
 export const UserManagementPage = () => {
   const [page, setPage] = useState(0);
@@ -12,14 +13,6 @@ export const UserManagementPage = () => {
 
   const handleLogout = () => {
     console.log('로그아웃');
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
   };
 
   const getStatusBadge = (active: boolean) => {
@@ -138,7 +131,7 @@ export const UserManagementPage = () => {
                       <td className="px-6 py-4 text-body-200-medium text-text-default">
                         {user.gender === 'M' ? '남성' : '여성'}
                       </td>
-                      <td className="px-6 py-4 text-body-200-medium text-text-weak">{formatDate(user.createdAt)}</td>
+                      <td className="px-6 py-4 text-body-200-medium text-text-weak">{formatKstDate(user.createdAt)}</td>
                       <td className="px-6 py-4">{getStatusBadge(user.active)}</td>
                     </tr>
                   ))}

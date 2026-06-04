@@ -12,3 +12,6 @@ export * from './label';
 export * from './radio';
 export * from './album';
 export * from './toast';
+export * from './step-indicator';
+export * from './calendar';
+export * from './time-slot-picker';

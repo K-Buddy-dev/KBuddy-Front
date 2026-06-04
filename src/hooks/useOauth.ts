@@ -4,6 +4,12 @@ import { OauthRequest, SignupFormData } from '@/types';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './useToastContext';
+import { analyticsService } from '@/services/analyticsService';
+import { analyticsEvents } from '@/services/analyticsEvents';
+
+function getAccessToken(result: any) {
+  return result?.accessToken ?? result?.data?.accessToken ?? result?.data?.data?.accessToken;
+}
 
 const useOauthCheck = () => {
   const [error, setError] = useState({ oAuthCategory: '', oAuthUid: '' });
@@ -99,11 +105,24 @@ export const useOauthRegister = () => {
         oAuthCategory,
       };
       const result = await authService.oauthRegister(signupData);
+      let accessToken = getAccessToken(result);
+      if (!accessToken && oAuthUid && oAuthCategory) {
+        const loginResult = await authService.oauthLogin({ oAuthUid, oAuthCategory });
+        accessToken = getAccessToken(loginResult);
+      }
+      if (accessToken) {
+        authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      }
+      localStorage.setItem('kBuddyId', userId);
+      analyticsService.trackEvent(analyticsEvents.signUpCompleted, {
+        method: oAuthCategory || 'oauth',
+      });
       setError('');
       return result;
     } catch (error: any) {
       const errorMessage = error.response.data.data as string;
       setError(errorMessage);
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -145,6 +164,9 @@ export const useOauthLoginHandler = () => {
       const result = await oauthLogin(data);
       const { accessToken } = result.data;
       authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      analyticsService.trackEvent(analyticsEvents.loginCompleted, {
+        method: data.oAuthCategory || 'oauth',
+      });
       navigate('/home');
     } catch (err: any) {
       console.error('로그인 실패:', err);

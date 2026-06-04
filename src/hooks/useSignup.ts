@@ -3,6 +3,10 @@ import { authService } from '@/services';
 import { SignupFormData } from '@/types';
 import { useState } from 'react';
 
+function getAccessToken(result: any) {
+  return result?.accessToken ?? result?.data?.accessToken ?? result?.data?.data?.accessToken;
+}
+
 export const useSignup = () => {
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,8 +41,14 @@ export const useSignup = () => {
       }
 
       const result = await authService.signup(signupData);
-      const { accessToken } = result.data;
-      authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      let accessToken = getAccessToken(result);
+      if (!accessToken && data.password) {
+        const loginResult = await authService.login({ emailOrUserId: data.userId, password: data.password });
+        accessToken = getAccessToken(loginResult);
+      }
+      if (accessToken) {
+        authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      }
       localStorage.setItem('kBuddyId', data.userId);
       setError('');
       return result;

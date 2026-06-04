@@ -2,21 +2,24 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosInstance } from 'axios';
 import { authService } from '@/services';
 
+// API Base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.k-buddy.kr/kbuddy/v1';
+
 // 공용 axios 인스턴스
 export const apiClient = axios.create({
-  baseURL: 'https://api.k-buddy.kr/kbuddy/v1',
+  baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 
 export const authClient = axios.create({
-  baseURL: 'https://api.k-buddy.kr/kbuddy/v1',
+  baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 });
 
 // 관리자 전용 axios 인스턴스
 export const adminClient = axios.create({
-  baseURL: 'https://api.k-buddy.kr/kbuddy/v1',
+  baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 });

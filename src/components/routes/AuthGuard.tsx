@@ -32,9 +32,14 @@ export function AuthGuard() {
     const refreshToken = async () => {
       try {
         if (!authClient.defaults.headers.common['Authorization']) {
-          const { accessToken } = await authService.refreshAccessToken();
-          authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-          setIsAuthenticated(true);
+          const { data } = await authService.refreshAccessToken();
+          const accessToken = data?.accessToken as string | undefined;
+          if (accessToken) {
+            authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+          }
         }
       } catch {
         setIsAuthenticated(false);

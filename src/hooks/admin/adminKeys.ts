@@ -7,4 +7,7 @@ export const adminKeys = {
   reports: () => [...adminKeys.all, 'reports'] as const,
   postReports: () => [...adminKeys.reports(), 'posts'] as const,
   userReports: () => [...adminKeys.reports(), 'users'] as const,
+  payments: () => [...adminKeys.all, 'payments'] as const,
+  paymentList: (page: number, size: number, status?: string) =>
+    [...adminKeys.payments(), 'list', { page, size, status }] as const,
 };
