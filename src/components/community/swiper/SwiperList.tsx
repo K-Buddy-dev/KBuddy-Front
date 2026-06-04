@@ -184,35 +184,35 @@ export const SwiperList = ({ cards, layout = 'default', onLike, onBookmark }: Sw
           setIsEnd(true);
         }}
         modules={[Navigation]}
-        spaceBetween={10}
+        spaceBetween={layout === 'home' ? 24 : 10}
         slidesPerView={1.1}
         breakpoints={{
           360: {
             slidesPerView: 1.1,
-            spaceBetween: 20,
+            spaceBetween: layout === 'home' ? 24 : 20,
             navigation: {
               enabled: false,
             },
           },
           400: {
             slidesPerView: 1.2,
-            spaceBetween: 20,
+            spaceBetween: layout === 'home' ? 24 : 20,
           },
           450: {
             slidesPerView: 1.4,
-            spaceBetween: 20,
+            spaceBetween: layout === 'home' ? 24 : 20,
           },
           500: {
             slidesPerView: 1.5,
-            spaceBetween: 20,
+            spaceBetween: layout === 'home' ? 24 : 20,
           },
           550: {
             slidesPerView: 1.7,
-            spaceBetween: 20,
+            spaceBetween: layout === 'home' ? 24 : 20,
           },
           600: {
             slidesPerView: 1.8,
-            spaceBetween: 20,
+            spaceBetween: layout === 'home' ? 24 : 20,
             navigation: {
               enabled: true,
               nextEl: '.swiper-button-next',
