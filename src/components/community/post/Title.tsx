@@ -1,7 +1,12 @@
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks/useCommunityFormContext';
 import { TextField } from '@/components/shared';
 
-export const Title = () => {
+interface TitleProps {
+  label?: string;
+  placeholder?: string;
+}
+
+export const Title = ({ label = 'Title of a post', placeholder = 'Type here' }: TitleProps) => {
   const { title } = useCommunityFormStateContext();
   const { setTitle } = useCommunityFormActionContext();
 
@@ -10,8 +15,8 @@ export const Title = () => {
       <TextField
         id="title"
         type="text"
-        label="Title of a post"
-        placeholder="Type here"
+        label={label}
+        placeholder={placeholder}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
