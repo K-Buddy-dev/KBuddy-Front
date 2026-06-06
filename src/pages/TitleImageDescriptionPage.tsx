@@ -2,6 +2,7 @@ import { Topbar } from '@/components/shared';
 import { Description } from '../components/community/post/Description';
 import { Title } from '../components/community/post/Title';
 import { Images } from '../components/community/post/Images';
+import { PostStepHeader } from '../components/community/post/PostStepHeader';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
 import { usePost } from '@/hooks/usePost';
 import { useEffect, useState } from 'react';
@@ -15,6 +16,20 @@ export const TitleImageDescriptionPage = () => {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const { reset } = useCommunityFormActionContext();
   const isValid = title.length > 0 && description.length > 0;
+  const contentCopy =
+    type === 'Q&A'
+      ? {
+          description: 'Describe your question clearly so community members can give useful answers.',
+          helper: 'Add details so others can understand your situation.',
+          placeholder: 'Example: How can I extend my visa in Korea?',
+          title: 'What do you need help with?',
+        }
+      : {
+          description: 'Turn your experience into a helpful post for people planning life in Korea.',
+          helper: 'Add practical details, personal tips, and anything readers should know.',
+          placeholder: 'Example: 5 things I wish I knew before moving to Seoul',
+          title: 'What is your post about?',
+        };
 
   const onSubmit = async () => {
     try {
@@ -75,9 +90,14 @@ export const TitleImageDescriptionPage = () => {
         onBack={onBack}
         onNext={onSubmit}
       />
-      <div>
-        <Title />
+      <PostStepHeader step={3} title="Write your post" description={contentCopy.description} />
+      <div className="pb-8">
+        <Title label={contentCopy.title} placeholder={contentCopy.placeholder} />
         <Images imageUrls={imageUrls} setImageUrls={setImageUrls} />
+        <section className="px-4 pt-5">
+          <h2 className="text-lg font-semibold text-text-default">Details</h2>
+          <p className="mt-1 text-sm leading-5 text-text-weak">{contentCopy.helper}</p>
+        </section>
         <Description />
       </div>
     </div>
