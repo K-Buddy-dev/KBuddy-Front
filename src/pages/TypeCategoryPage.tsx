@@ -2,6 +2,7 @@ import { Topbar } from '@/components/shared';
 import { DraftModal } from '../components/community/post/DraftModal';
 import { useEffect, useState } from 'react';
 import { CategorySelector } from '../components/community/post/CategorySelector';
+import { PostStepHeader } from '../components/community/post/PostStepHeader';
 import { TypeSelector } from '../components/community/post/TypeSelector';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
@@ -44,12 +45,11 @@ export const TypeCategoryPage = () => {
   return (
     <div className="font-roboto w-full min-h-screen pt-20">
       <Topbar title={isEditMode ? 'Edit Post' : 'New Post'} type="back" isNext={true} onBack={handleClickBackButton} />
-      {/* <div className="bg-bg-medium w-full h-[326px] mt-14 px-4">
-        <SectionInfo
-          title="Post Preview"
-          description="Here's a sneak peek of how your blog preview will look once it's published in the community space."
-        />
-      </div> */}
+      <PostStepHeader
+        step={1}
+        title="Choose what you want to create"
+        description="Start with the format, then choose the category that helps the right people find your post."
+      />
       <TypeSelector />
       <CategorySelector onNext={onNext} />
       {showExitModal && <DraftModal onExit={isEditMode ? onEditExit : onExit} setShowExitModal={setShowExitModal} />}

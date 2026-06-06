@@ -92,6 +92,12 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData, hand
     [deleteComment]
   );
 
+  const focusAnswerInput = () => {
+    const inputEl = inputRef.current;
+    if (!inputEl) return;
+    inputEl.focus();
+  };
+
   if (isLoading)
     return (
       <div className="w-full h-screen flex items-center justify-center">
@@ -102,15 +108,19 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData, hand
   if (!qna?.data) return <div className="w-full h-screen flex items-center justify-center">No data found</div>;
 
   const categoryNames = getCategoryNames(qna.data.categoryId);
+  const answerCount = qna.data.commentCount;
+  const statusLabel = formatQnaStatus(qna.data.status);
 
   return (
-    <main className=" pb-20 font-roboto">
-      <div className="pt-[80px] px-4">
-        <h1 className="font-medium text-text-default text-[22px] leading-7 mb-1">{qna.data.title}</h1>
-        <div className="flex items-center gap-2 text-sm text-text-weak mb-4">
-          <span>{categoryNames}</span>
+    <main className="bg-bg-medium pb-24 font-roboto">
+      <section className="bg-bg-default px-4 pb-5 pt-[88px]">
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span className="rounded-full bg-bg-brand-weak px-3 py-1 text-text-brand-default">Q&A</span>
+          <span className="rounded-full bg-bg-medium px-3 py-1 text-text-weak">{categoryNames}</span>
+          <span className="rounded-full bg-bg-medium px-3 py-1 text-text-default">{statusLabel}</span>
         </div>
-        <div className="flex items-center gap-2 mb-4" onClick={handleBlockUserOpen}>
+        <h1 className="mb-4 text-[22px] font-semibold leading-7 text-text-default">{qna.data.title}</h1>
+        <div className="flex items-center gap-2" onClick={handleBlockUserOpen}>
           <img
             src={qna.data.writerProfileImageUrl ? qna.data.writerProfileImageUrl : defaultImg}
             alt="Profile"
@@ -121,13 +131,13 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData, hand
             <span className="text-sm font-medium text-text-weak">{formatDate(qna.data.createdAt)}</span>
           </div>
         </div>
-      </div>
+      </section>
       {qna.data.images.length > 0 && <ContentImage images={qna.data.images} title={qna.data.title} />}
-      <div className="px-4">
-        <CommunityContent content={qna.data.description} className="text-base text-text-default pt-4 pb-6" />
-      </div>
+      <section className="bg-bg-default px-4">
+        <CommunityContent content={qna.data.description} className="pb-6 pt-5 text-base text-text-default" />
+      </section>
 
-      <div className="flex items-center justify-between h-10 text-text-weak border-b-[1px] border-solid border-border-default bg-bg-medium">
+      <div className="mt-2 flex h-12 items-center justify-between border-y border-solid border-border-default bg-bg-default text-text-weak">
         <button
           className="flex items-center justify-center w-full gap-1 cursor-pointer group"
           onClick={(e: React.MouseEvent) => onLike(e, qna.data.id, qna.data.isHearted)}
@@ -139,35 +149,49 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData, hand
               <FaRegHeart className="w-6 h-6 text-text-weak stroke-current" />
             )}
           </div>
-          <span className="group-hover:[&>svg]:text-red-500">Like</span>
+          <span className="text-sm font-medium">Helpful</span>
         </button>
-        <div className="flex items-center justify-center gap-1 w-full">
+        <button className="flex items-center justify-center gap-1 w-full" onClick={focusAnswerInput}>
           <CommentIcon width={24} height={24} />
-          <span>Comment</span>
-        </div>
+          <span className="text-sm font-medium">Answer</span>
+        </button>
       </div>
-      <div className="px-4 bg-bg-medium pb-6">
-        <div className="text-sm text-text-weak flex items-center gap-2 py-4">
-          <span>{qna.data.heartCount} likes</span>
+      <section className="px-4 bg-bg-medium pb-6">
+        <div className="flex items-center gap-2 py-4 text-sm text-text-weak">
+          <span>{qna.data.heartCount} helpful</span>
           <span>|</span>
-          <span>{qna.data.commentCount} comments</span>
+          <span>
+            {answerCount} {answerCount === 1 ? 'answer' : 'answers'}
+          </span>
         </div>
 
-        <CommentList
-          comments={qna.data.comments}
-          handleCommentLike={handleCommentLike}
-          handleDelete={handleDelete}
-          replyId={replyId}
-          setReplyId={setReplyId}
-          editId={editId}
-          setEditId={setEditId}
-          setEditText={setEditText}
-          inputRef={inputRef}
-        />
-      </div>
+        <h2 className="mb-3 text-base font-semibold text-text-default">Answers</h2>
+        {qna.data.comments.length > 0 ? (
+          <CommentList
+            comments={qna.data.comments}
+            handleCommentLike={handleCommentLike}
+            handleDelete={handleDelete}
+            replyId={replyId}
+            setReplyId={setReplyId}
+            editId={editId}
+            setEditId={setEditId}
+            setEditText={setEditText}
+            inputRef={inputRef}
+          />
+        ) : (
+          <div className="rounded-lg border border-dashed border-border-default bg-bg-default px-4 py-6 text-center">
+            <p className="text-sm font-medium text-text-default">No answers yet. Be the first to help.</p>
+          </div>
+        )}
+      </section>
 
       {/* 추천 게시물 */}
-      {recommendedData && <RecommendSwiper cards={recommendedData} onLike={onLike} onBookmark={onBookmark} />}
+      {recommendedData && (
+        <section className="bg-bg-default py-5">
+          <h2 className="px-4 pb-3 text-base font-semibold text-text-default">Related questions</h2>
+          <RecommendSwiper cards={recommendedData} onLike={onLike} onBookmark={onBookmark} />
+        </section>
+      )}
 
       {/* 하단 고정 댓글 입력창 */}
       <CommentInput
@@ -176,7 +200,19 @@ export const QnaDetail = ({ contentId, onLike, onBookmark, recommendedData, hand
         onCommentSubmit={handleCommentSubmit}
         onCommentEdit={handleCommentEdit}
         inputRef={inputRef}
+        placeholder="Write an answer"
+        submitLabel="Answer"
       />
     </main>
   );
 };
+
+function formatQnaStatus(status?: string) {
+  if (!status) return 'Open';
+
+  return status
+    .toLowerCase()
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
