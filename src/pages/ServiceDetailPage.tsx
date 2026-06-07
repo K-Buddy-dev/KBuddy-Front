@@ -26,11 +26,20 @@ type ServiceDetailLocationState = {
   service?: MyCounselorProfile;
 };
 
+type ServiceDetailTab = 'Info' | 'Review' | 'Photo' | 'Inquiry';
+
+const serviceDetailTabs = ['Info', 'Review', 'Photo', 'Inquiry'] as const satisfies readonly ServiceDetailTab[];
+
+function getInitialServiceDetailTab(search: string): ServiceDetailTab {
+  const tab = new URLSearchParams(search).get('tab');
+  return serviceDetailTabs.find((item) => item === tab) || 'Info';
+}
+
 export function ServiceDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState<'Info' | 'Review' | 'Photo' | 'Inquiry'>('Info');
+  const [activeTab, setActiveTab] = useState<ServiceDetailTab>(() => getInitialServiceDetailTab(location.search));
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const routeState = location.state as ServiceDetailLocationState | null;

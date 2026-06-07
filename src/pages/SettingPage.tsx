@@ -1,4 +1,5 @@
 import { Topbar } from '@/components/shared';
+import { deleteStoredFcmToken } from '@/components/FcmTokenBridge';
 import { authService } from '@/services';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -11,6 +12,7 @@ export function SettingPage() {
 
   const onClickLogout = async () => {
     try {
+      await deleteStoredFcmToken();
       await authService.logout();
       navigate('/');
     } catch (error) {
@@ -32,6 +34,7 @@ export function SettingPage() {
 
   const handleConfirmDelete = async () => {
     try {
+      await deleteStoredFcmToken();
       await authService.deleteAccount();
       navigate('/');
     } catch (error) {
