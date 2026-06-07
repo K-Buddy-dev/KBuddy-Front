@@ -1,4 +1,5 @@
 import { authClient } from '@/api/axiosConfig';
+import { notifyFcmAuthReady } from '@/components/FcmTokenBridge';
 import { authService } from '@/services';
 import { SignupFormData } from '@/types';
 import { useState } from 'react';
@@ -48,6 +49,7 @@ export const useSignup = () => {
       }
       if (accessToken) {
         authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        notifyFcmAuthReady();
       }
       localStorage.setItem('kBuddyId', data.userId);
       setError('');

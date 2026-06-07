@@ -50,6 +50,8 @@ import { MobileEnvProvider } from './components/contexts/MobileEnvContextProvide
 import { APP_PUSH_TYPE, getAppRoute } from './constants/enum.ts';
 import { BlockUserPage } from './pages/BlockUserPage.tsx';
 import { AnalyticsRouteTracker } from './components/analytics/AnalyticsRouteTracker.tsx';
+import { FcmTokenBridge } from './components/FcmTokenBridge.tsx';
+import { getNotificationTargetPath } from './utils/notificationRouting.ts';
 
 // AppRoutes component - inside BrowserRouter context
 function AppRoutes() {
@@ -63,7 +65,18 @@ function AppRoutes() {
         console.log('🚀 ~ handleMessage ~ data:', data);
 
         if (data.type === APP_PUSH_TYPE.PUSH_NOTIFICATION) {
+          const targetPath = getNotificationTargetPath({
+            targetId: data.targetId ?? data.deep_link ?? data.postID,
+            type: data.notificationType ?? data.click_action ?? data.postPart,
+          });
+
+          if (targetPath) {
+            navigate(targetPath);
+            return;
+          }
+
           const { postID, postPart } = data;
+          if (!postID || !postPart) return;
           const targetUrl = getAppRoute(postPart, postID);
           navigate(targetUrl);
         }
@@ -84,6 +97,7 @@ function AppRoutes() {
   return (
     <>
       <AnalyticsRouteTracker measurementId={gaMeasurementId} />
+      <FcmTokenBridge />
       <Routes>
         {/* Admin Login Route - Public */}
         <Route path="/admin/login" element={<AdminLoginPage />} />

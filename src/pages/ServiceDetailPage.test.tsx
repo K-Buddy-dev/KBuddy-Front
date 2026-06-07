@@ -256,6 +256,22 @@ it('loads inquiries from the counselor inquiry API when the inquiry tab is click
   ).not.toBeInTheDocument();
 });
 
+it('opens the inquiry tab from the service detail query string', async () => {
+  await render(
+    <ToastProvider>
+      <MemoryRouter initialEntries={['/service/9?tab=Inquiry']}>
+        <Routes>
+          <Route path="/service/:id" element={<ServiceDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    </ToastProvider>
+  );
+
+  expect(await screen.findByRole('button', { name: 'Inquiry' })).toHaveClass('flex-shrink-0');
+  expect(counselorService.getCounselorInquiries).toHaveBeenCalledWith('9', { page: 0, size: 20 });
+  expect(await screen.findByText('상담 가능 시간 문의')).toBeInTheDocument();
+});
+
 it('loads inquiry detail and posts a reply from the inquiry tab', async () => {
   const { user } = await render(
     <ToastProvider>
