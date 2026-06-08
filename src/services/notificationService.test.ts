@@ -67,8 +67,8 @@ it('registers FCM tokens with request parameters and deletes tokens with request
   vi.mocked(authClient.post).mockResolvedValue({ data: undefined });
   vi.mocked(authClient.delete).mockResolvedValue({ data: undefined });
 
-  await notificationService.registerFcmToken('token-1');
-  await notificationService.deleteFcmToken('token-1');
+  await notificationService.registerFcmToken(' token-1 ');
+  await notificationService.deleteFcmToken(' token-1 ');
 
   expect(authClient.post).toHaveBeenCalledWith(expect.stringContaining('/api/v1/fcm-tokens'), null, {
     params: {
@@ -80,4 +80,12 @@ it('registers FCM tokens with request parameters and deletes tokens with request
       token: 'token-1',
     },
   });
+});
+
+it('does not call the FCM token API without a usable token', async () => {
+  await notificationService.registerFcmToken('   ');
+  await notificationService.deleteFcmToken('');
+
+  expect(authClient.post).not.toHaveBeenCalled();
+  expect(authClient.delete).not.toHaveBeenCalled();
 });

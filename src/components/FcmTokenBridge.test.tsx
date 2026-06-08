@@ -55,3 +55,43 @@ it('re-registers a stored FCM token when authentication becomes ready', async ()
   });
   expect(window.ReactNativeWebView.postMessage).toHaveBeenCalledWith(JSON.stringify({ action: 'requestFcmToken' }));
 });
+
+it('ignores empty and duplicate native FCM token messages', async () => {
+  window.ReactNativeWebView = {
+    postMessage: vi.fn(),
+  };
+
+  render(<FcmTokenBridge />);
+
+  act(() => {
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: JSON.stringify({
+          token: '   ',
+          type: 'fcmTokenReady',
+        }),
+      })
+    );
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: JSON.stringify({
+          token: 'dedupe-token',
+          type: 'fcmTokenReady',
+        }),
+      })
+    );
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: JSON.stringify({
+          token: 'dedupe-token',
+          type: 'fcmTokenReady',
+        }),
+      })
+    );
+  });
+
+  await waitFor(() => {
+    expect(notificationService.registerFcmToken).toHaveBeenCalledTimes(1);
+  });
+  expect(notificationService.registerFcmToken).toHaveBeenCalledWith('dedupe-token');
+});

@@ -5,6 +5,9 @@ const FCM_TOKEN_STORAGE_KEY = 'fcmToken';
 
 export const FCM_AUTH_READY_EVENT = 'kbuddy:fcm-auth-ready';
 
+let lastRegisteredToken: string | null = null;
+let pendingRegistrationToken: string | null = null;
+
 export const notifyFcmAuthReady = () => {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new Event(FCM_AUTH_READY_EVENT));
@@ -20,6 +23,8 @@ export const deleteStoredFcmToken = async () => {
   } catch (error) {
     console.error('FCM token deletion failed:', error);
   } finally {
+    lastRegisteredToken = null;
+    pendingRegistrationToken = null;
     localStorage.removeItem(FCM_TOKEN_STORAGE_KEY);
   }
 };
@@ -39,13 +44,30 @@ const parseMessageData = (data: unknown) => {
   }
 };
 
-const registerFcmToken = async (token: string) => {
-  localStorage.setItem(FCM_TOKEN_STORAGE_KEY, token);
+const normalizeFcmToken = (token: unknown) => {
+  if (typeof token !== 'string') return '';
+  return token.trim();
+};
+
+const registerFcmToken = async (token: unknown) => {
+  const normalizedToken = normalizeFcmToken(token);
+
+  if (!normalizedToken) return;
+
+  if (normalizedToken === lastRegisteredToken || normalizedToken === pendingRegistrationToken) return;
+
+  localStorage.setItem(FCM_TOKEN_STORAGE_KEY, normalizedToken);
+  pendingRegistrationToken = normalizedToken;
 
   try {
-    await notificationService.registerFcmToken(token);
+    await notificationService.registerFcmToken(normalizedToken);
+    lastRegisteredToken = normalizedToken;
   } catch (error) {
     console.error('FCM token registration failed:', error);
+  } finally {
+    if (pendingRegistrationToken === normalizedToken) {
+      pendingRegistrationToken = null;
+    }
   }
 };
 
