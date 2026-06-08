@@ -63,15 +63,17 @@ it('marks a notification as read and reads all notifications', async () => {
   expect(authClient.post).toHaveBeenCalledWith(expect.stringContaining('/api/v1/notifications/read-all'));
 });
 
-it('registers and deletes FCM tokens with request bodies', async () => {
+it('registers FCM tokens with request parameters and deletes tokens with request bodies', async () => {
   vi.mocked(authClient.post).mockResolvedValue({ data: undefined });
   vi.mocked(authClient.delete).mockResolvedValue({ data: undefined });
 
   await notificationService.registerFcmToken('token-1');
   await notificationService.deleteFcmToken('token-1');
 
-  expect(authClient.post).toHaveBeenCalledWith(expect.stringContaining('/api/v1/fcm-tokens'), {
-    token: 'token-1',
+  expect(authClient.post).toHaveBeenCalledWith(expect.stringContaining('/api/v1/fcm-tokens'), null, {
+    params: {
+      token: 'token-1',
+    },
   });
   expect(authClient.delete).toHaveBeenCalledWith(expect.stringContaining('/api/v1/fcm-tokens'), {
     data: {
