@@ -50,8 +50,13 @@ export const notificationService = {
   markAllAsRead: async (): Promise<void> => {
     await authClient.post(notificationApiUrl('/notifications/read-all'));
   },
-  registerFcmToken: async (token: string): Promise<void> => {
-    await authClient.post(notificationApiUrl('/fcm-tokens'), { token });
+  registerFcmToken: async (token: string, deviceInfo?: string): Promise<void> => {
+    await authClient.post(notificationApiUrl('/fcm-tokens'), null, {
+      params: {
+        ...(deviceInfo ? { deviceInfo } : {}),
+        token,
+      },
+    });
   },
   deleteFcmToken: async (token: string): Promise<void> => {
     await authClient.delete(notificationApiUrl('/fcm-tokens'), {
