@@ -51,16 +51,24 @@ export const notificationService = {
     await authClient.post(notificationApiUrl('/notifications/read-all'));
   },
   registerFcmToken: async (token: string, deviceInfo?: string): Promise<void> => {
+    const normalizedToken = token?.trim();
+
+    if (!normalizedToken) return;
+
     await authClient.post(notificationApiUrl('/fcm-tokens'), null, {
       params: {
         ...(deviceInfo ? { deviceInfo } : {}),
-        token,
+        token: normalizedToken,
       },
     });
   },
   deleteFcmToken: async (token: string): Promise<void> => {
+    const normalizedToken = token?.trim();
+
+    if (!normalizedToken) return;
+
     await authClient.delete(notificationApiUrl('/fcm-tokens'), {
-      data: { token },
+      data: { token: normalizedToken },
     });
   },
 };
