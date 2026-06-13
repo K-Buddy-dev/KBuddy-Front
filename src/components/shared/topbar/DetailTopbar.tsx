@@ -10,6 +10,7 @@ interface DetailTopbarProps {
   title: string;
   type: 'cancel' | 'back';
   isBookmarked?: boolean;
+  isSticky?: boolean;
   showDetailModal: boolean;
   onBack?: () => void;
   onCancle?: () => void;
@@ -17,9 +18,14 @@ interface DetailTopbarProps {
   setShowDetailModal: Dispatch<SetStateAction<boolean>>;
 }
 
-function DetailTopbarWrapper({ children }: { children: React.ReactNode }) {
+function DetailTopbarWrapper({ children, isSticky = false }: { children: React.ReactNode; isSticky?: boolean }) {
   return (
-    <div className="absolute top-0 left-0 flex items-center justify-between min-w-[280px] w-full sm:w-[600px] h-14 bg-white py-4 pr-4 border-b border-solid border-custom-gray">
+    <div
+      data-testid="detail-topbar"
+      className={`left-0 top-0 flex h-14 min-w-[280px] w-full items-center justify-between border-b border-solid border-custom-gray bg-white py-4 pr-4 sm:w-[600px] ${
+        isSticky ? 'sticky z-20' : 'absolute'
+      }`}
+    >
       {children}
     </div>
   );
@@ -37,6 +43,7 @@ export function DetailTopbar({
   title,
   type,
   isBookmarked,
+  isSticky = false,
   showDetailModal,
   onBack,
   onCancle,
@@ -88,7 +95,7 @@ export function DetailTopbar({
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} duration={toast.duration} onClose={hideToast} />}
-      <DetailTopbarWrapper>
+      <DetailTopbarWrapper isSticky={isSticky}>
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {type === 'cancel' && (
             <button type="button" onClick={onCancle}>

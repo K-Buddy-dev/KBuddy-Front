@@ -21,15 +21,28 @@ export const getNotificationTargetPath = ({ targetId, type }: NotificationRouteI
     return `/profile/bookings/${targetId}`;
   }
 
-  if (type === 'INQUIRY_NOTIFICATION' || type === 'INQUIRY_REPLY_NOTIFICATION') {
+  if (
+    type === 'INQUIRY_NOTIFICATION' ||
+    type === 'INQUIRY_REPLY_NOTIFICATION' ||
+    type === 'SERVICE_INQUIRY_NOTIFICATION' ||
+    type === 'SERVICE_INQUIRY_REPLY_NOTIFICATION'
+  ) {
     return `/service/${targetId}?tab=Inquiry`;
   }
 
-  if (type === 'BLOG_LIKE_NOTIFICATION' || type === 'BLOG_COMMENT_NOTIFICATION') {
+  if (
+    type === 'BLOG_LIKE_NOTIFICATION' ||
+    type === 'BLOG_COMMENT_NOTIFICATION' ||
+    type === 'BLOG_COMMENT_LIKE_NOTIFICATION'
+  ) {
     return `/community/detail/${targetId}?tab=${encodeURIComponent(USER_BLOG_TAB)}`;
   }
 
-  if (type === 'QNA_LIKE_NOTIFICATION' || type === 'QNA_COMMENT_NOTIFICATION') {
+  if (
+    type === 'QNA_LIKE_NOTIFICATION' ||
+    type === 'QNA_COMMENT_NOTIFICATION' ||
+    type === 'QNA_COMMENT_LIKE_NOTIFICATION'
+  ) {
     return `/community/detail/${targetId}?tab=${encodeURIComponent(QNA_TAB)}`;
   }
 
