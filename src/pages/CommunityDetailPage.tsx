@@ -124,6 +124,7 @@ export const CommunityDetailPage = () => {
       <DetailTopbar
         title={currentData.title}
         type="back"
+        isSticky
         onBack={handleBack}
         isBookmarked={isBookmarked}
         showDetailModal={showDetailModal}

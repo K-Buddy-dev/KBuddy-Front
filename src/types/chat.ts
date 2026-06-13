@@ -2,7 +2,14 @@ export type ChatRole = 'COUNSELOR' | 'CLIENT';
 
 export interface ChatRoom {
   roomId: string;
-  name: string;
+  name?: string;
+  roomName?: string;
+  peerUserId?: number;
+  peerNickname?: string;
+  peerProfileImageUrl?: string | null;
+  lastMessage?: string | null;
+  lastMessageAt?: string | null;
+  unreadCount?: number;
 }
 
 export interface ChatRoomSummary {
