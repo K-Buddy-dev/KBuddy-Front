@@ -9,20 +9,25 @@ import { FiltersModal } from './filter';
 import { CategoryFilterSwiper } from './swiper';
 import { formatDate } from '@/utils';
 import { NoContent } from './detail';
+import { BlogContentType } from '@/types/post';
+import { BUDDY_CATEGORIES, POST_CATEGORIES } from '@/constants';
 
 interface BlogProps {
+  type?: BlogContentType;
+  title?: string;
   onLike: (event: React.MouseEvent, id: number, isHearted: boolean) => void;
   onBookmark: (event: React.MouseEvent, id: number, isBookmarked: boolean) => void;
 }
 
-export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
+export const BlogList = ({ type = 'GENERAL', title = 'All blogs', onLike, onBookmark }: BlogProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterCount, setFilterCount] = useState<number>(0);
+  const categories = type === 'BUDDY' ? BUDDY_CATEGORIES : POST_CATEGORIES;
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error, isLoading } = useBlogs(type);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -107,7 +112,21 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="font-roboto font-medium text-lg ml-4 mt-6 mb-4">All blogs</h1>
+      {type === 'BUDDY' && (
+        <section className="mx-4 mt-6 rounded-lg bg-bg-brand-weak p-4">
+          <h1 className="font-roboto text-xl font-semibold text-text-default">Find your buddy in Korea</h1>
+          <p className="mt-2 text-sm leading-5 text-text-weak">
+            Introduce yourself and meet language exchange partners, local friends, and hobby buddies.
+          </p>
+          <button
+            className="mt-4 h-11 w-full rounded-lg bg-bg-brand-default text-sm font-semibold text-text-inverted-default"
+            onClick={() => navigate('/community/post/type-category?type=Buddy')}
+          >
+            Create Buddy Profile
+          </button>
+        </section>
+      )}
+      <h1 className="font-roboto font-medium text-lg ml-4 mt-6 mb-4">{title}</h1>
       <div className="mb-4 ml-4 flex items-center gap-2">
         <button
           onClick={() => setIsModalOpen(true)}
@@ -124,7 +143,7 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
             </span>
           )}
         </button>
-        <CategoryFilterSwiper onCategoryChange={handleCategoryChange} />
+        <CategoryFilterSwiper categories={categories} onCategoryChange={handleCategoryChange} />
       </div>
 
       <div
@@ -132,7 +151,7 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
           isModalOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
         }`}
       >
-        <FiltersModal onApply={handleApplyFilters} onClose={() => setIsModalOpen(false)} />
+        <FiltersModal categories={categories} onApply={handleApplyFilters} onClose={() => setIsModalOpen(false)} />
       </div>
 
       {isLoading ? (
@@ -163,6 +182,7 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
                       createdAt={formatDate(blog.createdAt)}
                       title={blog.title}
                       categoryId={blog.categoryId}
+                      categoryOptions={categories}
                       heartCount={blog.heartCount}
                       comments={blog.commentCount}
                       isBookmarked={blog.isBookmarked}
@@ -181,7 +201,7 @@ export const BlogList = ({ onLike, onBookmark }: BlogProps) => {
             </div>
           )}
         </>
-      ) : (
+      ) : type === 'BUDDY' ? null : (
         <NoContent type="blog" />
       )}
       <div className="h-[136px]"></div>

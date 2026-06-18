@@ -11,7 +11,11 @@ import { useCallback, useEffect, useRef } from 'react';
 import { EditorState } from 'lexical';
 import { useMobileEnv } from '@/hooks/useMobileEnvContext';
 
-export const TextEditor = () => {
+interface TextEditorProps {
+  initialDescription?: string;
+}
+
+export const TextEditor = ({ initialDescription }: TextEditorProps) => {
   const { description } = useCommunityFormStateContext();
   const { setDescription } = useCommunityFormActionContext();
   const { isMobile } = useMobileEnv();
@@ -32,17 +36,22 @@ export const TextEditor = () => {
 
   useEffect(() => {
     if (isInitialMount.current) {
-      if (description) {
+      const initialEditorState = description || initialDescription;
+
+      if (initialEditorState) {
         try {
-          const parsedState = JSON.parse(description);
+          const parsedState = JSON.parse(initialEditorState);
           editor.setEditorState(editor.parseEditorState(parsedState));
+          if (!description && initialDescription) {
+            setDescription(initialDescription);
+          }
         } catch (e) {
           console.error('Failed to parse editor state:', e);
         }
       }
       isInitialMount.current = false;
     }
-  }, [description, editor]);
+  }, [description, editor, initialDescription, setDescription]);
 
   return (
     <>

@@ -45,7 +45,7 @@ export const DraftsController = ({
       setIsDeleting(true);
 
       const deletePromises = selectedDraftIds.map(({ id, type }) => {
-        if (type === 'Blog') {
+        if (type === 'Blog' || type === 'Buddy') {
           return blogService.deleteBlog(id);
         } else if (type === 'Q&A') {
           return qnaService.deleteQna(id);

@@ -18,9 +18,10 @@ import { useToast } from '@/hooks/useToastContext';
 import { PostFormType } from '@/types';
 import { useBlockUser } from '@/hooks/useBlockUser';
 import { BlockUserModal } from '@/components/community/detail/BlockModal';
+import { BUDDY_CATEGORIES, POST_CATEGORIES } from '@/constants';
 
 const TAB = {
-  CURATED_BLOG: 'Curatedblog',
+  BUDDY: 'Buddy',
   USER_BLOG: 'Userblog',
   QNA: 'Q&A',
 } as const;
@@ -35,12 +36,13 @@ export const CommunityDetailPage = () => {
   const [showBlockUserModal, setShowBlockUserModal] = useState<boolean>(false);
   const { showToast } = useToast();
 
-  // URL 쿼리의 탭값. 기본을 큐레이티드로 두되, 상세는 블로그 계열과 Q&A로만 분기
-  const tabParam = (searchParams.get('tab') as TabKey) ?? TAB.CURATED_BLOG;
+  // URL 쿼리의 탭값. 기본은 Buddy이며, 상세는 블로그 계열과 Q&A로만 분기
+  const tabParam = (searchParams.get('tab') as TabKey) ?? TAB.BUDDY;
 
-  // 블로그 계열(큐레이티드/유저블로그) 묶기
-  const isBlogLikeTab = tabParam === TAB.USER_BLOG || tabParam === TAB.CURATED_BLOG;
+  // 블로그 계열(Buddy/User blog) 묶기
+  const isBlogLikeTab = tabParam === TAB.USER_BLOG || tabParam === TAB.BUDDY;
   const isQnaTab = tabParam === TAB.QNA;
+  const blogCategoryOptions = tabParam === TAB.BUDDY ? BUDDY_CATEGORIES : POST_CATEGORIES;
 
   // 상세 데이터 훅: 현재 탭에 해당하는 것만 활성화
   const { data: blog, isLoading: blogLoading } = useBlogDetail(isBlogLikeTab ? contentId : null);
@@ -117,7 +119,7 @@ export const CommunityDetailPage = () => {
   }
 
   // 상세 모달용 탭 타입
-  const targetTab: PostFormType = isQnaTab ? 'Q&A' : 'Blog';
+  const targetTab: PostFormType = isQnaTab ? 'Q&A' : tabParam === TAB.BUDDY ? 'Buddy' : 'Blog';
 
   return (
     <main className="relative min-h-screen pb-24 font-roboto">
@@ -139,6 +141,8 @@ export const CommunityDetailPage = () => {
           onBookmark={handleBookmark}
           recommendedData={recommendBlog?.data?.results?.filter((d: any) => d.id !== contentId)}
           handleBlockUserOpen={handleBlockUserOpen}
+          categoryOptions={blogCategoryOptions}
+          badgeLabel={tabParam === TAB.BUDDY ? 'Buddy Profile' : 'Article'}
         />
       )}
 

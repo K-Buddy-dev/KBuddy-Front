@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CATEGORIES } from '@/types/community';
 import { Topbar } from '@/components/shared';
+import { CategoryOption } from '@/utils/utils';
 
 interface FiltersModalProps {
+  categories?: CategoryOption[];
   onApply: (filters: { sort: string; categoryCode: number | undefined }) => void;
   onClose: () => void;
 }
 
-export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) => {
+export const FiltersModal: React.FC<FiltersModalProps> = ({ categories = CATEGORIES, onApply, onClose }) => {
   const [searchParams] = useSearchParams();
 
   const initialSort = searchParams.get('sort') || 'LATEST';
@@ -62,7 +64,7 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) 
         <div className="py-[14px] font-medium text-text-default">
           <h3 className="mb-[10px]">Category selection</h3>
           <div className="grid grid-cols-2 gap-2">
-            {CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <label
                 key={category.id}
                 className="flex items-center p-3 border border-border-default h-12 rounded-lg cursor-pointer"
