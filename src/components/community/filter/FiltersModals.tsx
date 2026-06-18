@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CATEGORIES } from '@/types/community';
 import { Topbar } from '@/components/shared';
+import { CategoryOption } from '@/utils/utils';
 
 interface FiltersModalProps {
+  categories?: CategoryOption[];
   onApply: (filters: { sort: string; categoryCode: number | undefined }) => void;
   onClose: () => void;
 }
 
-export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) => {
+export const FiltersModal: React.FC<FiltersModalProps> = ({ categories = CATEGORIES, onApply, onClose }) => {
   const [searchParams] = useSearchParams();
 
   const initialSort = searchParams.get('sort') || 'LATEST';
@@ -39,7 +41,7 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) 
     <div className="relative flex flex-col h-full min-w-[280px] w-full sm:w-[600px] bg-white p-4 font-roboto mx-auto">
       <Topbar title="Filters" type="cancel" onCancle={onClose} />
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-4">
         <div className="mt-16 mb-2 border-b-[1px] border-border-weak1">
           <h3 className="font-medium text-text-default">Sort by</h3>
           <div className="space-y-2 mt-2">
@@ -62,7 +64,7 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) 
         <div className="py-[14px] font-medium text-text-default">
           <h3 className="mb-[10px]">Category selection</h3>
           <div className="grid grid-cols-2 gap-2">
-            {CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <label
                 key={category.id}
                 className="flex items-center p-3 border border-border-default h-12 rounded-lg cursor-pointer"
@@ -80,7 +82,10 @@ export const FiltersModal: React.FC<FiltersModalProps> = ({ onApply, onClose }) 
         </div>
       </div>
 
-      <div className="absolute m-auto bottom-0 left-0 min-w-[280px] w-full sm:w-[600px] h-[80px] border-t border-border-weak1 bg-bg-default">
+      <div
+        data-testid="filter-actions"
+        className="sticky bottom-0 -mx-4 h-[80px] border-t border-border-weak1 bg-bg-default"
+      >
         <div className="h-10 mt-3 px-4 flex items-center justify-between">
           <button onClick={handleClearAll} className="font-semibold underline text-text-default">
             Clear all

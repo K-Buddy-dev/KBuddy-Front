@@ -4,6 +4,8 @@ import render from '@/utils/test/render';
 import { TypeCategoryPage } from './TypeCategoryPage';
 import { TitleImageDescriptionPage } from './TitleImageDescriptionPage';
 
+const mockDescription = vi.hoisted(() => vi.fn(() => <div>Body editor</div>));
+
 const mockState = {
   categoryId: [] as number[],
   description: '',
@@ -13,7 +15,7 @@ const mockState = {
   isEditMode: false,
   originalType: undefined,
   title: '',
-  type: '' as 'Blog' | 'Q&A' | '',
+  type: '' as 'Blog' | 'Buddy' | 'Q&A' | '',
 };
 
 const mockActions = {
@@ -49,7 +51,7 @@ vi.mock('@/hooks/usePost', () => ({
 }));
 
 vi.mock('@/components/community/post/Description', () => ({
-  Description: () => <div>Body editor</div>,
+  Description: mockDescription,
 }));
 
 beforeEach(() => {
@@ -76,8 +78,21 @@ it('guides users through post type and category selection with clear steps', asy
 
   expect(screen.getByText('Step 1 of 3')).toBeInTheDocument();
   expect(screen.getByText('Choose what you want to create')).toBeInTheDocument();
+  expect(
+    screen.getByText('Introduce yourself and find friends, language partners, or hobby buddies.')
+  ).toBeInTheDocument();
   expect(screen.getByText('Share experiences, tips, and guides for life in Korea.')).toBeInTheDocument();
   expect(screen.getByText('Ask a specific question and get help from the community.')).toBeInTheDocument();
+});
+
+it('preselects Buddy Profile when the type query requests Buddy', async () => {
+  await render(
+    <MemoryRouter initialEntries={['/community/post/type-category?type=Buddy']}>
+      <TypeCategoryPage />
+    </MemoryRouter>
+  );
+
+  expect(mockActions.setType).toHaveBeenCalledWith('Buddy');
 });
 
 it('tailors the content step for Q&A creation', async () => {
@@ -100,4 +115,24 @@ it('tailors the content step for Q&A creation', async () => {
   expect(screen.getByText('Add details so others can understand your situation.')).toBeInTheDocument();
   expect(screen.getByText('Add photos')).toBeInTheDocument();
   expect(screen.getByText('Optional. You can add up to 5 images.')).toBeInTheDocument();
+});
+
+it('passes a Buddy details template to the editor for Buddy Profile creation', async () => {
+  Object.assign(mockState, {
+    categoryId: [0],
+    type: 'Buddy',
+  });
+
+  await render(
+    <MemoryRouter>
+      <TitleImageDescriptionPage />
+    </MemoryRouter>
+  );
+
+  expect(mockDescription).toHaveBeenCalledWith(
+    expect.objectContaining({
+      initialDescription: expect.stringContaining('Nationality'),
+    }),
+    expect.anything()
+  );
 });

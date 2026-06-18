@@ -2,17 +2,21 @@ import { POST_TYPES } from '@/constants';
 import { SectionInfo } from './SectionInfo';
 import { SelectedRadioIcon, UnSelectedRadioIcon } from '@/components/shared';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
+import { PostFormType } from '@/types';
 
 export const TypeSelector = () => {
   const { type } = useCommunityFormStateContext();
   const { setType, setCategoryId } = useCommunityFormActionContext();
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setType(e.target.value as 'Blog' | 'Q&A');
+    setType(e.target.value as PostFormType);
     setCategoryId([]);
   };
 
   const getTypeDescription = (value: string) => {
+    if (value === 'Buddy') {
+      return 'Introduce yourself and find friends, language partners, or hobby buddies.';
+    }
     if (value === 'Q&A') {
       return 'Ask a specific question and get help from the community.';
     }
@@ -23,7 +27,7 @@ export const TypeSelector = () => {
     <div className="w-full px-4">
       <SectionInfo title="Post type" description="Pick the format that best matches your post." />
       <div className="w-full flex flex-col items-start mb-4">
-        <div className="w-full grid grid-cols-2 gap-4">
+        <div className="w-full grid grid-cols-1 gap-4 sm:grid-cols-2">
           {POST_TYPES.map((option) => (
             <label
               key={option.value}

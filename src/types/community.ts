@@ -1,4 +1,5 @@
 import { PostStatus } from './post';
+import { BlogContentType } from './post';
 
 export const CATEGORIES = [
   { id: 0, name: 'Restaurant' },
@@ -37,6 +38,7 @@ export interface Community {
   commentCount: number;
   createdAt: string;
   thumbnailImageUrl: string;
+  type?: BlogContentType;
 }
 
 export interface Comment {
@@ -76,6 +78,7 @@ export interface CommunityDetail {
   isBookmarked: boolean;
   isHearted: boolean;
   status: string;
+  type?: BlogContentType;
 }
 
 interface CommunityListData {
@@ -95,6 +98,7 @@ export interface BlogFilters {
   keyword?: string; // 검색어가 없으면 빈 문자열
   sort?: string;
   categoryCode?: number;
+  type?: BlogContentType;
 }
 
 // 커뮤니티 콘텐츠 목록 응답 타입
@@ -132,6 +136,7 @@ export interface BlogRequest {
   categoryId: number[] | number;
   images: File[];
   status: PostStatus;
+  type?: BlogContentType;
 }
 
 // 댓글 생성/수정

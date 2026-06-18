@@ -62,6 +62,7 @@ it('presents blog detail as an article while keeping comments wording', async ()
   );
 
   expect(screen.getByText('Article')).toBeInTheDocument();
+  expect(screen.getByText('Article').closest('section')).toHaveClass('pt-4');
   expect(screen.getByText('Daily Life')).toBeInTheDocument();
   expect(screen.getByText('0 comments')).toBeInTheDocument();
   expect(screen.getByText('Comments')).toBeInTheDocument();
