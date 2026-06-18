@@ -62,3 +62,15 @@ it('does not show the blog empty-state box on the Buddy list', async () => {
   expect(screen.queryByRole('link', { name: 'Write a blog' })).not.toBeInTheDocument();
   expect(screen.queryByText(/Be the first one to post a blog/i)).not.toBeInTheDocument();
 });
+
+it('renders the filter modal above the bottom navigation layer', async () => {
+  const { user } = await render(
+    <MemoryRouter initialEntries={['/community?tab=Buddy']}>
+      <BlogList type="BUDDY" title="Buddy profiles" onLike={vi.fn()} onBookmark={vi.fn()} />
+    </MemoryRouter>
+  );
+
+  await user.click(screen.getByRole('button', { name: 'Open filters' }));
+
+  expect(screen.getByTestId('filter-modal-overlay')).toHaveClass('z-40');
+});

@@ -129,6 +129,7 @@ export const BlogList = ({ type = 'GENERAL', title = 'All blogs', onLike, onBook
       <h1 className="font-roboto font-medium text-lg ml-4 mt-6 mb-4">{title}</h1>
       <div className="mb-4 ml-4 flex items-center gap-2">
         <button
+          aria-label="Open filters"
           onClick={() => setIsModalOpen(true)}
           className={`w-[30px] h-[30px] p-[4px] border-[1px] rounded-lg relative cursor-pointer ${
             filterCount > 0 ? 'bg-bg-highlight-selected border-border-brand-default' : 'bg-none border-border-default'
@@ -147,7 +148,8 @@ export const BlogList = ({ type = 'GENERAL', title = 'All blogs', onLike, onBook
       </div>
 
       <div
-        className={`fixed inset-0 z-20 transition-all duration-500 ease-in-out ${
+        data-testid="filter-modal-overlay"
+        className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${
           isModalOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
         }`}
       >
