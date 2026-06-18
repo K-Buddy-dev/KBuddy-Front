@@ -1,4 +1,5 @@
 // import { CategoryMap } from '@/types/blog';
+import { CategoryOption } from '@/utils/utils';
 import { Actions, Content } from './card';
 
 interface CommunityCardProps {
@@ -8,6 +9,7 @@ interface CommunityCardProps {
   createdAt: string;
   title: string;
   categoryId: number[] | number;
+  categoryOptions?: CategoryOption[];
   thumbnailImageUrl: string;
   heartCount: number;
   comments: number;
@@ -22,6 +24,7 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({
   createdAt,
   title,
   categoryId,
+  categoryOptions,
   writerProfileImageUrl,
   thumbnailImageUrl,
   heartCount,
@@ -39,6 +42,7 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({
         profileImageUrl={writerProfileImageUrl}
         title={title}
         categoryId={categoryId}
+        categoryOptions={categoryOptions}
         imageUrl={thumbnailImageUrl}
       />
       <Actions

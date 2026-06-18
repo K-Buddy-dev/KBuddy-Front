@@ -17,6 +17,7 @@ import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 import { RecommendSwiper } from './swiper';
 import { CommunityContent } from './CommunityContent';
 import { useCallback, useRef, useState } from 'react';
+import { CategoryOption } from '@/utils/utils';
 
 interface BlogDetailProps {
   contentId: number;
@@ -26,6 +27,8 @@ interface BlogDetailProps {
     | ((event: React.MouseEvent) => void);
   recommendedData?: Community[];
   handleBlockUserOpen: () => void;
+  categoryOptions?: CategoryOption[];
+  badgeLabel?: string;
 }
 
 export const BlogDetail = ({
@@ -34,6 +37,8 @@ export const BlogDetail = ({
   onBookmark,
   recommendedData,
   handleBlockUserOpen,
+  categoryOptions,
+  badgeLabel = 'Article',
 }: BlogDetailProps) => {
   const { data: blog, isLoading, error } = useBlogDetail(contentId);
   const { mutate: createComment } = useCreateBlogComment(contentId);
@@ -113,13 +118,13 @@ export const BlogDetail = ({
   if (error) return <div className="w-full h-screen flex items-center justify-center">Error: {error.message}</div>;
   if (!blog?.data) return <div className="w-full h-screen flex items-center justify-center">No data found</div>;
 
-  const categoryNames = getCategoryNames(blog.data.categoryId);
+  const categoryNames = getCategoryNames(blog.data.categoryId, categoryOptions);
 
   return (
     <main className="bg-bg-medium pb-24 font-roboto">
-      <section className="bg-bg-default px-4 pb-5 pt-[88px]">
+      <section className="bg-bg-default px-4 pb-5 pt-4">
         <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-semibold">
-          <span className="rounded-full bg-bg-brand-weak px-3 py-1 text-text-brand-default">Article</span>
+          <span className="rounded-full bg-bg-brand-weak px-3 py-1 text-text-brand-default">{badgeLabel}</span>
           <span className="rounded-full bg-bg-medium px-3 py-1 text-text-weak">{categoryNames}</span>
         </div>
         <h1 className="mb-4 text-[24px] font-semibold leading-8 text-text-default">{blog.data.title}</h1>

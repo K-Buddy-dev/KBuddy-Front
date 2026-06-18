@@ -1,12 +1,17 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSearchParams } from 'react-router-dom';
 import { CATEGORIES } from '@/types';
+import { CategoryOption } from '@/utils/utils';
 
 interface CategoryFilterSwiperProps {
+  categories?: CategoryOption[];
   onCategoryChange: (categoryCode: number | undefined) => void;
 }
 
-export const CategoryFilterSwiper: React.FC<CategoryFilterSwiperProps> = ({ onCategoryChange }) => {
+export const CategoryFilterSwiper: React.FC<CategoryFilterSwiperProps> = ({
+  categories = CATEGORIES,
+  onCategoryChange,
+}) => {
   const [searchParams] = useSearchParams();
   const initialCategoryCode = searchParams.get('categoryCode') ? Number(searchParams.get('categoryCode')) : undefined;
 
@@ -31,7 +36,7 @@ export const CategoryFilterSwiper: React.FC<CategoryFilterSwiperProps> = ({ onCa
         `}
       </style>
       <Swiper className="swiper-container" spaceBetween={8} slidesPerView="auto" loop={false} allowTouchMove={true}>
-        {CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <SwiperSlide key={category.id} style={{ width: 'auto' }}>
             <button
               onClick={() => handleCategorySelect(category.id)}
