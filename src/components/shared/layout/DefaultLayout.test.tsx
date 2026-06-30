@@ -48,3 +48,38 @@ it('keeps bottom navigation above page content', async () => {
 
   expect(bottomNavigationLayer).toHaveClass('z-30');
 });
+
+it('shows a persistent Instagram support floating button', async () => {
+  await render(
+    <MemoryRouter initialEntries={['/home']}>
+      <Routes>
+        <Route element={<DefaultLayout />}>
+          <Route path="/home" element={<div>Home content</div>} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  );
+
+  const instagramLink = screen.getByRole('link', { name: 'Contact us on Instagram' });
+
+  expect(instagramLink).toHaveAttribute('href', 'https://www.instagram.com/kbuddy_official/');
+  expect(instagramLink).toHaveAttribute('target', '_blank');
+  expect(instagramLink).toHaveAttribute('rel', 'noopener noreferrer');
+  expect(instagramLink).toHaveClass('fixed', 'right-4', 'bottom-24', 'z-40');
+});
+
+it('moves the Instagram support button above the community post action', async () => {
+  await render(
+    <MemoryRouter initialEntries={['/community']}>
+      <Routes>
+        <Route element={<DefaultLayout />}>
+          <Route path="/community" element={<div>Community content</div>} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  );
+
+  const instagramLink = screen.getByRole('link', { name: 'Contact us on Instagram' });
+
+  expect(instagramLink).toHaveClass('bottom-[156px]');
+});
