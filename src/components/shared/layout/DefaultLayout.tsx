@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { BottomNavigation } from '../BottomNavigation';
+import { InstagramFloatingButton } from './InstagramFloatingButton';
 
 export function DefaultLayout() {
   const location = useLocation();
@@ -21,6 +22,7 @@ export function DefaultLayout() {
     location.pathname.startsWith('/service/') ||
     location.pathname.startsWith('/message/') ||
     location.pathname.startsWith('/profile/counselor/create');
+  const shouldAvoidCommunityPostAction = location.pathname === '/community';
 
   return (
     <div className="w-full h-full min-h-screen flex items-start justify-center bg-slate-200">
@@ -28,6 +30,10 @@ export function DefaultLayout() {
         className={`relative min-w-[280px] w-full sm:w-[600px] h-full min-h-screen bg-bg-default ${isPaddingDisabled ? '' : ' px-4'}`}
       >
         <Outlet />
+        <InstagramFloatingButton
+          hasBottomNavigation={!isBottomNavigationDisabled}
+          avoidCommunityPostAction={shouldAvoidCommunityPostAction}
+        />
         {!isBottomNavigationDisabled && (
           <div data-testid="bottom-navigation-layer" className="fixed bottom-0 left-0 z-30 w-full">
             <BottomNavigation />
