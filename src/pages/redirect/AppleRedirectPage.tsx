@@ -21,7 +21,7 @@ export function AppleRedirectPage() {
 
     if (!oAuthUid) {
       showToast({ message: 'Apple 로그인 정보가 부족합니다.', type: 'error' });
-      navigate('/');
+      navigate('/login');
       return;
     }
 
@@ -31,7 +31,7 @@ export function AppleRedirectPage() {
     if (isNew) {
       if (!email || !firstName || !lastName) {
         showToast({ message: 'Apple에서 이름 또는 이메일 정보를 제공하지 않았습니다.', type: 'error' });
-        navigate('/');
+        navigate('/login');
         return;
       }
 
@@ -43,7 +43,7 @@ export function AppleRedirectPage() {
     } else {
       if (!accessToken) {
         showToast({ message: '로그인에 실패했습니다. 다시 시도해주세요.', type: 'error' });
-        navigate('/');
+        navigate('/login');
         return;
       }
 

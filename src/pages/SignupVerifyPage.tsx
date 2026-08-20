@@ -32,7 +32,7 @@ export function SignupVerifyPage() {
   }, [location, showToast]);
 
   const handleClickBackButton = () => {
-    navigate('/');
+    navigate('/login');
   };
 
   const reSendCode = () => {

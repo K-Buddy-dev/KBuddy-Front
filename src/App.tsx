@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import {
   LoginPage,
@@ -100,7 +100,9 @@ function AppRoutes() {
         <Route element={<DefaultLayout />}>
           <Route element={<AuthGuard />}>
             <Route element={<EmailVerifyContextProvider />}>
-              <Route path="/" element={<LoginPage />} />
+              {/* 첫 진입은 로그인 강제 없이 홈으로 보낸다. 로그인은 /login 에서 처리한다. */}
+              <Route path="/" element={<Navigate to="/home" replace />} />
+              <Route path="/login" element={<LoginPage />} />
               <Route element={<EmailVerifyGuard guardType="verifyEmail" />}>
                 <Route path="/signup/verify" element={<SignupVerifyPage />} />
               </Route>
@@ -143,6 +145,12 @@ function AppRoutes() {
             <Route path="/block-user" element={<BlockUserPage />} />
           </Route>
         </Route>
+
+        {/*
+          정의되지 않은 경로는 홈으로 보낸다.
+          가드가 공개 기본으로 바뀌면서, 매칭되는 라우트가 없으면 빈 화면이 남기 때문이다.
+        */}
+        <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </>
   );

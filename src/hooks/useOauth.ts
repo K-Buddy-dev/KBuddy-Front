@@ -57,7 +57,7 @@ const useOauthLogin = () => {
           type: 'error',
           duration: 5000,
         });
-        navigate('/');
+        navigate('/login');
 
         return;
       }

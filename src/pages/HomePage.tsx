@@ -10,6 +10,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type TouchEvent as ReactTouchEvent,
 } from 'react';
+import { isLoggedIn } from '@/utils/auth';
 import { authService } from '@/services';
 import { useSendFcmTokenToServer } from '@/hooks/useFcmToken';
 import { useNavigate } from 'react-router-dom';
@@ -168,6 +169,11 @@ export const HomePage = () => {
   const { mutate: sendFcmTokenToServer } = useSendFcmTokenToServer();
 
   useEffect(() => {
+    //게스트는 프로필을 조회할 수 없다. 호출하면 매 진입마다 401만 발생한다.
+    if (!isLoggedIn()) {
+      return;
+    }
+
     const getUserProfile = async () => {
       try {
         const response = await authService.getUserProfile();
@@ -182,6 +188,11 @@ export const HomePage = () => {
   }, []);
 
   useEffect(() => {
+    //FCM 토큰 서버 등록은 로그인 사용자에게만 의미가 있다.
+    if (!isLoggedIn()) {
+      return;
+    }
+
     if (typeof window !== 'undefined' && window.ReactNativeWebView && !tokenRequested.current) {
       window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'requestFcmToken' }));
       tokenRequested.current = true;

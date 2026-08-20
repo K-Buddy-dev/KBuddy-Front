@@ -2,6 +2,7 @@ import { AlarmIcon, Logo, SearchIcon, SettingsIcon } from '@/components/shared/i
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { notificationService } from '@/services/notificationService';
+import { isLoggedIn } from '@/utils/auth';
 
 interface NavbarWithSearchProps {
   setSearchKeyword?: Dispatch<SetStateAction<string>>;
@@ -115,6 +116,12 @@ function NotificationButton({ onClick }: { onClick?: () => void }) {
   const handleClick = onClick ?? (() => navigate('/notifications'));
 
   useEffect(() => {
+    //게스트는 알림을 조회할 수 없다. 홈/커뮤니티/서비스가 공개되면서
+    //호출을 남겨두면 모든 게스트가 페이지마다 401과 토큰 재발급 시도를 발생시킨다.
+    if (!isLoggedIn()) {
+      return;
+    }
+
     let isMounted = true;
 
     notificationService

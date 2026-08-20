@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import render from '@/utils/test/render';
 import { Navbar } from './Navbar';
 import { notificationService } from '@/services/notificationService';
+import { authClient } from '@/api/axiosConfig';
 
 vi.mock('@/services/notificationService', () => ({
   notificationService: {
@@ -12,8 +13,17 @@ vi.mock('@/services/notificationService', () => ({
 }));
 
 beforeEach(() => {
+  vi.clearAllMocks();
   vi.mocked(notificationService.getUnreadCount).mockResolvedValue(0);
 });
+
+afterEach(() => {
+  delete authClient.defaults.headers.common.Authorization;
+});
+
+const signIn = () => {
+  authClient.defaults.headers.common['Authorization'] = 'Bearer token';
+};
 
 it('navigates home when the logo is clicked in the search navbar', async () => {
   const { user } = await render(
@@ -94,6 +104,7 @@ it('navigates to notifications when the notification action is clicked', async (
 });
 
 it('shows the unread notification count', async () => {
+  signIn();
   vi.mocked(notificationService.getUnreadCount).mockResolvedValue(3);
 
   await render(
@@ -113,4 +124,30 @@ it('hides the settings action when no settings handler is provided', async () =>
   );
 
   expect(screen.queryByRole('button', { name: 'Open settings' })).not.toBeInTheDocument();
+});
+
+/**
+ * 홈/커뮤니티/서비스가 공개되면서 Navbar도 게스트에게 렌더된다.
+ * 알림 조회를 남겨두면 게스트가 페이지마다 401과 토큰 재발급 시도를 발생시킨다.
+ */
+it('does not fetch the unread count for guests', async () => {
+  await render(
+    <MemoryRouter>
+      <Navbar withSearch={false} />
+    </MemoryRouter>
+  );
+
+  expect(notificationService.getUnreadCount).not.toHaveBeenCalled();
+});
+
+it('fetches the unread count for signed-in users', async () => {
+  signIn();
+
+  await render(
+    <MemoryRouter>
+      <Navbar withSearch={false} />
+    </MemoryRouter>
+  );
+
+  await waitFor(() => expect(notificationService.getUnreadCount).toHaveBeenCalled());
 });

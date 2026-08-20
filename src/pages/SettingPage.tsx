@@ -12,7 +12,7 @@ export function SettingPage() {
   const onClickLogout = async () => {
     try {
       await authService.logout();
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       console.error(error);
     }
@@ -33,7 +33,7 @@ export function SettingPage() {
   const handleConfirmDelete = async () => {
     try {
       await authService.deleteAccount();
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       console.error(error);
     }
