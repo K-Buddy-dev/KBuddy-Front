@@ -46,6 +46,7 @@ import { AdminAuthGuard } from './components/routes/AdminAuthGuard.tsx';
 import { CommunityFormContextProvider } from './components/contexts/CommunityFormContextProvider.tsx';
 import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 import { ToastProvider } from './hooks/useToastContext.tsx';
+import { LoginPromptProvider } from './hooks/useLoginPrompt.tsx';
 import { MobileEnvProvider } from './components/contexts/MobileEnvContextProvider.tsx';
 import { APP_PUSH_TYPE, getAppRoute } from './constants/enum.ts';
 import { BlockUserPage } from './pages/BlockUserPage.tsx';
@@ -84,74 +85,76 @@ function AppRoutes() {
   return (
     <>
       <AnalyticsRouteTracker measurementId={gaMeasurementId} />
-      <Routes>
-        {/* Admin Login Route - Public */}
-        <Route path="/admin/login" element={<AdminLoginPage />} />
+      <LoginPromptProvider>
+        <Routes>
+          {/* Admin Login Route - Public */}
+          <Route path="/admin/login" element={<AdminLoginPage />} />
 
-        {/* Admin Routes - Protected with AdminAuthGuard */}
-        <Route element={<AdminAuthGuard />}>
-          <Route path="/admin" element={<AdminDashboardPage />} />
-          <Route path="/admin/users" element={<UserManagementPage />} />
-          <Route path="/admin/payments" element={<PaymentsManagementPage />} />
-          <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
-          <Route path="/admin/reports" element={<ReportsManagementPage />} />
-        </Route>
-
-        <Route element={<DefaultLayout />}>
-          <Route element={<AuthGuard />}>
-            <Route element={<EmailVerifyContextProvider />}>
-              {/* 첫 진입은 로그인 강제 없이 홈으로 보낸다. 로그인은 /login 에서 처리한다. */}
-              <Route path="/" element={<Navigate to="/home" replace />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route element={<EmailVerifyGuard guardType="verifyEmail" />}>
-                <Route path="/signup/verify" element={<SignupVerifyPage />} />
-              </Route>
-              <Route element={<EmailVerifyGuard guardType="requireVerified" />}>
-                <Route path="/signup/form" element={<SignupFormPage />} />
-              </Route>
-            </Route>
-
-            <Route path="/oauth/callback/kakao" element={<KakaoRedirectPage />} />
-            <Route path="/oauth2/code/google" element={<GoogleRedirectPage />} />
-            <Route path="/oauth/apple-redirect" element={<AppleRedirectPage />} />
-
-            <Route path="/oauth/signup/form" element={<OauthSignupFormPage />} />
-
-            <Route path="/community" element={<CommunityPage />} />
-            <Route element={<CommunityFormContextProvider />}>
-              <Route path="/community/post" element={<CommunityPostPage />} />
-              <Route path="/community/post/type-category" element={<TypeCategoryPage />} />
-              <Route path="/community/post/title-image-description" element={<TitleImageDescriptionPage />} />
-              <Route path="/community/post/complete" element={<CommunityCompletePage />} />
-              <Route path="/community/edit" element={<CommunityEditPage />} />
-              <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
-            </Route>
-
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/discovery/:id" element={<DiscoveryDetailPage />} />
-            <Route path="/service" element={<ServicePage />} />
-            <Route path="/service/:id" element={<ServiceDetailPage />} />
-            <Route path="/service/:id/request" element={<RequestLiveChatPage />} />
-            <Route path="/service/:id/request/confirm" element={<ConfirmLiveChatOrderPage />} />
-            <Route path="/service/:id/request/placed" element={<LiveChatOrderPlacedPage />} />
-            <Route path="/message" element={<MessagePage />} />
-            <Route path="/message/:roomId" element={<ChatRoomPage />} />
-            <Route path="/notifications" element={<NotificationPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/profile/bookings/:bookingId" element={<BookingDetailPage />} />
-            <Route path="/profile/edit" element={<EditProfilePage />} />
-            <Route path="/profile/counselor/create" element={<CounselorProfileCreatePage />} />
-            <Route path="/settings" element={<SettingPage />} />
-            <Route path="/block-user" element={<BlockUserPage />} />
+          {/* Admin Routes - Protected with AdminAuthGuard */}
+          <Route element={<AdminAuthGuard />}>
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/users" element={<UserManagementPage />} />
+            <Route path="/admin/payments" element={<PaymentsManagementPage />} />
+            <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+            <Route path="/admin/reports" element={<ReportsManagementPage />} />
           </Route>
-        </Route>
 
-        {/*
+          <Route element={<DefaultLayout />}>
+            <Route element={<AuthGuard />}>
+              <Route element={<EmailVerifyContextProvider />}>
+                {/* 첫 진입은 로그인 강제 없이 홈으로 보낸다. 로그인은 /login 에서 처리한다. */}
+                <Route path="/" element={<Navigate to="/home" replace />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route element={<EmailVerifyGuard guardType="verifyEmail" />}>
+                  <Route path="/signup/verify" element={<SignupVerifyPage />} />
+                </Route>
+                <Route element={<EmailVerifyGuard guardType="requireVerified" />}>
+                  <Route path="/signup/form" element={<SignupFormPage />} />
+                </Route>
+              </Route>
+
+              <Route path="/oauth/callback/kakao" element={<KakaoRedirectPage />} />
+              <Route path="/oauth2/code/google" element={<GoogleRedirectPage />} />
+              <Route path="/oauth/apple-redirect" element={<AppleRedirectPage />} />
+
+              <Route path="/oauth/signup/form" element={<OauthSignupFormPage />} />
+
+              <Route path="/community" element={<CommunityPage />} />
+              <Route element={<CommunityFormContextProvider />}>
+                <Route path="/community/post" element={<CommunityPostPage />} />
+                <Route path="/community/post/type-category" element={<TypeCategoryPage />} />
+                <Route path="/community/post/title-image-description" element={<TitleImageDescriptionPage />} />
+                <Route path="/community/post/complete" element={<CommunityCompletePage />} />
+                <Route path="/community/edit" element={<CommunityEditPage />} />
+                <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
+              </Route>
+
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/discovery/:id" element={<DiscoveryDetailPage />} />
+              <Route path="/service" element={<ServicePage />} />
+              <Route path="/service/:id" element={<ServiceDetailPage />} />
+              <Route path="/service/:id/request" element={<RequestLiveChatPage />} />
+              <Route path="/service/:id/request/confirm" element={<ConfirmLiveChatOrderPage />} />
+              <Route path="/service/:id/request/placed" element={<LiveChatOrderPlacedPage />} />
+              <Route path="/message" element={<MessagePage />} />
+              <Route path="/message/:roomId" element={<ChatRoomPage />} />
+              <Route path="/notifications" element={<NotificationPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile/bookings/:bookingId" element={<BookingDetailPage />} />
+              <Route path="/profile/edit" element={<EditProfilePage />} />
+              <Route path="/profile/counselor/create" element={<CounselorProfileCreatePage />} />
+              <Route path="/settings" element={<SettingPage />} />
+              <Route path="/block-user" element={<BlockUserPage />} />
+            </Route>
+          </Route>
+
+          {/*
           정의되지 않은 경로는 홈으로 보낸다.
           가드가 공개 기본으로 바뀌면서, 매칭되는 라우트가 없으면 빈 화면이 남기 때문이다.
         */}
-        <Route path="*" element={<Navigate to="/home" replace />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/home" replace />} />
+        </Routes>
+      </LoginPromptProvider>
     </>
   );
 }

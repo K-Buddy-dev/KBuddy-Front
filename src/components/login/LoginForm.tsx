@@ -3,6 +3,7 @@ import { Controller } from 'react-hook-form';
 import { LoginFormData } from '@/types';
 import { useLoginForm, useLogin } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
+import { consumeReturnTo } from '@/utils/returnTo';
 import { Spinner } from '../shared/spinner';
 import { analyticsService } from '@/services/analyticsService';
 import { analyticsEvents } from '@/services/analyticsEvents';
@@ -26,7 +27,7 @@ export function LoginForm() {
       analyticsService.trackEvent(analyticsEvents.loginCompleted, {
         method: 'password',
       });
-      navigate('/home');
+      navigate(consumeReturnTo());
     } catch (error) {
       console.error(error);
     }

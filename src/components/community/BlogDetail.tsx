@@ -17,6 +17,7 @@ import { Comment as CommentIcon } from '@/components/shared/icon/Icon';
 import { RecommendSwiper } from './swiper';
 import { CommunityContent } from './CommunityContent';
 import { useCallback, useRef, useState } from 'react';
+import { useLoginPrompt } from '@/hooks/useLoginPrompt';
 
 interface BlogDetailProps {
   contentId: number;
@@ -36,6 +37,7 @@ export const BlogDetail = ({
   handleBlockUserOpen,
 }: BlogDetailProps) => {
   const { data: blog, isLoading, error } = useBlogDetail(contentId);
+  const { requireLogin } = useLoginPrompt();
   const { mutate: createComment } = useCreateBlogComment(contentId);
   const { mutate: updateComment } = useUpdateBlogComment(contentId);
 
@@ -50,6 +52,8 @@ export const BlogDetail = ({
 
   const handleCommentSubmit = (description: string) => {
     if (!description.trim()) return;
+    //게스트도 글과 댓글을 볼 수 있으므로, 작성 시점에 로그인을 안내한다.
+    if (!requireLogin('Log in to leave a comment.')) return;
 
     const commentRequest = { content: description, parentId: replyId };
 

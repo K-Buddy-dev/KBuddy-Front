@@ -1,17 +1,21 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { HomeIcon, CommunityIcon, ProfileIcon, ServiceIcon, MessageIcon } from './icon';
 import { cn } from '@/utils/utils';
+import { useLoginPrompt } from '@/hooks/useLoginPrompt';
 
 interface NavItem {
   path: string;
   label: string;
   icon: React.ReactNode;
   activeIcon: React.ReactNode;
+  /** 로그인이 필요한 탭. 게스트가 누르면 이동 대신 로그인 안내를 띄운다. */
+  requiresLogin?: boolean;
 }
 
 export const BottomNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { requireLogin } = useLoginPrompt();
   const currentPath = location.pathname;
 
   const navItems: NavItem[] = [
@@ -35,20 +39,25 @@ export const BottomNavigation = () => {
     },
     {
       path: '/message',
+      requiresLogin: true,
       label: 'Message',
       icon: <MessageIcon isActive={false} />,
       activeIcon: <MessageIcon isActive={true} />,
     },
     {
       path: '/profile',
+      requiresLogin: true,
       label: 'My page',
       icon: <ProfileIcon isActive={false} />,
       activeIcon: <ProfileIcon isActive={true} />,
     },
   ];
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
+  const handleNavigation = (item: NavItem) => {
+    if (item.requiresLogin && !requireLogin(`Log in to use ${item.label}.`)) {
+      return;
+    }
+    navigate(item.path);
   };
 
   return (
@@ -60,7 +69,7 @@ export const BottomNavigation = () => {
           return (
             <div
               key={item.path}
-              onClick={() => handleNavigation(item.path)}
+              onClick={() => handleNavigation(item)}
               className="flex flex-col items-center justify-center px-4 py-1 cursor-pointer gap-1"
             >
               <div className="w-full flex items-center justify-center">{isActive ? item.activeIcon : item.icon}</div>

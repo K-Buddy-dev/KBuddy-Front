@@ -1,12 +1,23 @@
 import { Accordion, AccordionItem, Toast, Topbar } from '@/components/shared';
 import { EmailVerifyForm, LoginForm, SocialLoginForm } from '@/components';
 import { useToast } from '@/hooks';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { saveReturnTo } from '@/utils/returnTo';
+import { useLocation, useNavigate } from 'react-router-dom';
 // import { useEffect } from 'react';
 
 export function LoginPage() {
   const { toast, hideToast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  //보호 경로에서 넘어온 경우 로그인 후 그 자리로 돌려보낸다.
+  useEffect(() => {
+    const from = (location.state as { from?: { pathname: string; search?: string } } | null)?.from;
+    if (from?.pathname) {
+      saveReturnTo(`${from.pathname}${from.search ?? ''}`);
+    }
+  }, [location.state]);
 
   /**
    * 로그인은 이제 거쳐 가는 화면이므로 닫을 수 있어야 한다.

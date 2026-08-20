@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useLoginPrompt } from '@/hooks/useLoginPrompt';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { DetailTopbar } from '@/components/shared/topbar/DetailTopbar';
 import { CategoryBadge } from '@/components/service/CategoryBadge';
@@ -28,6 +29,7 @@ type ServiceDetailLocationState = {
 
 export function ServiceDetailPage() {
   const navigate = useNavigate();
+  const { requireLogin } = useLoginPrompt();
   const location = useLocation();
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState<'Info' | 'Review' | 'Photo' | 'Inquiry'>('Info');
@@ -213,6 +215,8 @@ export function ServiceDetailPage() {
       return;
     }
 
+    if (!requireLogin('Log in to request this service.')) return;
+
     analyticsService.trackEvent(analyticsEvents.serviceRequestStarted, {
       counselor_id: service.id,
     });
@@ -325,6 +329,8 @@ export function ServiceDetailPage() {
       setInquiryFormErrorMessage('Please enter a title and content.');
       return;
     }
+
+    if (!requireLogin('Log in to ask a question.')) return;
 
     setIsSubmittingInquiry(true);
     setInquiryFormErrorMessage('');
