@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react';
+import { LoginPromptProvider } from '@/hooks/useLoginPrompt';
 import { waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import render from '@/utils/test/render';
@@ -28,10 +29,12 @@ const signIn = () => {
 it('navigates home when the logo is clicked in the search navbar', async () => {
   const { user } = await render(
     <MemoryRouter initialEntries={['/service']}>
-      <Routes>
-        <Route path="/service" element={<Navbar withSearch />} />
-        <Route path="/home" element={<div>Home route</div>} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/service" element={<Navbar withSearch />} />
+          <Route path="/home" element={<div>Home route</div>} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -43,10 +46,12 @@ it('navigates home when the logo is clicked in the search navbar', async () => {
 it('navigates home when the logo is clicked in the basic navbar', async () => {
   const { user } = await render(
     <MemoryRouter initialEntries={['/profile']}>
-      <Routes>
-        <Route path="/profile" element={<Navbar withSearch={false} />} />
-        <Route path="/home" element={<div>Home route</div>} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/profile" element={<Navbar withSearch={false} />} />
+          <Route path="/home" element={<div>Home route</div>} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -59,7 +64,9 @@ it('shows the settings action only when a settings handler is provided', async (
   const onClickSettings = vi.fn();
   const { user } = await render(
     <MemoryRouter>
-      <Navbar withSearch={false} onClickSettings={onClickSettings} />
+      <LoginPromptProvider>
+        <Navbar withSearch={false} onClickSettings={onClickSettings} />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -71,7 +78,9 @@ it('shows the settings action only when a settings handler is provided', async (
 it('shows the notification action in the search navbar', async () => {
   await render(
     <MemoryRouter>
-      <Navbar withSearch />
+      <LoginPromptProvider>
+        <Navbar withSearch />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -81,7 +90,9 @@ it('shows the notification action in the search navbar', async () => {
 it('shows the notification action in the basic navbar', async () => {
   await render(
     <MemoryRouter>
-      <Navbar withSearch={false} />
+      <LoginPromptProvider>
+        <Navbar withSearch={false} />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -89,12 +100,15 @@ it('shows the notification action in the basic navbar', async () => {
 });
 
 it('navigates to notifications when the notification action is clicked', async () => {
+  signIn();
   const { user } = await render(
     <MemoryRouter initialEntries={['/service']}>
-      <Routes>
-        <Route path="/service" element={<Navbar withSearch />} />
-        <Route path="/notifications" element={<div>Notifications route</div>} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/service" element={<Navbar withSearch />} />
+          <Route path="/notifications" element={<div>Notifications route</div>} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -109,7 +123,9 @@ it('shows the unread notification count', async () => {
 
   await render(
     <MemoryRouter>
-      <Navbar withSearch={false} />
+      <LoginPromptProvider>
+        <Navbar withSearch={false} />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -119,7 +135,9 @@ it('shows the unread notification count', async () => {
 it('hides the settings action when no settings handler is provided', async () => {
   await render(
     <MemoryRouter>
-      <Navbar withSearch={false} />
+      <LoginPromptProvider>
+        <Navbar withSearch={false} />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -133,7 +151,9 @@ it('hides the settings action when no settings handler is provided', async () =>
 it('does not fetch the unread count for guests', async () => {
   await render(
     <MemoryRouter>
-      <Navbar withSearch={false} />
+      <LoginPromptProvider>
+        <Navbar withSearch={false} />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -145,9 +165,30 @@ it('fetches the unread count for signed-in users', async () => {
 
   await render(
     <MemoryRouter>
-      <Navbar withSearch={false} />
+      <LoginPromptProvider>
+        <Navbar withSearch={false} />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
   await waitFor(() => expect(notificationService.getUnreadCount).toHaveBeenCalled());
+});
+
+/** 알림함은 로그인이 필요하므로, 게스트에게는 화면 전환 대신 안내를 띄운다. */
+it('shows a login prompt instead of navigating for guests', async () => {
+  const { user } = await render(
+    <MemoryRouter initialEntries={['/home']}>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/home" element={<Navbar withSearch={false} />} />
+          <Route path="/notifications" element={<div>Notifications page</div>} />
+        </Routes>
+      </LoginPromptProvider>
+    </MemoryRouter>
+  );
+
+  await user.click(screen.getByRole('button', { name: 'Open notifications' }));
+
+  expect(screen.getByText('Log in to see your notifications.')).toBeInTheDocument();
+  expect(screen.queryByText('Notifications page')).not.toBeInTheDocument();
 });

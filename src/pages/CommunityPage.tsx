@@ -1,3 +1,4 @@
+import { useLoginPrompt } from '@/hooks/useLoginPrompt';
 import { Navbar } from '@/components/shared/navbar/Navbar';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CommunityTab } from '@/components/community/tab';
@@ -10,6 +11,15 @@ import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/useToastContext';
 
 export const CommunityPage = () => {
+  const { requireLogin } = useLoginPrompt();
+
+  //링크 시맨틱은 유지하고, 게스트일 때만 이동을 막고 안내를 띄운다.
+  const handleWritePost = (event: React.MouseEvent) => {
+    if (!requireLogin('Log in to write a post.')) {
+      event.preventDefault();
+    }
+  };
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchKeyword, setSearchKeyword] = useState<string>(() => {
     return searchParams.get('keyword') || '';
@@ -69,7 +79,11 @@ export const CommunityPage = () => {
         )}
         <CommunityTab />
       </div>
-      <Link to="/community/post" className="fixed right-4 bottom-[92px] cursor-pointer sm:right-[calc(50%-260px-16px)]">
+      <Link
+        to="/community/post"
+        onClick={handleWritePost}
+        className="fixed right-4 bottom-[92px] cursor-pointer sm:right-[calc(50%-260px-16px)]"
+      >
         <FloatPostAction />
       </Link>
       {currentTab === 'Userblog' && <BlogList onLike={listHandleLike} onBookmark={listHandleBookmark} />}

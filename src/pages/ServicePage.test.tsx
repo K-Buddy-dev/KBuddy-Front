@@ -1,4 +1,5 @@
 import { act, screen } from '@testing-library/react';
+import { LoginPromptProvider } from '@/hooks/useLoginPrompt';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import render from '@/utils/test/render';
 import { counselorService } from '@/services/counselorService';
@@ -42,9 +43,11 @@ beforeEach(() => {
 it('renders counselors from the counselor list API', async () => {
   await render(
     <MemoryRouter initialEntries={['/service']}>
-      <Routes>
-        <Route path="/service" element={<ServicePage />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/service" element={<ServicePage />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
   await act(async () => {});
@@ -60,9 +63,11 @@ it('renders counselors from the counselor list API', async () => {
 it('loads counselors with the category query parameter', async () => {
   await render(
     <MemoryRouter initialEntries={['/service?category=VISA_IMMIGRATION']}>
-      <Routes>
-        <Route path="/service" element={<ServicePage />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/service" element={<ServicePage />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
   await act(async () => {});
@@ -75,9 +80,11 @@ it('loads counselors with the category query parameter', async () => {
 it('clears the category filter when All is clicked', async () => {
   const { user } = await render(
     <MemoryRouter initialEntries={['/service?category=HEALTHCARE']}>
-      <Routes>
-        <Route path="/service" element={<ServicePage />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/service" element={<ServicePage />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
   await act(async () => {});
@@ -91,9 +98,11 @@ it('clears the category filter when All is clicked', async () => {
 it('updates the selected category when a service category filter is clicked', async () => {
   const { user } = await render(
     <MemoryRouter initialEntries={['/service']}>
-      <Routes>
-        <Route path="/service" element={<ServicePage />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/service" element={<ServicePage />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
   await act(async () => {});
@@ -107,9 +116,11 @@ it('updates the selected category when a service category filter is clicked', as
 it('hides the filters and KRW controls', async () => {
   await render(
     <MemoryRouter initialEntries={['/service']}>
-      <Routes>
-        <Route path="/service" element={<ServicePage />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/service" element={<ServicePage />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
   await act(async () => {});
@@ -125,10 +136,12 @@ it('passes my profile ownership state when counselorId matches current user uuid
 
   const { user } = await render(
     <MemoryRouter initialEntries={['/service']}>
-      <Routes>
-        <Route path="/service" element={<ServicePage />} />
-        <Route path="/service/:id" element={<ServiceDetailStateProbe />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/service" element={<ServicePage />} />
+          <Route path="/service/:id" element={<ServiceDetailStateProbe />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
   await act(async () => {});

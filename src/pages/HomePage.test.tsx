@@ -1,4 +1,5 @@
 import { fireEvent, screen } from '@testing-library/react';
+import { LoginPromptProvider } from '@/hooks/useLoginPrompt';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import render from '@/utils/test/render';
 import { HomePage } from './HomePage';
@@ -50,10 +51,12 @@ beforeEach(() => {
 it('promotes becoming a counselor from the home page', async () => {
   const { user } = await render(
     <MemoryRouter initialEntries={['/home']}>
-      <Routes>
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/profile" element={<div>My sale route</div>} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/profile" element={<div>My sale route</div>} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -70,7 +73,9 @@ it('promotes becoming a counselor from the home page', async () => {
 it('orders the home sections around featured posts and discovery', async () => {
   await render(
     <MemoryRouter initialEntries={['/home']}>
-      <HomePage />
+      <LoginPromptProvider>
+        <HomePage />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -91,7 +96,9 @@ it('orders the home sections around featured posts and discovery', async () => {
 it('replaces recommended counselors with a sponsored ad section at the bottom', async () => {
   await render(
     <MemoryRouter initialEntries={['/home']}>
-      <HomePage />
+      <LoginPromptProvider>
+        <HomePage />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -107,7 +114,9 @@ it('replaces recommended counselors with a sponsored ad section at the bottom', 
 it('uses one vertical spacing rule between home sections', async () => {
   await render(
     <MemoryRouter initialEntries={['/home']}>
-      <HomePage />
+      <LoginPromptProvider>
+        <HomePage />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -117,7 +126,9 @@ it('uses one vertical spacing rule between home sections', async () => {
 it('shows discovery carousel cards and filters them by type', async () => {
   const { user } = await render(
     <MemoryRouter initialEntries={['/home']}>
-      <HomePage />
+      <LoginPromptProvider>
+        <HomePage />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -149,10 +160,12 @@ it('shows discovery carousel cards and filters them by type', async () => {
 it('opens a discovery detail page when a discovery card is clicked', async () => {
   const { user } = await render(
     <MemoryRouter initialEntries={['/home']}>
-      <Routes>
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/discovery/:id" element={<div>Discovery detail route</div>} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/discovery/:id" element={<div>Discovery detail route</div>} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -164,7 +177,9 @@ it('opens a discovery detail page when a discovery card is clicked', async () =>
 it('keeps service category chips on a horizontal swipe rail', async () => {
   await render(
     <MemoryRouter initialEntries={['/home']}>
-      <HomePage />
+      <LoginPromptProvider>
+        <HomePage />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -183,7 +198,9 @@ it('keeps service category chips on a horizontal swipe rail', async () => {
 it('scrolls home horizontal rails by pointer dragging', async () => {
   await render(
     <MemoryRouter initialEntries={['/home']}>
-      <HomePage />
+      <LoginPromptProvider>
+        <HomePage />
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -205,10 +222,12 @@ it('scrolls home horizontal rails by pointer dragging', async () => {
 it('opens service search from a problem chip', async () => {
   const { user } = await render(
     <MemoryRouter initialEntries={['/home']}>
-      <Routes>
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/service" element={<div>Service route</div>} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/service" element={<div>Service route</div>} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
