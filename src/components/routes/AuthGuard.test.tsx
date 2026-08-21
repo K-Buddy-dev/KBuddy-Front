@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import render from '@/utils/test/render';
 import { authClient } from '@/api/axiosConfig';
@@ -102,4 +102,45 @@ describe('로그인 사용자', () => {
     expect(await screen.findByText('Home')).toBeInTheDocument();
     expect(screen.queryByText('Login')).not.toBeInTheDocument();
   });
+});
+
+/**
+ * 로그인 직후 보호 경로로 이동하는 흐름.
+ *
+ * 인증 여부를 이펙트로 동기화하면 이동과 같은 렌더에서 값이 아직 false라
+ * 방금 로그인한 사용자를 다시 로그인 화면으로 돌려보낸다.
+ */
+it('로그인 직후 보호 경로로 이동해도 로그인 화면으로 되돌아가지 않는다', async () => {
+  vi.spyOn(authService, 'refreshAccessToken').mockRejectedValue(new Error('401'));
+
+  function LoginStub() {
+    const navigate = useNavigate();
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          authClient.defaults.headers.common['Authorization'] = 'Bearer token';
+          navigate('/profile');
+        }}
+      >
+        Sign in
+      </button>
+    );
+  }
+
+  const { user } = await render(
+    <MemoryRouter initialEntries={['/login']}>
+      <Routes>
+        <Route element={<AuthGuard />}>
+          <Route path="/login" element={<LoginStub />} />
+          <Route path="/home" element={<div>Home</div>} />
+          <Route path="/profile" element={<div>My page</div>} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  );
+
+  await user.click(await screen.findByRole('button', { name: 'Sign in' }));
+
+  expect(await screen.findByText('My page')).toBeInTheDocument();
 });

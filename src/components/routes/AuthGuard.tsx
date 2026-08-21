@@ -1,5 +1,6 @@
 import { authClient } from '@/api/axiosConfig';
 import { authService } from '@/services';
+import { isLoggedIn } from '@/utils/auth';
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
@@ -39,15 +40,17 @@ const isProtectedPath = (pathname: string) => PROTECTED_PATH_PATTERNS.some((patt
 export function AuthGuard() {
   const location = useLocation();
   const pathname = normalizePath(location.pathname);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isChecking, setIsChecking] = useState<boolean>(true);
 
-  const isOAuthCallback = OAUTH_CALLBACK_PATHS.some((path) => pathname.startsWith(path));
+  /**
+   * 인증 여부는 state로 들고 있지 않고 렌더 시점에 직접 읽는다.
+   *
+   * 이펙트로 동기화하면 로그인 직후 보호 경로로 이동할 때 값이 한 박자 늦어,
+   * 방금 로그인한 사용자를 다시 로그인 화면으로 돌려보내게 된다.
+   */
+  const isAuthenticated = isLoggedIn();
 
-  useEffect(() => {
-    const accessToken = authClient.defaults.headers.common['Authorization'];
-    setIsAuthenticated(!!accessToken);
-  }, [pathname]);
+  const isOAuthCallback = OAUTH_CALLBACK_PATHS.some((path) => pathname.startsWith(path));
 
   useEffect(() => {
     const refreshToken = async () => {
@@ -57,14 +60,10 @@ export function AuthGuard() {
           const accessToken = data?.accessToken as string | undefined;
           if (accessToken) {
             authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
           }
         }
       } catch {
         //비로그인 사용자는 재발급이 실패하는 것이 정상 경로다. 게스트로 계속 진행한다.
-        setIsAuthenticated(false);
       } finally {
         setIsChecking(false);
       }
