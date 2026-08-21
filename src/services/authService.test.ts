@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { authClient } from '@/api/axiosConfig';
 import { authService } from './authService';
+import { notificationService } from './notificationService';
+
+vi.mock('./notificationService', () => ({
+  notificationService: { deleteFcmToken: vi.fn().mockResolvedValue(undefined) },
+}));
 
 vi.mock('@/api/axiosConfig', () => ({
   apiClient: { post: vi.fn(), get: vi.fn() },
@@ -57,5 +62,34 @@ describe('회원 탈퇴', () => {
 
     expect(localStorage.getItem('basicUserData')).toBeNull();
     expect(localStorage.getItem('kBuddyId')).toBeNull();
+  });
+});
+
+/**
+ * 해제하지 않으면 로그아웃 후에도 그 계정의 푸시 알림을 계속 받는다.
+ * 공용 기기에서는 다음 사용자에게 이전 사용자의 알림이 뜬다.
+ */
+describe('로그아웃 시 푸시 토큰', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.clearAllMocks();
+    localStorage.setItem('fcmToken', 'device-token');
+    vi.mocked(authClient.get).mockResolvedValue({ data: { data: { accessToken: 'fresh' } } } as never);
+    vi.mocked(authClient.post).mockResolvedValue({ data: {} } as never);
+  });
+
+  it('이 기기의 푸시 토큰을 서버에서 해제한다', async () => {
+    await authService.logout();
+
+    expect(notificationService.deleteFcmToken).toHaveBeenCalledWith('device-token', 'fresh');
+  });
+
+  it('푸시 해제가 실패해도 로그아웃은 끝까지 진행된다', async () => {
+    vi.mocked(notificationService.deleteFcmToken).mockRejectedValueOnce(new Error('network'));
+
+    await authService.logout();
+
+    expect(localStorage.getItem('basicUserData')).toBeNull();
+    expect(authClient.defaults.headers.common['Authorization']).toBeUndefined();
   });
 });

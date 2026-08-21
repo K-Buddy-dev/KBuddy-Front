@@ -53,9 +53,11 @@ export const notificationService = {
   registerFcmToken: async (token: string): Promise<void> => {
     await authClient.post(notificationApiUrl('/fcm-tokens'), { token });
   },
-  deleteFcmToken: async (token: string): Promise<void> => {
+  //서버는 토큰을 쿼리 파라미터(@RequestParam)로 받는다. 본문에 담으면 400이 난다.
+  deleteFcmToken: async (token: string, accessToken?: string): Promise<void> => {
     await authClient.delete(notificationApiUrl('/fcm-tokens'), {
-      data: { token },
+      params: { token },
+      ...(accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {}),
     });
   },
 };

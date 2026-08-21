@@ -1,6 +1,7 @@
 import { apiClient, authClient } from '@/api/axiosConfig';
 import { OauthRequest, ProfileEditFormData } from '@/types';
 import axios from 'axios';
+import { notificationService } from './notificationService';
 
 export interface LoginRequest {
   emailOrUserId: string;
@@ -73,6 +74,18 @@ export const authService = {
       const accessToken = data?.accessToken as string | undefined;
 
       if (accessToken) {
+        //이 기기의 푸시 토큰을 먼저 해제한다.
+        //해제하지 않으면 로그아웃 후에도 그 계정의 알림을 계속 받는다.
+        const fcmToken = localStorage.getItem('fcmToken');
+        if (fcmToken) {
+          try {
+            await notificationService.deleteFcmToken(fcmToken, accessToken);
+          } catch (e) {
+            //푸시 해제 실패가 로그아웃 자체를 막아서는 안 된다.
+            console.error('FCM 토큰 해제 실패:', e);
+          }
+        }
+
         // 2) 전역 저장 없이 "이 요청에만" Authorization 부착하여 서버 로그아웃
         await authClient.post('/auth/logout', null, {
           headers: { Authorization: `Bearer ${accessToken}` },
