@@ -47,17 +47,17 @@ import { CommunityFormContextProvider } from './components/contexts/CommunityFor
 import { EmailVerifyContextProvider } from './components/contexts/EmailVerifyContextProvider.tsx';
 import { ToastProvider } from './hooks/useToastContext.tsx';
 import { LoginPromptProvider } from './hooks/useLoginPrompt.tsx';
-import { useFcmTokenRegistration } from './hooks/useFcmTokenRegistration.ts';
 import { MobileEnvProvider } from './components/contexts/MobileEnvContextProvider.tsx';
 import { APP_PUSH_TYPE, getAppRoute } from './constants/enum.ts';
 import { BlockUserPage } from './pages/BlockUserPage.tsx';
 import { AnalyticsRouteTracker } from './components/analytics/AnalyticsRouteTracker.tsx';
+import { FcmTokenBridge } from './components/FcmTokenBridge.tsx';
+import { getNotificationTargetPath } from './utils/notificationRouting.ts';
 
 // AppRoutes component - inside BrowserRouter context
 function AppRoutes() {
   const navigate = useNavigate();
   //앱에 FCM 토큰을 요청·등록한다. 로그인 후 어느 화면으로 돌아가든 동작해야 하므로 전역에 둔다.
-  useFcmTokenRegistration();
   const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
   useEffect(() => {
@@ -67,7 +67,18 @@ function AppRoutes() {
         console.log('🚀 ~ handleMessage ~ data:', data);
 
         if (data.type === APP_PUSH_TYPE.PUSH_NOTIFICATION) {
+          const targetPath = getNotificationTargetPath({
+            targetId: data.targetId ?? data.deep_link ?? data.postID,
+            type: data.notificationType ?? data.click_action ?? data.postPart,
+          });
+
+          if (targetPath) {
+            navigate(targetPath);
+            return;
+          }
+
           const { postID, postPart } = data;
+          if (!postID || !postPart) return;
           const targetUrl = getAppRoute(postPart, postID);
           navigate(targetUrl);
         }
@@ -88,6 +99,7 @@ function AppRoutes() {
   return (
     <>
       <AnalyticsRouteTracker measurementId={gaMeasurementId} />
+      <FcmTokenBridge />
       <LoginPromptProvider>
         <Routes>
           {/* Admin Login Route - Public */}

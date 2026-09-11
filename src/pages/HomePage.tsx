@@ -149,7 +149,6 @@ export const HomePage = () => {
   const [selectedDiscoveryType, setSelectedDiscoveryType] = useState<DiscoveryFilter>('ALL');
   const discoveryDragScroll = useHorizontalDragScroll<HTMLDivElement>();
   const serviceCategoryDragScroll = useHorizontalDragScroll<HTMLDivElement>();
-  // FCM 토큰 요청 (중복 방지)
 
   const visibleDiscoveryItems = useMemo(
     () =>

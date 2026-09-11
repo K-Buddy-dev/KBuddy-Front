@@ -83,7 +83,9 @@ export const DetailModal = ({
   };
 
   const handleDelete = (contentId: number) => {
-    navigate(`/community?tab=${targetTab === 'Q&A' ? 'Q&A' : 'User+blog'}`, { replace: true });
+    navigate(`/community?tab=${targetTab === 'Q&A' ? 'Q&A' : targetTab === 'Buddy' ? 'Buddy' : 'User+blog'}`, {
+      replace: true,
+    });
     deleteMutate(contentId);
   };
   return (

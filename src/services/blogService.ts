@@ -6,6 +6,7 @@ import {
   CommunityDetailResponse,
   CommunityListResponse,
 } from '@/types/community';
+import { BlogContentType } from '@/types/post';
 
 // blogService 정의
 export const blogService = {
@@ -14,7 +15,8 @@ export const blogService = {
     size: number,
     keyword?: string,
     sort?: string,
-    categoryCode?: number
+    categoryCode?: number,
+    type?: BlogContentType
   ): Promise<CommunityListResponse> => {
     const response = await authClient.get<CommunityListResponse>('/blog', {
       params: {
@@ -23,6 +25,7 @@ export const blogService = {
         keyword: keyword ?? '', // keyword가 undefined일 경우 빈 문자열로 처리
         sort,
         categoryCode,
+        type,
       },
     });
     return response.data;

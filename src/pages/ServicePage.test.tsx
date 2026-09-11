@@ -26,6 +26,7 @@ beforeEach(() => {
       {
         categories: ['생활', '비자'],
         counselorId: '7',
+        counselorUserUuid: 'user-7',
         coverImageUrl: 'https://example.com/cover.jpg',
         hasPromotion: false,
         name: '홍길동',
@@ -131,8 +132,8 @@ it('hides the filters and KRW controls', async () => {
   expect(screen.queryByText('KRW')).not.toBeInTheDocument();
 });
 
-it('passes my profile ownership state when counselorId matches current user uuid', async () => {
-  localStorage.setItem('basicUserData', JSON.stringify({ userId: 'legacy-id', uuid: 7 }));
+it('passes my profile ownership state when counselorUserUuid matches current user uuid', async () => {
+  localStorage.setItem('basicUserData', JSON.stringify({ userId: 'legacy-id', uuid: 'user-7' }));
 
   const { user } = await render(
     <MemoryRouter initialEntries={['/service']}>

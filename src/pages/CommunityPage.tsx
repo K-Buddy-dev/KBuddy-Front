@@ -26,7 +26,7 @@ export const CommunityPage = () => {
   });
   const { toast, hideToast } = useToast();
 
-  const currentTab = searchParams.get('tab') || 'Curatedblog';
+  const currentTab = searchParams.get('tab') || 'Buddy';
   const prevTabRef = useRef<string>(currentTab);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export const CommunityPage = () => {
     setSearchParams(newSearchParams, { replace: true });
   }, [searchKeyword, searchParams]);
 
-  const contentType = currentTab === 'Userblog' ? 'blog' : 'qna';
+  const contentType = currentTab === 'Userblog' || currentTab === 'Buddy' ? 'blog' : 'qna';
   const { handleLike: listHandleLike, handleBookmark: listHandleBookmark } = useContentActions({
     contentType,
   });
@@ -86,7 +86,12 @@ export const CommunityPage = () => {
       >
         <FloatPostAction />
       </Link>
-      {currentTab === 'Userblog' && <BlogList onLike={listHandleLike} onBookmark={listHandleBookmark} />}
+      {currentTab === 'Buddy' && (
+        <BlogList type="BUDDY" title="Buddy profiles" onLike={listHandleLike} onBookmark={listHandleBookmark} />
+      )}
+      {currentTab === 'Userblog' && (
+        <BlogList type="GENERAL" title="All blogs" onLike={listHandleLike} onBookmark={listHandleBookmark} />
+      )}
       {currentTab === 'Q&A' && <QnaList onLike={listHandleLike} onBookmark={listHandleBookmark} />}
     </>
   );

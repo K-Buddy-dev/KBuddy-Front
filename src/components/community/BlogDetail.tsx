@@ -18,6 +18,7 @@ import { RecommendSwiper } from './swiper';
 import { CommunityContent } from './CommunityContent';
 import { useCallback, useRef, useState } from 'react';
 import { useLoginPrompt } from '@/hooks/useLoginPrompt';
+import { CategoryOption } from '@/utils/utils';
 
 interface BlogDetailProps {
   contentId: number;
@@ -27,6 +28,8 @@ interface BlogDetailProps {
     | ((event: React.MouseEvent) => void);
   recommendedData?: Community[];
   handleBlockUserOpen: () => void;
+  categoryOptions?: CategoryOption[];
+  badgeLabel?: string;
 }
 
 export const BlogDetail = ({
@@ -35,6 +38,8 @@ export const BlogDetail = ({
   onBookmark,
   recommendedData,
   handleBlockUserOpen,
+  categoryOptions,
+  badgeLabel = 'Article',
 }: BlogDetailProps) => {
   const { data: blog, isLoading, error } = useBlogDetail(contentId);
   const { requireLogin } = useLoginPrompt();
@@ -102,9 +107,11 @@ export const BlogDetail = ({
     [deleteComment]
   );
 
-  // const handleBlockUser = useCallback(() => {
-  //   blockUser(userId);
-  // }, [blockUser, userId]);
+  const focusCommentInput = () => {
+    const inputEl = inputRef.current;
+    if (!inputEl) return;
+    inputEl.focus();
+  };
 
   if (isLoading)
     return (
@@ -115,16 +122,17 @@ export const BlogDetail = ({
   if (error) return <div className="w-full h-screen flex items-center justify-center">Error: {error.message}</div>;
   if (!blog?.data) return <div className="w-full h-screen flex items-center justify-center">No data found</div>;
 
-  const categoryNames = getCategoryNames(blog.data.categoryId);
+  const categoryNames = getCategoryNames(blog.data.categoryId, categoryOptions);
 
   return (
-    <main className=" pb-20 font-roboto">
-      <div className="pt-[80px] px-4">
-        <h1 className="font-medium text-text-default text-[22px] leading-7 mb-1">{blog.data.title}</h1>
-        <div className="flex items-center gap-2 text-sm text-text-weak mb-4">
-          <span>{categoryNames}</span>
+    <main className="bg-bg-medium pb-24 font-roboto">
+      <section className="bg-bg-default px-4 pb-5 pt-4">
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span className="rounded-full bg-bg-brand-weak px-3 py-1 text-text-brand-default">{badgeLabel}</span>
+          <span className="rounded-full bg-bg-medium px-3 py-1 text-text-weak">{categoryNames}</span>
         </div>
-        <div className="flex items-center gap-2 mb-4 cursor-pointer" onClick={handleBlockUserOpen}>
+        <h1 className="mb-4 text-[24px] font-semibold leading-8 text-text-default">{blog.data.title}</h1>
+        <div className="flex items-center gap-2 cursor-pointer" onClick={handleBlockUserOpen}>
           <img
             src={blog.data.writerProfileImageUrl ? blog.data.writerProfileImageUrl : defaultImg}
             alt="Profile"
@@ -135,13 +143,13 @@ export const BlogDetail = ({
             <span className="text-sm font-medium text-text-weak">{formatDate(blog.data.createdAt)}</span>
           </div>
         </div>
-      </div>
+      </section>
       {blog.data.images.length > 0 && <ContentImage images={blog.data.images} title={blog.data.title} />}
-      <div className="px-4">
-        <CommunityContent content={blog.data.description} className="text-base text-text-default pt-4 pb-6" />
-      </div>
+      <article className="bg-bg-default px-4">
+        <CommunityContent content={blog.data.description} className="pb-8 pt-6 text-base leading-7 text-text-default" />
+      </article>
 
-      <div className="flex items-center justify-between h-10 text-text-weak border-b-[1px] border-solid border-border-default bg-bg-medium">
+      <div className="mt-2 flex h-12 items-center justify-between border-y border-solid border-border-default bg-bg-default text-text-weak">
         <button
           className="flex items-center justify-center w-full gap-1 cursor-pointer group"
           onClick={(event) => onLike(event, blog.data.id, blog.data.isHearted)}
@@ -155,33 +163,45 @@ export const BlogDetail = ({
           </div>
           <span className="transition-colors group-hover:text-red-500">Like</span>
         </button>
-        <div className="flex items-center justify-center gap-1 w-full">
+        <button className="flex items-center justify-center gap-1 w-full" onClick={focusCommentInput}>
           <CommentIcon width={24} height={24} />
           <span>Comment</span>
-        </div>
+        </button>
       </div>
-      <div className="px-4 bg-bg-medium pb-6">
+      <section className="px-4 bg-bg-medium pb-6">
         <div className="text-sm text-text-weak flex items-center gap-2 py-4">
           <span>{blog.data.heartCount} likes</span>
           <span>|</span>
           <span>{blog.data.commentCount} comments</span>
         </div>
 
-        <CommentList
-          comments={blog.data.comments}
-          handleCommentLike={handleCommentLike}
-          handleDelete={handleDelete}
-          replyId={replyId}
-          setReplyId={setReplyId}
-          editId={editId}
-          setEditId={setEditId}
-          setEditText={setEditText}
-          inputRef={inputRef}
-        />
-      </div>
+        <h2 className="mb-3 text-base font-semibold text-text-default">Comments</h2>
+        {blog.data.comments.length > 0 ? (
+          <CommentList
+            comments={blog.data.comments}
+            handleCommentLike={handleCommentLike}
+            handleDelete={handleDelete}
+            replyId={replyId}
+            setReplyId={setReplyId}
+            editId={editId}
+            setEditId={setEditId}
+            setEditText={setEditText}
+            inputRef={inputRef}
+          />
+        ) : (
+          <div className="rounded-lg border border-dashed border-border-default bg-bg-default px-4 py-6 text-center">
+            <p className="text-sm font-medium text-text-default">No comments yet. Start the conversation.</p>
+          </div>
+        )}
+      </section>
 
       {/* 추천 게시물 */}
-      {recommendedData && <RecommendSwiper cards={recommendedData} onLike={onLike} onBookmark={onBookmark} />}
+      {recommendedData && (
+        <section className="bg-bg-default py-5">
+          <h2 className="px-4 pb-3 text-base font-semibold text-text-default">Related posts</h2>
+          <RecommendSwiper cards={recommendedData} onLike={onLike} onBookmark={onBookmark} />
+        </section>
+      )}
 
       {/* 하단 고정 댓글 입력창 */}
       <CommentInput
@@ -190,6 +210,7 @@ export const BlogDetail = ({
         onCommentSubmit={handleCommentSubmit}
         onCommentEdit={handleCommentEdit}
         inputRef={inputRef}
+        placeholder="Write a comment"
       />
     </main>
   );

@@ -1,4 +1,5 @@
 import { authClient } from '@/api/axiosConfig';
+import { notifyFcmAuthReady } from '@/components/FcmTokenBridge';
 import { authService } from '@/services/authService';
 import { LoginFormData } from '@/types';
 import { useState } from 'react';
@@ -23,6 +24,7 @@ export const useLogin = () => {
       const { accessToken } = result.data;
       authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       updateLocalStorage(data.emailOrUserId);
+      notifyFcmAuthReady();
       setError({ emailOrUserId: '', password: '' });
       return result;
     } catch (error: any) {

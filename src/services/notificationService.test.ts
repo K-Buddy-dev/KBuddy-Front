@@ -64,18 +64,20 @@ it('marks a notification as read and reads all notifications', async () => {
 });
 
 /**
- * 등록은 본문, 해제는 쿼리 파라미터다.
- * 서버가 해제를 @RequestParam 으로 받기 때문이며, 본문으로 보내면 실패한다.
+ * 등록·해제 모두 쿼리 파라미터다.
+ * 서버(FCMTokenController)가 둘 다 @RequestParam 으로 받기 때문이며, 본문으로 보내면 400이 난다.
  */
-it('registers FCM tokens with a request body and deletes them with a query parameter', async () => {
+it('registers and deletes FCM tokens with query parameters', async () => {
   vi.mocked(authClient.post).mockResolvedValue({ data: undefined });
   vi.mocked(authClient.delete).mockResolvedValue({ data: undefined });
 
-  await notificationService.registerFcmToken('token-1');
-  await notificationService.deleteFcmToken('token-1');
+  await notificationService.registerFcmToken(' token-1 ');
+  await notificationService.deleteFcmToken(' token-1 ');
 
-  expect(authClient.post).toHaveBeenCalledWith(expect.stringContaining('/api/v1/fcm-tokens'), {
-    token: 'token-1',
+  expect(authClient.post).toHaveBeenCalledWith(expect.stringContaining('/api/v1/fcm-tokens'), null, {
+    params: {
+      token: 'token-1',
+    },
   });
   expect(authClient.delete).toHaveBeenCalledWith(expect.stringContaining('/api/v1/fcm-tokens'), {
     params: {
@@ -94,4 +96,12 @@ it('attaches the access token when one is given', async () => {
     params: { token: 'token-1' },
     headers: { Authorization: 'Bearer access-token' },
   });
+});
+
+it('does not call the FCM token API without a usable token', async () => {
+  await notificationService.registerFcmToken('   ');
+  await notificationService.deleteFcmToken('');
+
+  expect(authClient.post).not.toHaveBeenCalled();
+  expect(authClient.delete).not.toHaveBeenCalled();
 });

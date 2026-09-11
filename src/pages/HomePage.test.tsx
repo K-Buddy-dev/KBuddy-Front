@@ -25,12 +25,6 @@ vi.mock('@/hooks', () => ({
   })),
 }));
 
-vi.mock('@/hooks/useFcmToken', () => ({
-  useSendFcmTokenToServer: vi.fn(() => ({
-    mutate: vi.fn(),
-  })),
-}));
-
 vi.mock('@/services', () => ({
   authService: {
     getUserProfile: vi.fn(),

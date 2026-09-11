@@ -2,6 +2,11 @@ import { CATEGORIES } from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+export interface CategoryOption {
+  id: number;
+  name: string;
+}
+
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
@@ -56,14 +61,17 @@ export const urlToFile = async (url: string, fileName: string): Promise<File> =>
   return new File([blob], fileName, { type: blob.type });
 };
 
-export function getCategoryNames(categoryId: number | number[]): string {
+export function getCategoryNames(
+  categoryId: number | number[],
+  categories: readonly CategoryOption[] = CATEGORIES
+): string {
   if (Array.isArray(categoryId)) {
     return categoryId
-      .map((id) => CATEGORIES.find((cat) => cat.id === id)?.name)
+      .map((id) => categories.find((cat) => cat.id === id)?.name)
       .filter(Boolean)
       .join(' | ');
   }
-  return CATEGORIES.find((cat) => cat.id === categoryId)?.name || '';
+  return categories.find((cat) => cat.id === categoryId)?.name || '';
 }
 
 // 환경에 따른 Base URL 반환

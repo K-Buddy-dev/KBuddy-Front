@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Navbar } from '@/components/shared/navbar/Navbar';
 import { useMarkAllNotificationsAsRead, useMarkNotificationAsRead, useNotifications } from '@/hooks/useNotifications';
 import { NotificationItem } from '@/types/notification';
+import { getNotificationTargetPath } from '@/utils/notificationRouting';
 import { cn } from '@/utils/utils';
 import { AlarmIcon } from '@/components/shared/icon';
 
@@ -155,32 +156,6 @@ function EmptyNotificationState() {
       </div>
     </section>
   );
-}
-
-function getNotificationTargetPath(notification: NotificationItem) {
-  if (!notification.targetId) return null;
-
-  if (notification.targetId.startsWith('/')) {
-    return notification.targetId;
-  }
-
-  if (notification.type === 'CHAT_MESSAGE_NOTIFICATION') {
-    return `/message/${notification.targetId}`;
-  }
-
-  if (notification.type.includes('BOOKING')) {
-    return `/profile/bookings/${notification.targetId}`;
-  }
-
-  if (notification.type.includes('COMMUNITY')) {
-    return `/community/detail/${notification.targetId}`;
-  }
-
-  if (notification.type.includes('SERVICE')) {
-    return `/service/${notification.targetId}`;
-  }
-
-  return null;
 }
 
 function formatNotificationTime(dateTime: string) {

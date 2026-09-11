@@ -1,4 +1,5 @@
 import { authClient } from '@/api/axiosConfig';
+import { notifyFcmAuthReady } from '@/components/FcmTokenBridge';
 import { authService } from '@/services';
 import { OauthRequest, SignupFormData } from '@/types';
 import { useCallback, useState } from 'react';
@@ -47,6 +48,11 @@ const useOauthLogin = () => {
     setIsLoading(true);
     try {
       const result = await authService.oauthLogin(data);
+      const accessToken = getAccessToken(result);
+      if (accessToken) {
+        authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        notifyFcmAuthReady();
+      }
       setError({ oAuthCategory: '', oAuthUid: '' });
       return result;
     } catch (error: any) {
@@ -113,6 +119,7 @@ export const useOauthRegister = () => {
       }
       if (accessToken) {
         authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        notifyFcmAuthReady();
       }
       localStorage.setItem('kBuddyId', userId);
       analyticsService.trackEvent(analyticsEvents.signUpCompleted, {

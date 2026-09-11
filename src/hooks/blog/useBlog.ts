@@ -11,6 +11,7 @@ import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient }
 import { useSearchParams } from 'react-router-dom';
 import { blogQueryKeys } from './blogKeys';
 import { blogService } from '@/services/blogService';
+import { BlogContentType } from '@/types/post';
 
 // import { Community } from "@/types/blog";
 // import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,7 +19,7 @@ import { blogService } from '@/services/blogService';
 // // 블로그 목록 조회 (쿼리 파라미터로 필터 관리)
 type BlogQueryKey = readonly [string, BlogFilters];
 
-export const useBlogs = () => {
+export const useBlogs = (type: BlogContentType = 'GENERAL') => {
   const [searchParams] = useSearchParams();
 
   const sort = searchParams.get('sort') || undefined;
@@ -31,6 +32,7 @@ export const useBlogs = () => {
     keyword,
     sort,
     categoryCode,
+    type,
   };
 
   return useInfiniteQuery<
@@ -42,7 +44,7 @@ export const useBlogs = () => {
   >({
     queryKey: blogQueryKeys.blog.list(filters),
     queryFn: ({ pageParam }) => {
-      return blogService.getBlogs(pageParam, filters.size, filters.keyword, filters.sort, filters.categoryCode);
+      return blogService.getBlogs(pageParam, filters.size, filters.keyword, filters.sort, filters.categoryCode, type);
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.data.nextId === -1 || !lastPage.data.nextId) return undefined;
@@ -56,12 +58,13 @@ export const useRecommendedBlogs = ({ size = 5, categoryCode }: UseRecommendedBl
   const filters: BlogFilters = {
     size,
     categoryCode,
+    type: 'GENERAL',
   };
 
   return useQuery<CommunityListResponse, Error>({
     queryKey: blogQueryKeys.blog.list(filters),
     queryFn: () => {
-      return blogService.getBlogs(undefined, filters.size, undefined, undefined, filters.categoryCode);
+      return blogService.getBlogs(undefined, filters.size, undefined, undefined, filters.categoryCode, filters.type);
     },
   });
 };
@@ -70,12 +73,13 @@ export const useFeaturedBlogs = ({ size = 5, sort = 'VIEW_COUNT' }: UseRecommend
   const filters: BlogFilters = {
     size,
     sort,
+    type: 'GENERAL',
   };
 
   return useQuery<CommunityListResponse, Error>({
     queryKey: blogQueryKeys.blog.list(filters),
     queryFn: () => {
-      return blogService.getBlogs(undefined, filters.size, undefined, filters.sort, undefined);
+      return blogService.getBlogs(undefined, filters.size, undefined, filters.sort, undefined, filters.type);
     },
   });
 };

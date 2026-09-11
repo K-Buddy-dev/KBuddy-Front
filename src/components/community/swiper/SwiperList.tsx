@@ -24,7 +24,7 @@ function SwiperCardWrapper({ children, onclick }: { children: React.ReactNode; o
   return (
     <div
       onClick={onclick}
-      className="flex items-start justify-between w-full min-w-[242px] xs:min-w-none xs:w-[312px] h-[162px] py-[11px] px-[12px] xs:py-[14px] xs:px-4 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.04),_0px_4px_8px_0px_rgba(0,0,0,0.06)] bg-bg-default border-[1px] border-border-weak2 cursor-pointer rounded-lg"
+      className="flex h-[162px] w-full cursor-pointer items-start justify-between rounded-lg border border-border-weak2 bg-bg-default px-[12px] py-[11px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.04),_0px_4px_8px_0px_rgba(0,0,0,0.06)] xs:px-4 xs:py-[14px]"
     >
       {children}
     </div>
@@ -184,35 +184,35 @@ export const SwiperList = ({ cards, layout = 'default', onLike, onBookmark }: Sw
           setIsEnd(true);
         }}
         modules={[Navigation]}
-        spaceBetween={10}
-        slidesPerView={1.1}
+        spaceBetween={layout === 'home' ? 24 : 10}
+        slidesPerView={1}
         breakpoints={{
           360: {
-            slidesPerView: 1.1,
-            spaceBetween: 20,
+            slidesPerView: 1,
+            spaceBetween: layout === 'home' ? 24 : 20,
             navigation: {
               enabled: false,
             },
           },
           400: {
-            slidesPerView: 1.2,
-            spaceBetween: 20,
+            slidesPerView: 1,
+            spaceBetween: layout === 'home' ? 24 : 20,
           },
           450: {
-            slidesPerView: 1.4,
-            spaceBetween: 20,
+            slidesPerView: 1,
+            spaceBetween: layout === 'home' ? 24 : 20,
           },
           500: {
-            slidesPerView: 1.5,
-            spaceBetween: 20,
+            slidesPerView: 1,
+            spaceBetween: layout === 'home' ? 24 : 20,
           },
           550: {
-            slidesPerView: 1.7,
-            spaceBetween: 20,
+            slidesPerView: 1,
+            spaceBetween: layout === 'home' ? 24 : 20,
           },
           600: {
-            slidesPerView: 1.8,
-            spaceBetween: 20,
+            slidesPerView: 1,
+            spaceBetween: layout === 'home' ? 24 : 20,
             navigation: {
               enabled: true,
               nextEl: '.swiper-button-next',

@@ -128,10 +128,30 @@ export const Images = ({ imageUrls = [], setImageUrls }: ImagesProps) => {
     };
   }, []);
 
+  if (imageUrls.length === 0) {
+    return (
+      <section className="bg-bg-medium px-4 py-5">
+        <button
+          type="button"
+          className="flex min-h-[148px] w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-border-weak1 bg-white px-4 text-center"
+          onClick={handleImageSelection}
+        >
+          <span className="text-base font-semibold text-text-default">Add photos</span>
+          <span className="mt-2 text-sm leading-5 text-text-weak">
+            Optional. You can add up to {MAX_IMAGES} images.
+          </span>
+        </button>
+      </section>
+    );
+  }
+
   return (
     <div className="bg-bg-medium">
       <div className="w-full flex flex-col justify-center items-center gap-4 p-4">
-        {maxImageMessage && <div className="w-full text-center text-text-weak text-xs mb-1">{maxImageMessage}</div>}
+        <div className="w-full text-center text-text-weak text-xs mb-1">
+          Optional. You can add up to {MAX_IMAGES} images.
+          {maxImageMessage ? ` ${maxImageMessage}` : ''}
+        </div>
         <div
           className="overflow-x-hidden flex items-center gap-4 w-[528px] h-[200px] relative"
           onTouchStart={(e) => {
