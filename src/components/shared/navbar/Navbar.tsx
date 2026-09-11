@@ -2,6 +2,8 @@ import { AlarmIcon, Logo, SearchIcon, SettingsIcon } from '@/components/shared/i
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { notificationService } from '@/services/notificationService';
+import { isLoggedIn } from '@/utils/auth';
+import { useLoginPrompt } from '@/hooks/useLoginPrompt';
 
 interface NavbarWithSearchProps {
   setSearchKeyword?: Dispatch<SetStateAction<string>>;
@@ -112,9 +114,22 @@ function NotificationButton({ onClick }: { onClick?: () => void }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const hasUnread = unreadCount > 0;
   const displayCount = unreadCount > 99 ? '99+' : String(unreadCount);
-  const handleClick = onClick ?? (() => navigate('/notifications'));
+  const { requireLogin } = useLoginPrompt();
+  //알림함은 로그인이 필요하다.
+  const handleClick =
+    onClick ??
+    (() => {
+      if (!requireLogin('Log in to see your notifications.')) return;
+      navigate('/notifications');
+    });
 
   useEffect(() => {
+    //게스트는 알림을 조회할 수 없다. 홈/커뮤니티/서비스가 공개되면서
+    //호출을 남겨두면 모든 게스트가 페이지마다 401과 토큰 재발급 시도를 발생시킨다.
+    if (!isLoggedIn()) {
+      return;
+    }
+
     let isMounted = true;
 
     notificationService

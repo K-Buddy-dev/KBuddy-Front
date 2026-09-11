@@ -23,7 +23,7 @@ export const OauthSignupFormPage = () => {
   const { oauthRegister, isLoading } = useOauthRegister();
   const { checkUserIdDuplicate, error: userIdError } = useUserIdDuplicateCheck();
   const handleClickBackButton = () => {
-    navigate('/');
+    navigate('/login');
   };
 
   const onSubmit = async (data: SignupFormData) => {
@@ -40,7 +40,7 @@ export const OauthSignupFormPage = () => {
 
   useEffect(() => {
     if (!email || !oAuthUid || !oAuthCategory) {
-      navigate('/');
+      navigate('/login');
     }
     resetFrom({
       firstName,

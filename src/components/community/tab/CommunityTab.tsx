@@ -2,7 +2,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { TabList, TabWrapper } from './Tab';
 
 const menuArr = [
-  { name: 'Curated blog', id: 1 },
+  { name: 'Buddy', id: 1 },
   { name: 'User blog', id: 2 },
   { name: 'Q&A', id: 3 },
 ];
@@ -15,8 +15,8 @@ export function CommunityTab() {
     return tabName.replace(/\s+/g, '');
   };
 
-  const currentTabParam = searchParams.get('tab') || 'Curatedblog';
-  const currentTab = menuArr.find((menu) => getCleanTabName(menu.name) === currentTabParam)?.name || 'Curatedblog';
+  const currentTabParam = searchParams.get('tab') || 'Buddy';
+  const currentTab = menuArr.find((menu) => getCleanTabName(menu.name) === currentTabParam)?.name || 'Buddy';
 
   // 탭 변경 시 URL 업데이트 (공백 제거)
   const handleTabChange = (tabName: string) => {

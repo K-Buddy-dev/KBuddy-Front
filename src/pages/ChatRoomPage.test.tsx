@@ -53,6 +53,7 @@ vi.mock('@/hooks/useChatMessages', () => ({
 
 vi.mock('@/services/chatService', () => ({
   chatService: {
+    getChatRoom: vi.fn(),
     getChatRoomMessages: vi.fn(),
     joinRoom: vi.fn(),
     leaveRoom: vi.fn(),
@@ -90,6 +91,16 @@ beforeEach(() => {
   subscribedMessageHandler = undefined;
   activateMock.mockClear();
   deactivateMock.mockClear();
+  vi.mocked(chatService.getChatRoom).mockResolvedValue({
+    roomId: 'room-1',
+    roomName: 'Live chat counseling',
+    peerUserId: 7,
+    peerNickname: 'Hong Gil Dong',
+    peerProfileImageUrl: 'https://example.com/profile.jpg',
+    lastMessage: 'Hello',
+    lastMessageAt: '2026-06-12T10:30:00',
+    unreadCount: 3,
+  });
   vi.mocked(chatService.getChatRoomMessages).mockResolvedValue([
     {
       messageType: 'TALK',
@@ -114,6 +125,15 @@ it('joins the room, marks it as read, and subscribes to the room topic', async (
   expect(analyticsService.trackEvent).toHaveBeenCalledWith('chat_room_opened', {
     room_id: 'room-1',
   });
+});
+
+it('loads room metadata when opened directly from a notification', async () => {
+  await renderChatRoom();
+
+  expect(await screen.findByRole('heading', { name: 'Live chat counseling' })).toBeInTheDocument();
+  expect(screen.getByText('Hong Gil Dong')).toBeInTheDocument();
+  expect(screen.getByAltText('Hong Gil Dong')).toHaveAttribute('src', 'https://example.com/profile.jpg');
+  expect(chatService.getChatRoom).toHaveBeenCalledWith('room-1');
 });
 
 it('sends chat messages without role so the server can resolve it', async () => {
@@ -375,7 +395,7 @@ it('leaves the chat room from the options menu', async () => {
 });
 
 async function renderChatRoom(state?: Record<string, unknown>) {
-  return render(
+  const result = render(
     <MemoryRouter initialEntries={[{ pathname: '/message/room-1', state }]}>
       <Routes>
         <Route path="/message/:roomId" element={<ChatRoomPage />} />
@@ -383,4 +403,7 @@ async function renderChatRoom(state?: Record<string, unknown>) {
       </Routes>
     </MemoryRouter>
   );
+
+  await waitFor(() => expect(chatService.getChatRoom).toHaveBeenCalledWith('room-1'));
+  return result;
 }

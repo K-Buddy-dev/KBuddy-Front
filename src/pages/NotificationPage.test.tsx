@@ -102,6 +102,41 @@ it('marks a chat notification as read and opens the chat room', async () => {
   expect(screen.getByText('Chat room route')).toBeInTheDocument();
 });
 
+it('opens the inquiry tab for service inquiry notifications', async () => {
+  vi.mocked(useNotifications).mockReturnValue({
+    data: {
+      content: [
+        {
+          id: 3,
+          isRead: false,
+          title: 'New Inquiry',
+          message: 'A customer asked about your service.',
+          targetId: 'service-1',
+          type: 'SERVICE_INQUIRY_NOTIFICATION',
+          createdAt: '2026-06-03T10:00:00Z',
+        },
+      ],
+    },
+    isLoading: false,
+    isError: false,
+    error: null,
+  } as ReturnType<typeof useNotifications>);
+
+  const { user } = await render(
+    <MemoryRouter initialEntries={['/notifications']}>
+      <Routes>
+        <Route path="/notifications" element={<NotificationPage />} />
+        <Route path="/service/:serviceId" element={<div>Inquiry route</div>} />
+      </Routes>
+    </MemoryRouter>
+  );
+
+  await user.click(screen.getByRole('button', { name: /New Inquiry/ }));
+
+  await waitFor(() => expect(mutateAsync).toHaveBeenCalledWith(3));
+  expect(screen.getByText('Inquiry route')).toBeInTheDocument();
+});
+
 it('opens a free notification target path when targetId is a route', async () => {
   vi.mocked(useNotifications).mockReturnValue({
     data: {

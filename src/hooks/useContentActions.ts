@@ -9,6 +9,7 @@ import {
   useRemoveQnaHeart,
   useRemoveQnaBookmark,
 } from '@/hooks';
+import { useLoginPrompt } from '@/hooks/useLoginPrompt';
 
 interface ContentActionProps {
   contentType: 'blog' | 'qna';
@@ -24,10 +25,15 @@ export const useContentActions = ({ contentType, refetchRecommended }: ContentAc
   const removeQnaHeart = useRemoveQnaHeart();
   const addQnaBookmark = useAddQnaBookmark();
   const removeQnaBookmark = useRemoveQnaBookmark();
+  const { requireLogin } = useLoginPrompt();
 
   const handleLike = useCallback(
     (event: React.MouseEvent, contentId: number, isHearted: boolean) => {
       event.stopPropagation();
+      //게스트가 누르면 401 대신 로그인 안내를 띄운다.
+      if (!requireLogin('Log in to like posts.')) {
+        return;
+      }
       const isBlog = contentType === 'blog';
       const addHeart = isBlog ? addBlogHeart : addQnaHeart;
       const removeHeart = isBlog ? removeBlogHeart : removeQnaHeart;
@@ -44,12 +50,15 @@ export const useContentActions = ({ contentType, refetchRecommended }: ContentAc
         });
       }
     },
-    [contentType, addBlogHeart, addQnaHeart, removeBlogHeart, removeQnaHeart, refetchRecommended]
+    [contentType, addBlogHeart, addQnaHeart, removeBlogHeart, removeQnaHeart, refetchRecommended, requireLogin]
   );
 
   const handleBookmark = useCallback(
     (event: React.MouseEvent, contentId: number, isBookmarked: boolean) => {
       event.stopPropagation();
+      if (!requireLogin('Log in to save posts.')) {
+        return;
+      }
       const isBlog = contentType === 'blog';
       const addBookmark = isBlog ? addBlogBookmark : addQnaBookmark;
       const removeBookmark = isBlog ? removeBlogBookmark : removeQnaBookmark;
@@ -66,7 +75,15 @@ export const useContentActions = ({ contentType, refetchRecommended }: ContentAc
         });
       }
     },
-    [contentType, addBlogBookmark, addQnaBookmark, removeBlogBookmark, removeQnaBookmark, refetchRecommended]
+    [
+      contentType,
+      addBlogBookmark,
+      addQnaBookmark,
+      removeBlogBookmark,
+      removeQnaBookmark,
+      refetchRecommended,
+      requireLogin,
+    ]
   );
 
   return { handleLike, handleBookmark };

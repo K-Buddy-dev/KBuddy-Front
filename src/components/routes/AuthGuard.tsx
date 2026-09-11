@@ -1,32 +1,56 @@
 import { authClient } from '@/api/axiosConfig';
 import { authService } from '@/services';
+import { isLoggedIn } from '@/utils/auth';
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-const PUBLIC_PATHS = [
-  '/',
-  '/signup/verify',
-  '/signup/form',
-  '/oauth/callback/kakao',
-  '/oauth2/code/google',
-  '/oauth/callback/apple',
-  '/oauth/signup/form',
+export const LOGIN_PATH = '/login';
+
+/**
+ * 로그인이 필요한 경로.
+ *
+ * 기본은 공개이며, 여기에 해당하는 경로만 비로그인 사용자를 로그인 화면으로 보낸다.
+ * 게시글 조회·서비스 둘러보기 등은 로그인 없이 접근할 수 있어야 전환율 목표를 만족한다.
+ */
+const PROTECTED_PATH_PATTERNS: RegExp[] = [
+  /^\/profile(\/|$)/,
+  /^\/settings(\/|$)/,
+  /^\/message(\/|$)/,
+  /^\/notifications(\/|$)/,
+  /^\/block-user(\/|$)/,
+  /^\/community\/post(\/|$)/,
+  /^\/community\/edit(\/|$)/,
+  /^\/service\/[^/]+\/request(\/|$)/,
 ];
 
-const OAUTH_CALLBACK_PATHS = ['/oauth/callback/kakao', '/oauth2/code/google', '/oauth/callback/apple'];
+/** 이미 로그인한 사용자가 다시 볼 이유가 없는 경로 */
+const AUTH_ONLY_PATHS = [LOGIN_PATH, '/signup/verify', '/signup/form', '/oauth/signup/form'];
+
+/** 소셜 로그인 콜백은 인증 상태와 무관하게 페이지 로직이 실행되어야 한다. */
+const OAUTH_CALLBACK_PATHS = ['/oauth/callback/kakao', '/oauth2/code/google', '/oauth/apple-redirect'];
+
+/**
+ * 배포 환경(S3/CloudFront)이 경로 끝에 슬래시를 붙여 리다이렉트하므로,
+ * pathname 이 '/login/' 처럼 들어올 수 있다. 비교 전에 정규화한다.
+ */
+const normalizePath = (pathname: string) => (pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname);
+
+const isProtectedPath = (pathname: string) => PROTECTED_PATH_PATTERNS.some((pattern) => pattern.test(pathname));
 
 export function AuthGuard() {
   const location = useLocation();
-  const { pathname } = location;
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const pathname = normalizePath(location.pathname);
   const [isChecking, setIsChecking] = useState<boolean>(true);
 
-  const isOAuthCallback = OAUTH_CALLBACK_PATHS.some((path) => pathname.startsWith(path));
+  /**
+   * 인증 여부는 state로 들고 있지 않고 렌더 시점에 직접 읽는다.
+   *
+   * 이펙트로 동기화하면 로그인 직후 보호 경로로 이동할 때 값이 한 박자 늦어,
+   * 방금 로그인한 사용자를 다시 로그인 화면으로 돌려보내게 된다.
+   */
+  const isAuthenticated = isLoggedIn();
 
-  useEffect(() => {
-    const accessToken = authClient.defaults.headers.common['Authorization'];
-    setIsAuthenticated(!!accessToken);
-  }, [pathname]);
+  const isOAuthCallback = OAUTH_CALLBACK_PATHS.some((path) => pathname.startsWith(path));
 
   useEffect(() => {
     const refreshToken = async () => {
@@ -36,13 +60,10 @@ export function AuthGuard() {
           const accessToken = data?.accessToken as string | undefined;
           if (accessToken) {
             authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
           }
         }
       } catch {
-        setIsAuthenticated(false);
+        //비로그인 사용자는 재발급이 실패하는 것이 정상 경로다. 게스트로 계속 진행한다.
       } finally {
         setIsChecking(false);
       }
@@ -59,12 +80,13 @@ export function AuthGuard() {
     return <Outlet />;
   }
 
-  if (PUBLIC_PATHS.includes(pathname) && isAuthenticated) {
-    return <Navigate to={'/home'} />;
+  if (isAuthenticated && AUTH_ONLY_PATHS.includes(pathname)) {
+    return <Navigate to={'/home'} replace />;
   }
 
-  if (!PUBLIC_PATHS.includes(pathname) && !isAuthenticated) {
-    return <Navigate to={'/'} />;
+  //로그인 후 원래 보려던 화면으로 돌아갈 수 있도록 위치를 넘긴다.
+  if (!isAuthenticated && isProtectedPath(pathname)) {
+    return <Navigate to={LOGIN_PATH} state={{ from: location }} replace />;
   }
 
   return <Outlet />;

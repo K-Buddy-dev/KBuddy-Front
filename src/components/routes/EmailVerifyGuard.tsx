@@ -10,7 +10,7 @@ export const EmailVerifyGuard = ({ guardType }: EmailVerifyGuardProps) => {
   const location = useLocation();
 
   if (guardType === 'verifyEmail' && !email) {
-    return <Navigate to="/" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if (guardType === 'requireVerified' && !isVerify) {

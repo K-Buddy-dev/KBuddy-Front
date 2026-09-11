@@ -1,5 +1,5 @@
 import defaultImg from '@/assets/images/default-profile.png';
-import { getCategoryNames } from '@/utils/utils';
+import { CategoryOption, getCategoryNames } from '@/utils/utils';
 
 interface ContentProps {
   writerName: string;
@@ -7,11 +7,20 @@ interface ContentProps {
   profileImageUrl?: string;
   title: string;
   categoryId: number[] | number;
+  categoryOptions?: CategoryOption[];
   imageUrl?: string;
 }
 
-export const Content: React.FC<ContentProps> = ({ writerName, date, profileImageUrl, title, categoryId, imageUrl }) => {
-  const categoryNames = getCategoryNames(categoryId);
+export const Content: React.FC<ContentProps> = ({
+  writerName,
+  date,
+  profileImageUrl,
+  title,
+  categoryId,
+  categoryOptions,
+  imageUrl,
+}) => {
+  const categoryNames = getCategoryNames(categoryId, categoryOptions);
   return (
     <div className="flex items-center justify-between">
       <div>

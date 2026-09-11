@@ -1,4 +1,5 @@
 import { act, screen } from '@testing-library/react';
+import { LoginPromptProvider } from '@/hooks/useLoginPrompt';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import render from '@/utils/test/render';
 import { counselorService } from '@/services/counselorService';
@@ -51,10 +52,12 @@ beforeEach(() => {
 it('navigates from my sale to counselor profile creation', async () => {
   const { user } = await render(
     <MemoryRouter initialEntries={['/profile?tab=My%20sale']}>
-      <Routes>
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/profile/counselor/create" element={<div>Create counselor profile route</div>} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/counselor/create" element={<div>Create counselor profile route</div>} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -87,10 +90,12 @@ it('shows my counselor profile in my sale and blocks creating another profile', 
 
   const { user } = await render(
     <MemoryRouter initialEntries={['/profile?tab=My%20sale']}>
-      <Routes>
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/profile/counselor/create" element={<div>Create counselor profile route</div>} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/counselor/create" element={<div>Create counselor profile route</div>} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -132,9 +137,11 @@ it('shows sales and listings submenus under my sale', async () => {
 
   const { user } = await render(
     <MemoryRouter initialEntries={['/profile?tab=My%20sale']}>
-      <Routes>
-        <Route path="/profile" element={<ProfilePage />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/profile" element={<ProfilePage />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -163,9 +170,11 @@ it('shows sales and listings submenus under my sale', async () => {
 it('shows the empty post gray box under my post', async () => {
   await render(
     <MemoryRouter initialEntries={['/profile?tab=My%20post']}>
-      <Routes>
-        <Route path="/profile" element={<ProfilePage />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/profile" element={<ProfilePage />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -208,10 +217,12 @@ it('opens the booking detail from counselor listings', async () => {
 
   const { user } = await render(
     <MemoryRouter initialEntries={['/profile?tab=My%20sale&saleTab=Listings']}>
-      <Routes>
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/profile/bookings/:bookingId" element={<BookingDetailRouteProbe />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/bookings/:bookingId" element={<BookingDetailRouteProbe />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -248,9 +259,11 @@ it('renders my sale without crashing when optional counselor fields are missing'
 
   await render(
     <MemoryRouter initialEntries={['/profile?tab=My%20sale']}>
-      <Routes>
-        <Route path="/profile" element={<ProfilePage />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/profile" element={<ProfilePage />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -275,10 +288,12 @@ it('opens the booking detail from customer orders', async () => {
 
   const { user } = await render(
     <MemoryRouter initialEntries={['/profile?tab=Orders']}>
-      <Routes>
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/profile/bookings/:bookingId" element={<BookingDetailRouteProbe />} />
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/bookings/:bookingId" element={<BookingDetailRouteProbe />} />
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 

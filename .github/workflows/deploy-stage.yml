@@ -1,0 +1,65 @@
+# stage 브랜치에 푸시되면 스테이징 빌드를 만들어 OCI VM 의 stage 디렉터리로 배포한다.
+# - 프로덕션(deploy.yml)과 같은 시크릿을 쓰되, 카카오/구글 리다이렉트 URI 만 stage 도메인 (공개값이라 인라인)
+# - API 는 프로덕션을 그대로 본다 (기존 stage 와 동일)
+# - 대상: /home/ubuntu/kbuddy-front-stage (Caddy 가 /srv/kbuddy-front-stage 로 마운트)
+name: Deploy stage frontend to OCI
+
+on:
+  push:
+    branches: [stage]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-frontend-stage
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+      VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
+      VITE_KAKAO_REST_API_KEY: ${{ secrets.VITE_KAKAO_REST_API_KEY }}
+      VITE_KAKAO_SECRET_KEY: ${{ secrets.VITE_KAKAO_SECRET_KEY }}
+      VITE_KAKAO_REDIRECT_URI: https://stage.k-buddy.kr/oauth/callback/kakao
+      VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+      VITE_GOOGLE_CLIENT_PW: ${{ secrets.VITE_GOOGLE_CLIENT_PW }}
+      VITE_GOOGLE_REDIRECT_URI: https://stage.k-buddy.kr/oauth2/code/google
+      VITE_GOOGLE_SCOPE: ${{ secrets.VITE_GOOGLE_SCOPE }}
+      VITE_APPLE_CLIENT_ID: ${{ secrets.VITE_APPLE_CLIENT_ID }}
+      VITE_APPLE_REDIRECT_URI: ${{ secrets.VITE_APPLE_REDIRECT_URI }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.OCI_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "${{ secrets.OCI_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+
+      - name: Upload to OCI
+        run: |
+          # assets 는 해시 파일명이라 먼저 올리고, index.html 은 마지막에 바꿔 배포 중 깨진 참조를 막는다.
+          rsync -az --exclude index.html \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes" \
+            dist/ ${{ secrets.OCI_USER }}@${{ secrets.OCI_HOST }}:/home/ubuntu/kbuddy-front-stage/
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes" \
+            dist/ ${{ secrets.OCI_USER }}@${{ secrets.OCI_HOST }}:/home/ubuntu/kbuddy-front-stage/
+
+      - name: Verify
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes ${{ secrets.OCI_USER }}@${{ secrets.OCI_HOST }} \
+            'ls -la /home/ubuntu/kbuddy-front-stage/index.html && ls /home/ubuntu/kbuddy-front-stage/assets | wc -l'

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useLoginPrompt } from '@/hooks/useLoginPrompt';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { DetailTopbar } from '@/components/shared/topbar/DetailTopbar';
 import { CategoryBadge } from '@/components/service/CategoryBadge';
@@ -26,11 +27,21 @@ type ServiceDetailLocationState = {
   service?: MyCounselorProfile;
 };
 
+type ServiceDetailTab = 'Info' | 'Review' | 'Photo' | 'Inquiry';
+
+const serviceDetailTabs = ['Info', 'Review', 'Photo', 'Inquiry'] as const satisfies readonly ServiceDetailTab[];
+
+function getInitialServiceDetailTab(search: string): ServiceDetailTab {
+  const tab = new URLSearchParams(search).get('tab');
+  return serviceDetailTabs.find((item) => item === tab) || 'Info';
+}
+
 export function ServiceDetailPage() {
   const navigate = useNavigate();
+  const { requireLogin } = useLoginPrompt();
   const location = useLocation();
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState<'Info' | 'Review' | 'Photo' | 'Inquiry'>('Info');
+  const [activeTab, setActiveTab] = useState<ServiceDetailTab>(() => getInitialServiceDetailTab(location.search));
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const routeState = location.state as ServiceDetailLocationState | null;
@@ -208,10 +219,12 @@ export function ServiceDetailPage() {
   const handleRequest = () => {
     if (!service) return;
 
-    if (isMyServiceProfile(service.id, currentUserUuid, passedIsMyProfile)) {
+    if (isMyServiceProfile(service.counselorUserUuid, currentUserUuid, passedIsMyProfile)) {
       setRequestBlockedMessage('You cannot request your own counselor profile.');
       return;
     }
+
+    if (!requireLogin('Log in to request this service.')) return;
 
     analyticsService.trackEvent(analyticsEvents.serviceRequestStarted, {
       counselor_id: service.id,
@@ -326,6 +339,8 @@ export function ServiceDetailPage() {
       return;
     }
 
+    if (!requireLogin('Log in to ask a question.')) return;
+
     setIsSubmittingInquiry(true);
     setInquiryFormErrorMessage('');
 
@@ -410,7 +425,7 @@ export function ServiceDetailPage() {
 
       {showDetailModal && (
         <ServiceDetailMenuModal
-          isMyProfile={isMyServiceProfile(service.id, currentUserUuid, passedIsMyProfile)}
+          isMyProfile={isMyServiceProfile(service.counselorUserUuid, currentUserUuid, passedIsMyProfile)}
           onDelete={handleDeleteService}
           onEdit={handleEditService}
           onClose={() => setShowDetailModal(false)}
@@ -674,9 +689,9 @@ function InquiryFormModal({
   );
 }
 
-function isMyServiceProfile(counselorUuid: string, currentUserUuid: string, passedIsMyProfile?: boolean) {
+function isMyServiceProfile(counselorUserUuid: string, currentUserUuid: string, passedIsMyProfile?: boolean) {
   if (passedIsMyProfile !== undefined) return passedIsMyProfile;
-  return Boolean(currentUserUuid && String(counselorUuid) === String(currentUserUuid));
+  return Boolean(currentUserUuid && String(counselorUserUuid) === String(currentUserUuid));
 }
 
 function OwnProfileRequestBlockedModal({ message, onClose }: { message: string; onClose: () => void }) {
@@ -765,6 +780,8 @@ function mapCounselorProfileToServiceDetail(profile: MyCounselorProfile) {
     categoryType: '1:1 Chat' as const,
     description: profile.detail,
     duration: `${sessionMinutes} min`,
+    counselorId: profile.counselorId ? String(profile.counselorId) : '',
+    counselorUserUuid: profile.counselorUserUuid ? String(profile.counselorUserUuid) : '',
     id: profile.id,
     imageUrl: profile.coverImageUrl || profile.profileImageUrl || defaultProfileImage,
     inquiries: inquiries.items,

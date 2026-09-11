@@ -21,7 +21,7 @@ export function SignupFormPage() {
   const { signup, isLoading } = useSignup();
   const { checkUserIdDuplicate, error: userIdError } = useUserIdDuplicateCheck();
   const handleClickBackButton = () => {
-    navigate('/');
+    navigate('/login');
   };
 
   const isSubmitDisabled = isLoading || !isValid || !!userIdError || !agree;

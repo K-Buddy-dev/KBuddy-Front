@@ -1,8 +1,10 @@
 import { authClient } from '@/api/axiosConfig';
+import { notifyFcmAuthReady } from '@/components/FcmTokenBridge';
 import { authService } from '@/services';
 import { OauthRequest, SignupFormData } from '@/types';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { consumeReturnTo } from '@/utils/returnTo';
 import { useToast } from './useToastContext';
 import { analyticsService } from '@/services/analyticsService';
 import { analyticsEvents } from '@/services/analyticsEvents';
@@ -46,6 +48,11 @@ const useOauthLogin = () => {
     setIsLoading(true);
     try {
       const result = await authService.oauthLogin(data);
+      const accessToken = getAccessToken(result);
+      if (accessToken) {
+        authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        notifyFcmAuthReady();
+      }
       setError({ oAuthCategory: '', oAuthUid: '' });
       return result;
     } catch (error: any) {
@@ -57,7 +64,7 @@ const useOauthLogin = () => {
           type: 'error',
           duration: 5000,
         });
-        navigate('/');
+        navigate('/login');
 
         return;
       }
@@ -112,6 +119,7 @@ export const useOauthRegister = () => {
       }
       if (accessToken) {
         authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        notifyFcmAuthReady();
       }
       localStorage.setItem('kBuddyId', userId);
       analyticsService.trackEvent(analyticsEvents.signUpCompleted, {
@@ -167,7 +175,7 @@ export const useOauthLoginHandler = () => {
       analyticsService.trackEvent(analyticsEvents.loginCompleted, {
         method: data.oAuthCategory || 'oauth',
       });
-      navigate('/home');
+      navigate(consumeReturnTo());
     } catch (err: any) {
       console.error('로그인 실패:', err);
     }

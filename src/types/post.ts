@@ -1,4 +1,6 @@
-export type PostFormType = 'Blog' | 'Q&A' | '';
+export type PostFormType = 'Blog' | 'Buddy' | 'Q&A' | '';
+
+export type BlogContentType = 'GENERAL' | 'BUDDY';
 
 export type PostStatus = 'PUBLISHED' | 'DRAFT';
 

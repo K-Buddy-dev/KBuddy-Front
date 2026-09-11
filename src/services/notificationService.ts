@@ -50,12 +50,28 @@ export const notificationService = {
   markAllAsRead: async (): Promise<void> => {
     await authClient.post(notificationApiUrl('/notifications/read-all'));
   },
-  registerFcmToken: async (token: string): Promise<void> => {
-    await authClient.post(notificationApiUrl('/fcm-tokens'), { token });
+  registerFcmToken: async (token: string, deviceInfo?: string): Promise<void> => {
+    const normalizedToken = token?.trim();
+
+    if (!normalizedToken) return;
+
+    await authClient.post(notificationApiUrl('/fcm-tokens'), null, {
+      params: {
+        ...(deviceInfo ? { deviceInfo } : {}),
+        token: normalizedToken,
+      },
+    });
   },
-  deleteFcmToken: async (token: string): Promise<void> => {
+  //서버는 등록·해제 모두 토큰을 쿼리 파라미터(@RequestParam)로 받는다. 본문에 담으면 400이 난다.
+  //로그아웃 흐름에서는 전역 Authorization 헤더가 이미 비워져 있어 액세스 토큰을 직접 실어 보낼 수 있다.
+  deleteFcmToken: async (token: string, accessToken?: string): Promise<void> => {
+    const normalizedToken = token?.trim();
+
+    if (!normalizedToken) return;
+
     await authClient.delete(notificationApiUrl('/fcm-tokens'), {
-      data: { token },
+      params: { token: normalizedToken },
+      ...(accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {}),
     });
   },
 };

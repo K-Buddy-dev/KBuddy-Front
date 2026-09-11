@@ -3,12 +3,17 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import render from '@/utils/test/render';
 import { SettingPage } from './SettingPage';
 import { authService } from '@/services';
+import { deleteStoredFcmToken } from '@/components/FcmTokenBridge';
 
 vi.mock('@/services', () => ({
   authService: {
     deleteAccount: vi.fn(),
     logout: vi.fn(),
   },
+}));
+
+vi.mock('@/components/FcmTokenBridge', () => ({
+  deleteStoredFcmToken: vi.fn(),
 }));
 
 beforeEach(() => {
@@ -93,6 +98,7 @@ it('asks for confirmation before deleting an account', async () => {
 
 it('deletes an account only after confirming in the dialog', async () => {
   vi.mocked(authService.deleteAccount).mockResolvedValue({});
+  vi.mocked(deleteStoredFcmToken).mockResolvedValue(undefined);
 
   const { user } = await render(
     <MemoryRouter initialEntries={['/settings']}>
@@ -103,5 +109,22 @@ it('deletes an account only after confirming in the dialog', async () => {
   await user.click(screen.getByRole('button', { name: 'Delete account' }));
   await user.click(screen.getByRole('button', { name: 'Yes, delete account' }));
 
+  expect(deleteStoredFcmToken).toHaveBeenCalledTimes(1);
   expect(authService.deleteAccount).toHaveBeenCalledTimes(1);
+});
+
+it('deletes the stored FCM token before logging out', async () => {
+  vi.mocked(authService.logout).mockResolvedValue(undefined);
+  vi.mocked(deleteStoredFcmToken).mockResolvedValue(undefined);
+
+  const { user } = await render(
+    <MemoryRouter initialEntries={['/settings']}>
+      <SettingPage />
+    </MemoryRouter>
+  );
+
+  await user.click(screen.getByRole('button', { name: 'Log out' }));
+
+  expect(deleteStoredFcmToken).toHaveBeenCalledTimes(1);
+  expect(authService.logout).toHaveBeenCalledTimes(1);
 });

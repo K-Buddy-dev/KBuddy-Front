@@ -10,8 +10,8 @@ import {
   type PointerEvent as ReactPointerEvent,
   type TouchEvent as ReactTouchEvent,
 } from 'react';
+import { isLoggedIn } from '@/utils/auth';
 import { authService } from '@/services';
-import { useSendFcmTokenToServer } from '@/hooks/useFcmToken';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRight } from 'react-icons/fa';
 import { serviceCategories } from '@/constants/serviceCategories';
@@ -149,8 +149,6 @@ export const HomePage = () => {
   const [selectedDiscoveryType, setSelectedDiscoveryType] = useState<DiscoveryFilter>('ALL');
   const discoveryDragScroll = useHorizontalDragScroll<HTMLDivElement>();
   const serviceCategoryDragScroll = useHorizontalDragScroll<HTMLDivElement>();
-  // FCM 토큰 요청 (중복 방지)
-  const tokenRequested = useRef(false);
 
   const visibleDiscoveryItems = useMemo(
     () =>
@@ -165,9 +163,12 @@ export const HomePage = () => {
     refetchRecommended: refetchFeaturedBlog,
   });
 
-  const { mutate: sendFcmTokenToServer } = useSendFcmTokenToServer();
-
   useEffect(() => {
+    //게스트는 프로필을 조회할 수 없다. 호출하면 매 진입마다 401만 발생한다.
+    if (!isLoggedIn()) {
+      return;
+    }
+
     const getUserProfile = async () => {
       try {
         const response = await authService.getUserProfile();
@@ -179,37 +180,6 @@ export const HomePage = () => {
     };
 
     getUserProfile();
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.ReactNativeWebView && !tokenRequested.current) {
-      window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'requestFcmToken' }));
-      tokenRequested.current = true;
-    }
-  }, []);
-
-  // FCM 토큰 수신 및 API 호출
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      try {
-        const message = JSON.parse(event.data);
-        if (message.type === 'fcmTokenReady' && message.token) {
-          localStorage.setItem('fcmToken', message.token);
-          sendFcmTokenToServer({
-            token: message.token,
-          });
-        }
-      } catch (error) {
-        console.error('Error parsing message:', error);
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-    document.addEventListener('message', handleMessage as any);
-    return () => {
-      window.removeEventListener('message', handleMessage);
-      document.removeEventListener('message', handleMessage as any);
-    };
   }, []);
 
   return (

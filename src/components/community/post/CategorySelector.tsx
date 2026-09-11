@@ -1,5 +1,5 @@
 import { Button, CheckedIcon, UnCheckedIcon } from '@/components/shared';
-import { POST_CATEGORIES } from '@/constants';
+import { BUDDY_CATEGORIES, POST_CATEGORIES } from '@/constants';
 import { useCommunityFormActionContext, useCommunityFormStateContext } from '@/hooks';
 import { SectionInfo } from './SectionInfo';
 
@@ -12,6 +12,7 @@ export const CategorySelector = ({ onNext }: CategorySelectorProps) => {
   const { setCategoryId } = useCommunityFormActionContext();
 
   const isValid = type && categoryId.length > 0;
+  const categories = type === 'Buddy' ? BUDDY_CATEGORIES : POST_CATEGORIES;
 
   const handleCategorySelect = (id: number) => {
     if (type === 'Q&A') {
@@ -54,11 +55,13 @@ export const CategorySelector = ({ onNext }: CategorySelectorProps) => {
         description={
           type === 'Q&A'
             ? 'Choose one category that fits your question.'
-            : 'Choose at least one category that fits your blog. Feel free to select multiple categories.'
+            : type === 'Buddy'
+              ? 'Choose what kind of buddy connection you are looking for. Feel free to select multiple options.'
+              : 'Choose at least one category that fits your blog. Feel free to select multiple categories.'
         }
       />
       <div className="grid grid-cols-2 gap-4">
-        {POST_CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <div
             key={category.name}
             className="flex items-center justify-start cursor-pointer gap-1 py-2 px-3 rounded-lg border-2 border-border-default"

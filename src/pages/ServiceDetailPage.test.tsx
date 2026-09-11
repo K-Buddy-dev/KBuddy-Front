@@ -2,6 +2,8 @@ import { act, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import render from '@/utils/test/render';
 import { ToastProvider } from '@/hooks/useToastContext';
+import { LoginPromptProvider } from '@/hooks/useLoginPrompt';
+import { authClient } from '@/api/axiosConfig';
 import { counselorService } from '@/services/counselorService';
 import { analyticsService } from '@/services/analyticsService';
 import { ServiceDetailPage } from './ServiceDetailPage';
@@ -25,10 +27,12 @@ vi.mock('@/services/analyticsService', () => ({
 }));
 
 beforeEach(() => {
+  vi.clearAllMocks();
   localStorage.clear();
   vi.mocked(counselorService.getCounselorDetail).mockResolvedValue({
     categories: ['생활', '비자'],
     counselorId: '9',
+    counselorUserUuid: 'user-9',
     coverImageUrl: 'https://example.com/detail.jpg',
     detail: 'API counselor detail.',
     id: '9',
@@ -100,6 +104,15 @@ beforeEach(() => {
   vi.mocked(counselorService.deleteProfile).mockResolvedValue();
 });
 
+/** 문의 작성·서비스 신청은 로그인 사용자만 가능하다. */
+const signIn = () => {
+  authClient.defaults.headers.common['Authorization'] = 'Bearer token';
+};
+
+afterEach(() => {
+  delete authClient.defaults.headers.common.Authorization;
+});
+
 it('renders counselor profile data passed from my sale instead of static mock data', async () => {
   await render(
     <ToastProvider>
@@ -129,9 +142,11 @@ it('renders counselor profile data passed from my sale instead of static mock da
           },
         ]}
       >
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );
@@ -149,9 +164,11 @@ it('opens the service detail menu when the hamburger menu is clicked', async () 
   const { user } = await render(
     <ToastProvider>
       <MemoryRouter initialEntries={['/service/1']}>
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );
@@ -166,9 +183,11 @@ it('loads service detail from the counselor detail API by route id', async () =>
   await render(
     <ToastProvider>
       <MemoryRouter initialEntries={['/service/9']}>
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );
@@ -196,10 +215,12 @@ it('navigates to the service list when backTo state is provided', async () => {
           },
         ]}
       >
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-          <Route path="/service" element={<div>Service list route</div>} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+            <Route path="/service" element={<div>Service list route</div>} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );
@@ -214,9 +235,11 @@ it('loads reviews from the counselor review API when the review tab is clicked',
   const { user } = await render(
     <ToastProvider>
       <MemoryRouter initialEntries={['/service/9']}>
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );
@@ -235,9 +258,11 @@ it('loads inquiries from the counselor inquiry API when the inquiry tab is click
   const { user } = await render(
     <ToastProvider>
       <MemoryRouter initialEntries={['/service/9']}>
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );
@@ -254,13 +279,33 @@ it('loads inquiries from the counselor inquiry API when the inquiry tab is click
   ).not.toBeInTheDocument();
 });
 
+it('opens the inquiry tab from the service detail query string', async () => {
+  await render(
+    <ToastProvider>
+      <MemoryRouter initialEntries={['/service/9?tab=Inquiry']}>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+          </Routes>
+        </LoginPromptProvider>
+      </MemoryRouter>
+    </ToastProvider>
+  );
+
+  expect(await screen.findByRole('button', { name: 'Inquiry' })).toHaveClass('flex-shrink-0');
+  expect(counselorService.getCounselorInquiries).toHaveBeenCalledWith('9', { page: 0, size: 20 });
+  expect(await screen.findByText('상담 가능 시간 문의')).toBeInTheDocument();
+});
+
 it('loads inquiry detail and posts a reply from the inquiry tab', async () => {
   const { user } = await render(
     <ToastProvider>
       <MemoryRouter initialEntries={['/service/9']}>
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );
@@ -282,12 +327,15 @@ it('loads inquiry detail and posts a reply from the inquiry tab', async () => {
 });
 
 it('opens an inquiry form from ask the seller and creates an inquiry', async () => {
+  signIn();
   const { user } = await render(
     <ToastProvider>
       <MemoryRouter initialEntries={['/service/9']}>
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );
@@ -312,15 +360,17 @@ it('opens an inquiry form from ask the seller and creates an inquiry', async () 
 });
 
 it('shows a popup instead of navigating when requesting my own counselor profile', async () => {
-  localStorage.setItem('basicUserData', JSON.stringify({ userId: 'legacy-id', uuid: '9' }));
+  localStorage.setItem('basicUserData', JSON.stringify({ userId: 'legacy-id', uuid: 'user-9' }));
 
   const { user } = await render(
     <ToastProvider>
       <MemoryRouter initialEntries={['/service/9']}>
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-          <Route path="/service/:id/request" element={<div>Request route</div>} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+            <Route path="/service/:id/request" element={<div>Request route</div>} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );
@@ -334,13 +384,16 @@ it('shows a popup instead of navigating when requesting my own counselor profile
 });
 
 it('tracks when a customer starts a service request', async () => {
+  signIn();
   const { user } = await render(
     <ToastProvider>
       <MemoryRouter initialEntries={['/service/9']}>
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-          <Route path="/service/:id/request" element={<div>Request route</div>} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+            <Route path="/service/:id/request" element={<div>Request route</div>} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );
@@ -355,14 +408,58 @@ it('tracks when a customer starts a service request', async () => {
 });
 
 it('shows edit and delete menu items for my own counselor profile', async () => {
-  localStorage.setItem('basicUserData', JSON.stringify({ userId: 'legacy-id', uuid: 9 }));
+  localStorage.setItem('basicUserData', JSON.stringify({ userId: 'legacy-id', uuid: 'user-9' }));
 
   const { user } = await render(
     <ToastProvider>
       <MemoryRouter initialEntries={['/service/9']}>
-        <Routes>
-          <Route path="/service/:id" element={<ServiceDetailPage />} />
-        </Routes>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+          </Routes>
+        </LoginPromptProvider>
+      </MemoryRouter>
+    </ToastProvider>
+  );
+  await act(async () => {});
+
+  await user.click(await screen.findByRole('button', { name: 'menu' }));
+
+  expect(screen.queryByText('Report this service')).not.toBeInTheDocument();
+  expect(screen.getByText('Edit this content')).toBeInTheDocument();
+  expect(screen.getByText('Delete this content')).toBeInTheDocument();
+});
+
+it('shows edit and delete menu items when counselorUserUuid owns a service listing id', async () => {
+  localStorage.setItem('basicUserData', JSON.stringify({ userId: 'legacy-id', uuid: 'owner-uuid' }));
+  vi.mocked(counselorService.getCounselorDetail).mockResolvedValueOnce({
+    categories: ['Visa'],
+    counselorId: 'profile-uuid',
+    counselorUserUuid: 'owner-uuid',
+    coverImageUrl: 'https://example.com/detail.jpg',
+    detail: 'Owned service detail.',
+    id: 'listing-99',
+    intro: 'Hello',
+    name: 'Owner',
+    photoUrls: [],
+    profileImageUrl: 'https://example.com/profile.jpg',
+    ratingAvg: 4.8,
+    recentReviews: [],
+    regularPrice: 30000,
+    reviewCount: 0,
+    sessionMinutes: 50,
+    timezone: 'Asia/Seoul',
+    title: 'Owned service',
+  });
+
+  const { user } = await render(
+    <ToastProvider>
+      <MemoryRouter initialEntries={['/service/listing-99']}>
+        <LoginPromptProvider>
+          <Routes>
+            <Route path="/service/:id" element={<ServiceDetailPage />} />
+          </Routes>
+        </LoginPromptProvider>
       </MemoryRouter>
     </ToastProvider>
   );

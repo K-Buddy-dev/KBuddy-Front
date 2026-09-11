@@ -4,7 +4,7 @@ import { Client, IMessage } from '@stomp/stompjs';
 import { PreviewBackIcon } from '@/components/shared/icon';
 import { useChatMessages } from '@/hooks/useChatMessages';
 import { authClient } from '@/api/axiosConfig';
-import { ChatMessage, ChatRole } from '@/types/chat';
+import { ChatMessage, ChatRole, ChatRoom } from '@/types/chat';
 import { authService } from '@/services/authService';
 import { chatService } from '@/services/chatService';
 import defaultProfileImage from '@/assets/images/default-profile.png';
@@ -30,9 +30,10 @@ export function ChatRoomPage() {
   const { roomId } = useParams();
   const location = useLocation();
   const state = location.state as ChatRoomLocationState | null;
-  const title = state?.roomName || state?.peerNickname || 'Chat';
-  const peerDisplayName = state?.peerNickname || title;
-  const peerProfileImageUrl = state?.peerProfileImageUrl || defaultProfileImage;
+  const [roomMetadata, setRoomMetadata] = useState<ChatRoom | null>(null);
+  const title = state?.roomName || state?.peerNickname || roomMetadata?.roomName || roomMetadata?.name || 'Chat';
+  const peerDisplayName = state?.peerNickname || roomMetadata?.peerNickname || title;
+  const peerProfileImageUrl = state?.peerProfileImageUrl || roomMetadata?.peerProfileImageUrl || defaultProfileImage;
   const { data, isLoading, isError, error } = useChatMessages(roomId);
   const [chatMessages, setChatMessages] = useState<ChatDisplayMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -60,6 +61,26 @@ export function ChatRoomPage() {
     setNextMessagePage(1);
     setHasOlderMessages(data.length >= messagePageSize);
   }, [data]);
+
+  useEffect(() => {
+    if (!roomId) return;
+
+    let isCurrent = true;
+    chatService
+      .getChatRoom(roomId)
+      .then((room) => {
+        if (isCurrent) {
+          setRoomMetadata(room);
+        }
+      })
+      .catch((metadataError) => {
+        console.error('Failed to load chat room metadata:', metadataError);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [roomId]);
 
   const handleLoadOlderMessages = async () => {
     if (!roomId || isLoadingOlderMessages || !hasOlderMessages) return;

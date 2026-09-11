@@ -39,14 +39,11 @@ export const DetailModal = ({
     setOriginalType,
   } = useCommunityFormActionContext();
 
+  //비로그인 사용자도 게시글을 볼 수 있어야 한다. 본인 글이 아니면 수정/삭제 메뉴는 노출되지 않는다.
   const localUserData = localStorage.getItem('basicUserData');
-  if (!localUserData) {
-    navigate('/');
-    return;
-  }
-  const userInfo = JSON.parse(localUserData);
+  const userInfo = localUserData ? JSON.parse(localUserData) : null;
 
-  const isMyPost = userInfo.uuid === writerUuid;
+  const isMyPost = userInfo?.uuid === writerUuid;
 
   const handleReport = () => {
     alert('신고가 접수되었습니다.');
@@ -86,7 +83,9 @@ export const DetailModal = ({
   };
 
   const handleDelete = (contentId: number) => {
-    navigate(`/community?tab=${targetTab === 'Q&A' ? 'Q&A' : 'User+blog'}`, { replace: true });
+    navigate(`/community?tab=${targetTab === 'Q&A' ? 'Q&A' : targetTab === 'Buddy' ? 'Buddy' : 'User+blog'}`, {
+      replace: true,
+    });
     deleteMutate(contentId);
   };
   return (

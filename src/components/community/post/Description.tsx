@@ -26,11 +26,15 @@ const initialConfig: ComponentProps<typeof LexicalComposer>['initialConfig'] = {
   },
 };
 
-export const Description = () => {
+interface DescriptionProps {
+  initialDescription?: string;
+}
+
+export const Description = ({ initialDescription }: DescriptionProps) => {
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <div className="relative w-full h-auto p-4 !border-0">
-        <TextEditor />
+        <TextEditor initialDescription={initialDescription} />
       </div>
     </LexicalComposer>
   );
