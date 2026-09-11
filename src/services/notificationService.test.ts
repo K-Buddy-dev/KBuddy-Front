@@ -63,7 +63,11 @@ it('marks a notification as read and reads all notifications', async () => {
   expect(authClient.post).toHaveBeenCalledWith(expect.stringContaining('/api/v1/notifications/read-all'));
 });
 
-it('registers FCM tokens with request parameters and deletes tokens with request bodies', async () => {
+/**
+ * 등록·해제 모두 쿼리 파라미터다.
+ * 서버(FCMTokenController)가 둘 다 @RequestParam 으로 받기 때문이며, 본문으로 보내면 400이 난다.
+ */
+it('registers and deletes FCM tokens with query parameters', async () => {
   vi.mocked(authClient.post).mockResolvedValue({ data: undefined });
   vi.mocked(authClient.delete).mockResolvedValue({ data: undefined });
 
@@ -76,9 +80,21 @@ it('registers FCM tokens with request parameters and deletes tokens with request
     },
   });
   expect(authClient.delete).toHaveBeenCalledWith(expect.stringContaining('/api/v1/fcm-tokens'), {
-    data: {
+    params: {
       token: 'token-1',
     },
+  });
+});
+
+/** 로그아웃 흐름에서는 전역 헤더가 없으므로 액세스 토큰을 직접 실어 보낸다. */
+it('attaches the access token when one is given', async () => {
+  vi.mocked(authClient.delete).mockResolvedValue({ data: undefined });
+
+  await notificationService.deleteFcmToken('token-1', 'access-token');
+
+  expect(authClient.delete).toHaveBeenCalledWith(expect.stringContaining('/api/v1/fcm-tokens'), {
+    params: { token: 'token-1' },
+    headers: { Authorization: 'Bearer access-token' },
   });
 });
 

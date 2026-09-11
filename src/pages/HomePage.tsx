@@ -10,6 +10,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type TouchEvent as ReactTouchEvent,
 } from 'react';
+import { isLoggedIn } from '@/utils/auth';
 import { authService } from '@/services';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRight } from 'react-icons/fa';
@@ -163,6 +164,11 @@ export const HomePage = () => {
   });
 
   useEffect(() => {
+    //게스트는 프로필을 조회할 수 없다. 호출하면 매 진입마다 401만 발생한다.
+    if (!isLoggedIn()) {
+      return;
+    }
+
     const getUserProfile = async () => {
       try {
         const response = await authService.getUserProfile();

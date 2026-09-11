@@ -1,5 +1,7 @@
+import { MemoryRouter } from 'react-router-dom';
 import { screen } from '@testing-library/react';
 import render from '@/utils/test/render';
+import { LoginPromptProvider } from '@/hooks/useLoginPrompt';
 import { BlogDetail } from './BlogDetail';
 
 const mockBlogDetail = {
@@ -52,13 +54,17 @@ beforeEach(() => {
 
 it('presents blog detail as an article while keeping comments wording', async () => {
   await render(
-    <BlogDetail
-      contentId={1}
-      handleBlockUserOpen={vi.fn()}
-      onBookmark={vi.fn()}
-      onLike={vi.fn()}
-      recommendedData={[]}
-    />
+    <MemoryRouter>
+      <LoginPromptProvider>
+        <BlogDetail
+          contentId={1}
+          handleBlockUserOpen={vi.fn()}
+          onBookmark={vi.fn()}
+          onLike={vi.fn()}
+          recommendedData={[]}
+        />
+      </LoginPromptProvider>
+    </MemoryRouter>
   );
 
   expect(screen.getByText('Article')).toBeInTheDocument();

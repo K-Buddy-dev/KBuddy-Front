@@ -2,7 +2,6 @@ import { formatRelativeDate } from '@/utils';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import defaultImg from '@/assets/images/default-profile.png';
 import { Comment } from '@/types';
-import { useNavigate } from 'react-router-dom';
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { DeletelModal } from './DeleteModal';
 
@@ -33,18 +32,16 @@ export const CommentItem = ({
   setEditText,
   inputRef,
 }: CommentItemProps) => {
-  const navigate = useNavigate();
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [userInfo, setUserInfo] = useState<{ uuid: string } | null>(null);
 
   useEffect(() => {
+    //비로그인 사용자도 댓글을 볼 수 있어야 한다. userInfo가 없으면 본인 댓글 여부만 false가 된다.
     const localUserData = localStorage.getItem('basicUserData');
-    if (!localUserData) {
-      navigate('/');
-    } else {
+    if (localUserData) {
       setUserInfo(JSON.parse(localUserData));
     }
-  }, [navigate]);
+  }, []);
 
   const focusInputWithCursor = () => {
     const inputEl = inputRef?.current;

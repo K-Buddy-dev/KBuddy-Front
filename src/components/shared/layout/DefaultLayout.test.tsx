@@ -1,16 +1,19 @@
 import { screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import render from '@/utils/test/render';
+import { LoginPromptProvider } from '@/hooks/useLoginPrompt';
 import { DefaultLayout } from './DefaultLayout';
 
 it('hides bottom navigation on counselor profile creation route', async () => {
   await render(
     <MemoryRouter initialEntries={['/profile/counselor/create']}>
-      <Routes>
-        <Route element={<DefaultLayout />}>
-          <Route path="/profile/counselor/create" element={<div>Create counselor profile</div>} />
-        </Route>
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route element={<DefaultLayout />}>
+            <Route path="/profile/counselor/create" element={<div>Create counselor profile</div>} />
+          </Route>
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -21,11 +24,13 @@ it('hides bottom navigation on counselor profile creation route', async () => {
 it('keeps bottom navigation on discovery detail route', async () => {
   await render(
     <MemoryRouter initialEntries={['/discovery/1']}>
-      <Routes>
-        <Route element={<DefaultLayout />}>
-          <Route path="/discovery/:id" element={<div>Discovery detail</div>} />
-        </Route>
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route element={<DefaultLayout />}>
+            <Route path="/discovery/:id" element={<div>Discovery detail</div>} />
+          </Route>
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -36,11 +41,13 @@ it('keeps bottom navigation on discovery detail route', async () => {
 it('keeps bottom navigation above page content', async () => {
   await render(
     <MemoryRouter initialEntries={['/home']}>
-      <Routes>
-        <Route element={<DefaultLayout />}>
-          <Route path="/home" element={<div>Home content</div>} />
-        </Route>
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route element={<DefaultLayout />}>
+            <Route path="/home" element={<div>Home content</div>} />
+          </Route>
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -52,11 +59,13 @@ it('keeps bottom navigation above page content', async () => {
 it('shows a persistent Instagram support floating button', async () => {
   await render(
     <MemoryRouter initialEntries={['/home']}>
-      <Routes>
-        <Route element={<DefaultLayout />}>
-          <Route path="/home" element={<div>Home content</div>} />
-        </Route>
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route element={<DefaultLayout />}>
+            <Route path="/home" element={<div>Home content</div>} />
+          </Route>
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 
@@ -71,11 +80,13 @@ it('shows a persistent Instagram support floating button', async () => {
 it('moves the Instagram support button above the community post action', async () => {
   await render(
     <MemoryRouter initialEntries={['/community']}>
-      <Routes>
-        <Route element={<DefaultLayout />}>
-          <Route path="/community" element={<div>Community content</div>} />
-        </Route>
-      </Routes>
+      <LoginPromptProvider>
+        <Routes>
+          <Route element={<DefaultLayout />}>
+            <Route path="/community" element={<div>Community content</div>} />
+          </Route>
+        </Routes>
+      </LoginPromptProvider>
     </MemoryRouter>
   );
 

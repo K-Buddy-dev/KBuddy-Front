@@ -1,6 +1,7 @@
 import { apiClient, authClient } from '@/api/axiosConfig';
 import { OauthRequest, ProfileEditFormData } from '@/types';
 import axios from 'axios';
+import { notificationService } from './notificationService';
 
 export interface LoginRequest {
   emailOrUserId: string;
@@ -37,6 +38,26 @@ export interface UserIdCheckRequest {
   userId: string;
 }
 
+/**
+ * 사용자에게 종속된 클라이언트 캐시를 정리한다.
+ *
+ * 로그아웃 후에도 게스트로 계속 둘러볼 수 있게 되면서, 이전 사용자의 신원 정보가 남으면
+ * 본인 글 판별이 어긋나 수정/삭제 메뉴가 잘못 노출된다.
+ * 아이디 저장(kBuddyId)은 로그인 폼 편의 기능이므로 지우지 않는다.
+ */
+const USER_SCOPED_STORAGE_KEYS = [
+  'basicUserData',
+  'fcmToken',
+  'kakaoAccessToken',
+  'kakaoRefreshToken',
+  'kakaoTokenExpiry',
+  'community-current-step',
+];
+
+const clearUserScopedStorage = () => {
+  USER_SCOPED_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+};
+
 export const authService = {
   login: async (data: LoginRequest) => {
     const response = await authClient.post('/auth/login', data);
@@ -53,6 +74,18 @@ export const authService = {
       const accessToken = data?.accessToken as string | undefined;
 
       if (accessToken) {
+        //이 기기의 푸시 토큰을 먼저 해제한다.
+        //해제하지 않으면 로그아웃 후에도 그 계정의 알림을 계속 받는다.
+        const fcmToken = localStorage.getItem('fcmToken');
+        if (fcmToken) {
+          try {
+            await notificationService.deleteFcmToken(fcmToken, accessToken);
+          } catch (e) {
+            //푸시 해제 실패가 로그아웃 자체를 막아서는 안 된다.
+            console.error('FCM 토큰 해제 실패:', e);
+          }
+        }
+
         // 2) 전역 저장 없이 "이 요청에만" Authorization 부착하여 서버 로그아웃
         await authClient.post('/auth/logout', null, {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -71,8 +104,7 @@ export const authService = {
     } finally {
       // 3) 항상 클라이언트 상태 정리 (빈 문자열 대신 delete)
       delete authClient.defaults.headers.common.Authorization;
-      // 필요 시 여기에 전역 상태/캐시 초기화 추가
-      // queryClient.clear(); resetStores(); 등
+      clearUserScopedStorage();
     }
   },
   emailVerify: async (data: EmailVerifyRequest) => {
@@ -133,7 +165,10 @@ export const authService = {
   },
   deleteAccount: async () => {
     const response = await authClient.delete('/auth/account');
-    authClient.defaults.headers.common['Authorization'] = '';
+    delete authClient.defaults.headers.common.Authorization;
+    clearUserScopedStorage();
+    //탈퇴는 계정 자체가 사라지므로 저장된 아이디도 함께 지운다.
+    localStorage.removeItem('kBuddyId');
     return response.data;
   },
 };

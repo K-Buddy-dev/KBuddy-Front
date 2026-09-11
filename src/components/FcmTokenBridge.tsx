@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { notificationService } from '@/services/notificationService';
+import { isLoggedIn } from '@/utils/auth';
 
 const FCM_TOKEN_STORAGE_KEY = 'fcmToken';
 
@@ -29,8 +30,16 @@ export const deleteStoredFcmToken = async () => {
   }
 };
 
+/**
+ * 앱(WebView)에 FCM 토큰을 요청한다.
+ *
+ * 로그인 상태에서만 요청한다. 게스트는 등록할 대상이 없을 뿐 아니라, 앱이 이 시점에
+ * 알림 권한을 묻기 때문에 둘러보는 중에 권한 팝업이 뜨게 된다. 로그인이 끝나면
+ * FCM_AUTH_READY_EVENT 로 다시 요청된다.
+ */
 const requestFcmToken = () => {
   if (!window.ReactNativeWebView) return;
+  if (!isLoggedIn()) return;
   window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'requestFcmToken' }));
 };
 

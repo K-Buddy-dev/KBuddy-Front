@@ -1,5 +1,7 @@
+import { MemoryRouter } from 'react-router-dom';
 import { screen } from '@testing-library/react';
 import render from '@/utils/test/render';
+import { LoginPromptProvider } from '@/hooks/useLoginPrompt';
 import { QnaDetail } from './QnaDetail';
 
 const mockQnaDetail = {
@@ -52,7 +54,17 @@ beforeEach(() => {
 
 it('presents Q&A detail as an answer-focused question page', async () => {
   await render(
-    <QnaDetail contentId={1} handleBlockUserOpen={vi.fn()} onBookmark={vi.fn()} onLike={vi.fn()} recommendedData={[]} />
+    <MemoryRouter>
+      <LoginPromptProvider>
+        <QnaDetail
+          contentId={1}
+          handleBlockUserOpen={vi.fn()}
+          onBookmark={vi.fn()}
+          onLike={vi.fn()}
+          recommendedData={[]}
+        />
+      </LoginPromptProvider>
+    </MemoryRouter>
   );
 
   expect(screen.getByText('Q&A')).toBeInTheDocument();

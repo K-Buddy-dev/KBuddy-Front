@@ -4,6 +4,7 @@ import { authService } from '@/services';
 import { OauthRequest, SignupFormData } from '@/types';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { consumeReturnTo } from '@/utils/returnTo';
 import { useToast } from './useToastContext';
 import { analyticsService } from '@/services/analyticsService';
 import { analyticsEvents } from '@/services/analyticsEvents';
@@ -63,7 +64,7 @@ const useOauthLogin = () => {
           type: 'error',
           duration: 5000,
         });
-        navigate('/');
+        navigate('/login');
 
         return;
       }
@@ -174,7 +175,7 @@ export const useOauthLoginHandler = () => {
       analyticsService.trackEvent(analyticsEvents.loginCompleted, {
         method: data.oAuthCategory || 'oauth',
       });
-      navigate('/home');
+      navigate(consumeReturnTo());
     } catch (err: any) {
       console.error('로그인 실패:', err);
     }

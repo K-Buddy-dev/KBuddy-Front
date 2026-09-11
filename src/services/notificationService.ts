@@ -62,13 +62,16 @@ export const notificationService = {
       },
     });
   },
-  deleteFcmToken: async (token: string): Promise<void> => {
+  //서버는 등록·해제 모두 토큰을 쿼리 파라미터(@RequestParam)로 받는다. 본문에 담으면 400이 난다.
+  //로그아웃 흐름에서는 전역 Authorization 헤더가 이미 비워져 있어 액세스 토큰을 직접 실어 보낼 수 있다.
+  deleteFcmToken: async (token: string, accessToken?: string): Promise<void> => {
     const normalizedToken = token?.trim();
 
     if (!normalizedToken) return;
 
     await authClient.delete(notificationApiUrl('/fcm-tokens'), {
-      data: { token: normalizedToken },
+      params: { token: normalizedToken },
+      ...(accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {}),
     });
   },
 };

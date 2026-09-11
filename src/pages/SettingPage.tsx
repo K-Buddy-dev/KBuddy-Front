@@ -14,7 +14,7 @@ export function SettingPage() {
     try {
       await deleteStoredFcmToken();
       await authService.logout();
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       console.error(error);
     }
@@ -36,7 +36,7 @@ export function SettingPage() {
     try {
       await deleteStoredFcmToken();
       await authService.deleteAccount();
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       console.error(error);
     }
