@@ -5,6 +5,7 @@ import render from '@/utils/test/render';
 import { authClient } from '@/api/axiosConfig';
 import { authService } from '@/services';
 import { AuthGuard } from './AuthGuard';
+import { FCM_AUTH_READY_EVENT } from '@/components/FcmTokenBridge';
 
 const renderAt = (path: string) =>
   render(
@@ -85,6 +86,22 @@ describe('로그인 사용자', () => {
   beforeEach(() => {
     setLoggedIn();
     vi.spyOn(authService, 'refreshAccessToken').mockResolvedValue({ data: { accessToken: 'token' } });
+  });
+
+  /**
+   * 앱을 다시 열면 로그인 이벤트 없이 조용히 재발급된다. 이때도 푸시 토큰이
+   * 다시 등록되도록 FCM 준비 이벤트를 보내야 한다. 보내지 않으면 토큰이 회전된
+   * 사용자는 다시 로그인할 때까지 푸시를 받지 못한다.
+   */
+  it('조용한 재발급이 성공하면 FCM 준비 이벤트를 보낸다', async () => {
+    delete authClient.defaults.headers.common['Authorization'];
+    const onReady = vi.fn();
+    window.addEventListener(FCM_AUTH_READY_EVENT, onReady);
+
+    await renderAt('/home');
+
+    await vi.waitFor(() => expect(onReady).toHaveBeenCalledTimes(1));
+    window.removeEventListener(FCM_AUTH_READY_EVENT, onReady);
   });
 
   it('마이페이지에 접근할 수 있다', async () => {
