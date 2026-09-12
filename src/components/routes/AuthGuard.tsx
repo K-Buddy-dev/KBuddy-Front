@@ -1,5 +1,6 @@
 import { authClient } from '@/api/axiosConfig';
 import { authService } from '@/services';
+import { notifyFcmAuthReady } from '@/components/FcmTokenBridge';
 import { isLoggedIn } from '@/utils/auth';
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
@@ -60,6 +61,10 @@ export function AuthGuard() {
           const accessToken = data?.accessToken as string | undefined;
           if (accessToken) {
             authClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            //앱을 다시 열어 조용히 재발급된 경우에도 푸시 토큰을 다시 등록한다.
+            //FcmTokenBridge 는 로그인 상태에서만 토큰을 요청하므로, 마운트 시점(헤더 없음)에는
+            //건너뛰고 여기서 보내는 이벤트로 재요청한다.
+            notifyFcmAuthReady();
           }
         }
       } catch {
